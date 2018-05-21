@@ -1,0 +1,3 @@
+/Users/Alan/workspace/compiler/project/shinaCC/code/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/Alan/workspace/compiler/project/shinaCC/code/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/Alan/workspace/compiler/project/shinaCC/code/cmake-build-debug/CMakeFiles/code.dir
