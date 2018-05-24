@@ -75,9 +75,9 @@ struct A_exp_
     //TODO:
     A_exp_();
 
-    enum {A_varExp, A_nilExp, A_intExp, A_stringExp, A_callExp,
-        A_opExp, A_recordExp, A_seqExp, A_assignExp, A_ifExp,
-        A_whileExp, A_forExp, A_breakExp, A_letExp, A_arrayExp} kind;
+    enum {A_varExp, A_nilExp, A_intExp, A_callExp,
+        A_opExp, A_structExp,A_unionExp, A_seqExp /*comma exp*/, A_assignExp, A_ifExp,
+        A_whileExp,A_dowhileExp, A_forExp, A_breakExp,A_continueExp,A_gotoExp, A_arrayExp,A_pointerExp} kind;
     A_pos pos;
     union {A_var var;
         /* nil; - needs only the pos */
@@ -115,7 +115,7 @@ class A_decList_{
 
 };
 
-struct A_ty_ {enum {A_nameTy, A_recordTy, A_arrayTy} kind;
+struct A_ty_ {enum {A_typedefTy, A_structTy,A_unionTy, A_arrayTy} kind;
     A_pos pos;
     union {S_symbol name;
         A_fieldList record;
