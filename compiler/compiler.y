@@ -20,6 +20,7 @@ void yyerror(const char*);
     struct Expr_ *expr;
     struct Stmt_ *stmt;
     struct Decl_ *decl;
+    char *sval;
     int operator_;
 }
 
@@ -37,7 +38,8 @@ jump_statement
 
 %type <operator_> unary_operator assignment_operator
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
+%token <sval> IDENTIFIER
+%token CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN

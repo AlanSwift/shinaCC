@@ -1,6 +1,7 @@
 %{
 #include <cstdio>
 #include <iostream>
+#include <cstring>
 #include "constant.h"
 #include "type.h"
 #include "declaration.h"
@@ -171,7 +172,7 @@ int check_type()
 *
 *	if (yytext == type_name)
 *		return(TYPE_NAME);
-*
+*   yyval.sval = strdup(yytext);
 *	return(IDENTIFIER);
 */
 
