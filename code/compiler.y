@@ -169,50 +169,50 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers ';'    {$$=A_declaration A_Declaration(0,$1, NULL);}
+	| declaration_specifiers init_declarator_list ';'   {$$=A_declaration A_Declaration(0,$1, $2);}
 	;
 
 declaration_specifiers
-	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
-	| type_qualifier
-	| type_qualifier declaration_specifiers
+	: storage_class_specifier   {$$=A_DecSpeciferList(0,NULL,DS_storage_class_specifier,$1);}
+	| storage_class_specifier declaration_specifiers    {$$=A_DecSpeciferList(0,$1,DS_storage_class_specifier,$2);}
+	| type_specifier    {$$=A_DecSpeciferList(0,NULL,DS_type_specifier,$1);}
+	| type_specifier declaration_specifiers {$$=A_DecSpeciferList(0,$1,DS_type_specifier,$2);}
+	| type_qualifier    {$$=A_DecSpeciferList(0,NULL,DS_type_qualifier,$1);}
+	| type_qualifier declaration_specifiers {$$=A_DecSpeciferList(0,$1,DS_type_qualifier,$2);}
 	;
 
 init_declarator_list
-	: init_declarator
-	| init_declarator_list ',' init_declarator
+	: init_declarator   {$$=A_InitDeclaratorList(0,NULL,$1);}
+	| init_declarator_list ',' init_declarator  {$$=A_InitDeclaratorList(0,$1,$2);}
 	;
 
 init_declarator
-	: declarator
-	| declarator '=' initializer
+	: declarator    {$$=A_InitDeclarator(0,$1, NULL);}
+	| declarator '=' initializer    {$$=A_InitDeclarator(0,$1, $2);}
 	;
 
 storage_class_specifier
-	: TYPEDEF
-	| EXTERN
-	| STATIC
-	| AUTO
-	| REGISTER
+	: TYPEDEF   {$$=SC_TYPEDEF;}
+	| EXTERN    {$$=SC_EXTERN;}
+	| STATIC    {$$=SC_STATIC;}
+	| AUTO      {$$=SC_AUTO;}
+	| REGISTER  {$$=SC_REGISTER;}
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	: VOID      {$$=TS_VOID;}
+	| CHAR      {$$=TS_CHAR;}
+	| SHORT     {$$=TS_SHORT;}
+	| INT       {$$=TS_INT;}
+	| LONG      {$$=TS_LONG;}
+	| FLOAT     {$$=TS_FLOAT;}
+	| DOUBLE    {$$=TS_DOUBLE;}
+	| SIGNED    {$$=TS_SIGNED;}
+	| UNSIGNED  {$$=TS_UNSIGNED;}
+	| struct_or_union_specifier {$$=$1;}
+	| enum_specifier    {$$=TS_ENUM;}
+	| TYPE_NAME         {$$=TS_TYPENAME;}
 	;
 
 struct_or_union_specifier
@@ -222,8 +222,8 @@ struct_or_union_specifier
 	;
 
 struct_or_union
-	: STRUCT
-	| UNION
+	: STRUCT    {$$=TS_STRUCT;}
+	| UNION     {$$=TS_UNION}
 	;
 
 struct_declaration_list
@@ -270,13 +270,13 @@ enumerator
 	;
 
 type_qualifier
-	: CONST
-	| VOLATILE
+	: CONST {$$=TQ_CONST;}
+	| VOLATILE  {$$=TQ_VOLATILE;}
 	;
 
 declarator
-	: pointer direct_declarator
-	| direct_declarator
+	: pointer direct_declarator     {$$=A_Declarator(0,$1,$2);}
+	| direct_declarator {$$=A_Declarator(0,NULL,$2);}
 	;
 
 direct_declarator
@@ -290,15 +290,15 @@ direct_declarator
 	;
 
 pointer
-	: '*'
-	| '*' type_qualifier_list
-	| '*' pointer
-	| '*' type_qualifier_list pointer
+	: '*'   {$$=A_Pointer(0, NULL,NULL);}
+	| '*' type_qualifier_list   {$$=A_Pointer(0, $1,NULL);}
+	| '*' pointer   {$$=A_Pointer(0, NULL,$1);}
+	| '*' type_qualifier_list pointer   {$$=A_Pointer(0, $1,$2);}
 	;
 
 type_qualifier_list
-	: type_qualifier
-	| type_qualifier_list type_qualifier
+	: type_qualifier    {$$=A_TypequalifierList(0,NULL,$1);}
+	| type_qualifier_list type_qualifier    {$$=A_TypequalifierList(0,$1,$2);}
 	;
 
 
@@ -358,78 +358,78 @@ initializer_list
 	;
 
 statement
-	: labeled_statement
-	| compound_statement
-	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
+	: labeled_statement     {$$=$1;}
+	| compound_statement    {$$=$1;}
+	| expression_statement  {$$=$1;}
+	| selection_statement   {$$=$1;}
+	| iteration_statement   {$$=$1;}
+	| jump_statement        {$$=$1;}
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement
-	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement
+	: IDENTIFIER ':' statement                  {$$=A_IdentifierLabeledStatement(0, S_symbol($1), $3);}
+	| CASE constant_expression ':' statement    {$$=A_CaseLabeledStatement(0, $2, $4);}
+	| DEFAULT ':' statement                     {$$=A_DefaultLabeledStatement(0, $3);}
 	;
 
 compound_statement
-	: '{' '}'
-	| '{' statement_list '}'
-	| '{' declaration_list '}'
-	| '{' declaration_list statement_list '}'
+	: '{' '}'                                   {$$=A_StmList(0,NULL,NULL);}
+	| '{' statement_list '}'                    {$$=$2;}
+	| '{' declaration_list '}'                  {$$=$2;}
+	| '{' declaration_list statement_list '}'   {$$=A_statement A_CompdStatement(A_pos pos, $2,$3);}
 	;
 
 declaration_list
-	: declaration
-	| declaration_list declaration
+	: declaration       {$$=A_DeclarationList(0,NULL,$1);}
+	| declaration_list declaration  {$$=A_DeclarationList(0,$1,$2);}
 	;
 
 statement_list
-	: statement
-	| statement_list statement
+	: statement                 {$$=A_StmList(0,NULL,$1);}
+	| statement_list statement  {$$=A_StmList(0,$1,$2);}
 	;
 
 expression_statement
-	: ';'
-	| expression ';'
+	: ';'               {$$=A_ExpStatement(0,NULL);}
+	| expression ';'    {$$=A_ExpStatement(0,$1);}
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement
+	: IF '(' expression ')' statement                   {$$=A_IfSelectStatement(0, $3, $5,NULL);}
+	| IF '(' expression ')' statement ELSE statement    {$$=A_IfSelectStatement(0, $3, $5,$7);}
+	| SWITCH '(' expression ')' statement               {$$=A_SwitchSelectStatement(0, $3, $5);}
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
+	: WHILE '(' expression ')' statement    {$$=A_WhileSelectStatement(0,$3, $5);}
+	| DO statement WHILE '(' expression ')' ';'     {$$=A_DoWhileSelectStatement(0, $2, $4);}
+	| FOR '(' expression_statement expression_statement ')' statement   {$$=A_ForSelectStatement(0,$3, $4, NULL,$6);}
+	| FOR '(' expression_statement expression_statement expression ')' statement    {$$=A_ForSelectStatement(0,$3, $4, $5,$7);}
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
+	: GOTO IDENTIFIER ';'   {$$=A_JumpStatement(0,S_symbol($1),S_symbol($2), NULL);}
+	| CONTINUE ';'  {$$=A_JumpStatement(0,S_symbol($1),NULL, NULL);}
+	| BREAK ';' {$$=A_JumpStatement(0,S_symbol($1),NULL, NULL);}
+	| RETURN ';'    {$$=A_JumpStatement(0,S_symbol($1),NULL, NULL);}
+	| RETURN expression ';' {$$=A_JumpStatement(0,S_symbol($1),NULL, $1);}
 	;
 
 translation_unit
-	: external_declaration
-	| translation_unit external_declaration
+	: external_declaration  {$$=A_DecList(0,NULL,$1);}
+	| translation_unit external_declaration {$$=A_DecList(0,$1,$2);}
 	;
 
 external_declaration
-	: function_definition
-	| declaration
+	: function_definition   {$$=$1;}
+	| declaration           {$$=$1;}
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers declarator compound_statement
-	| declarator declaration_list compound_statement
-	| declarator compound_statement
+	: declaration_specifiers declarator declaration_list compound_statement     {$$=A_FuncDec(0,$1, $2, $3,$4);}
+	| declaration_specifiers declarator compound_statement  {$$=A_FuncDec(0,$1, $2, NULL,$3);}
+	| declarator declaration_list compound_statement    {$$=A_FuncDec(0,NULL, $1, $2,$3);}
+	| declarator compound_statement     {$$=A_FuncDec(0,NULL, $1, NULL,$2);}
 	;
 
 %%

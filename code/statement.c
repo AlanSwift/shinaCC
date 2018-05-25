@@ -52,7 +52,7 @@ struct A_statement_
 			}kind;
 			A_exp exp;
 			A_statement stm;
-			A_statement expstm1,expstm2,
+			A_statement expstm1,expstm2;
 			A_exp exp1;
 		}iterStm;
 		struct
@@ -67,10 +67,16 @@ struct A_statement_
 
 	
 };
+struct A_statementlist_{
+    struct A_statement stm;
+    struct A_statementlist next;
+};
+A_statementList A_StmList(A_pos,A_statementlist lst,A_statement stm);
+
 A_statement A_IdentifierLabeledStatement(A_pos pos, S_symbol identifier, A_statement stm);
 A_statement A_CaseLabeledStatement(A_pos pos, A_exp exp, A_statement stm);
 A_statement A_DefaultLabeledStatement(A_pos pos, A_statement stm);
-A_statement A_CompdStatement(A_pos pos, vector<A_statement>stmList,vector<A_declaration>decList);
+A_statement A_CompdStatement(A_pos pos, A_statementlist stmList,A_declarationlist decList);
 A_statement A_ExpStatement(A_pos pos,A_exp exp);
 A_statement A_IfSelectStatement(A_pos pos, A_exp exp, A_statement stm,A_statement elseStm);
 A_statement A_SwitchSelectStatement(A_pos pos, A_exp exp, A_statement stm);
