@@ -6,7 +6,7 @@
 #include "declaration.h"
 #include "statement.h"
 #include "expression.h"
-#include "compiler.tab.h"
+#include "y.tab.h"
 extern YYSTYPE yylval;
 
 void count(void);
