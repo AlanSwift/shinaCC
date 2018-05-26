@@ -7,6 +7,8 @@
 #include "declaration.h"
 #include "statement.h"
 #include "expression.h"
+#include <iostream>
+#include <list>
 
 Node rootNode;
 
@@ -15,14 +17,18 @@ extern int column;
 extern FILE * yyin;
 extern FILE * yyout;
 extern int yylineno;
-int yylex(void);
-void yyerror(const char*);
+
+extern "C"{
+    void yyerror(const char *s);
+    extern int yylex(void);
+}
 %}
 
 %union {
     struct Expr_ *expr;
     struct Stmt_ *stmt;
     struct Decl_ *decl;
+    std::list<struct Stmt_ *> *stmtList;
     char *sval;
     int operator_;
 }
@@ -38,6 +44,8 @@ constant_expression argument_expression_list
 %type <stmt> statement labeled_statement compound_statement
 expression_statement selection_statement iteration_statement
 jump_statement
+
+%type <stmtList> statement_list
 
 %type <operator_> unary_operator assignment_operator
 
@@ -87,30 +95,35 @@ postfix_expression
 	}
 	| postfix_expression '(' ')' {
         $$ = (Expr)new CallExpr_($1);
-        
+        rootNode = (Node)$$;
 	}
 	| postfix_expression '(' argument_expression_list ')' {
-
+        rootNode = (Node)$$;
 	}
 	| postfix_expression '.' IDENTIFIER {
         $$ = (Expr)new MemberExpr_($1, $3, false);
+        rootNode = (Node)$$;
 	}
 	| postfix_expression PTR_OP IDENTIFIER {
         $$ = (Expr)new MemberExpr_($1, $3, true);
+        rootNode = (Node)$$;
 	}
 	| postfix_expression INC_OP {
         $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEADD, true);
+        rootNode = (Node)$$;
 	}
 	| postfix_expression DEC_OP {
         $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEMINUS, true);
+        rootNode = (Node)$$;
 	}
 	;
 
 //OP_BINARY_COMMA
 argument_expression_list
-	: assignment_expression { $$ = $1; }
+	: assignment_expression { $$ = $1;rootNode = (Node)$$; }
 	| argument_expression_list ',' assignment_expression {
 	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
+	    rootNode = (Node)$$;
 	}
 	;
 
@@ -118,15 +131,22 @@ unary_expression
 	: postfix_expression { $$ = $1; }
 	| INC_OP unary_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEADD, false);
+	    rootNode = (Node)$$;
 	}
 	| DEC_OP unary_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEMINUS, false);
+	    rootNode = (Node)$$;
 	}
 	| unary_operator cast_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, $1, false);
+	    rootNode = (Node)$$;
 	}
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_name ')'
+	| SIZEOF unary_expression {
+
+	}
+	| SIZEOF '(' type_name ')'{
+
+	}
 	;
 
 unary_operator
@@ -139,115 +159,137 @@ unary_operator
 	;
 
 cast_expression
-	: unary_expression { $$ = $1; }
-	| '(' type_name ')' cast_expression
+	: unary_expression { $$ = $1;rootNode = (Node)$$; }
+	| '(' type_name ')' cast_expression{
+
+	}
 	;
 
 multiplicative_expression
-	: cast_expression { $$ = $1; }
+	: cast_expression { $$ = $1;rootNode = (Node)$$; }
 	| multiplicative_expression '*' cast_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MULTIPLY, $3);
+        rootNode = (Node)$$;
 	}
 	| multiplicative_expression '/' cast_expression {
 	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_DIV, $3);
+	    rootNode = (Node)$$;
 	}
 	| multiplicative_expression '%' cast_expression {
 	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MOD, $3);
+	    rootNode = (Node)$$;
 	}
 	;
 
 additive_expression
-	: multiplicative_expression { $$ = $1; }
+	: multiplicative_expression { $$ = $1;rootNode = (Node)$$; }
 	| additive_expression '+' multiplicative_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ADD, $3);
+        rootNode = (Node)$$;
 	}
 	| additive_expression '-' multiplicative_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MINUS, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 shift_expression
-	: additive_expression { $$ = $1; }
+	: additive_expression { $$ = $1;rootNode = (Node)$$; }
 	| shift_expression LEFT_OP additive_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTLEFT, $3);
+        rootNode = (Node)$$;
 	}
 	| shift_expression RIGHT_OP additive_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTRIGHT, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 relational_expression
-	: shift_expression { $$ = $1; }
+	: shift_expression { $$ = $1;rootNode = (Node)$$; }
 	| relational_expression '<' shift_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ST, $3);
+        rootNode = (Node)$$;
 	}
 	| relational_expression '>' shift_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_GT, $3);
+        rootNode = (Node)$$;
 	}
 	| relational_expression LE_OP shift_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SE, $3);
+        rootNode = (Node)$$;
 	}
 	| relational_expression GE_OP shift_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_BE, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 equality_expression
-	: relational_expression { $$ = $1; }
+	: relational_expression { $$ = $1;rootNode = (Node)$$; }
 	| equality_expression EQ_OP relational_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_EQ, $3);
+        rootNode = (Node)$$;
 	}
 	| equality_expression NE_OP relational_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_NEQ, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 and_expression
-	: equality_expression { $$ = $1; }
+	: equality_expression { $$ = $1;rootNode = (Node)$$; }
 	| and_expression '&' equality_expression {
          $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_AND, $3);
+         rootNode = (Node)$$;
 	}
 	;
 
 exclusive_or_expression
-	: and_expression { $$ = $1; }
+	: and_expression { $$ = $1;rootNode = (Node)$$; }
 	| exclusive_or_expression '^' and_expression {
          $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_XOR, $3);
+         rootNode = (Node)$$;
 	}
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression { $$ = $1; }
+	: exclusive_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| inclusive_or_expression '|' exclusive_or_expression {
          $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_OR, $3);
+         rootNode = (Node)$$;
 	}
 	;
 
 logical_and_expression
-	: inclusive_or_expression { $$ = $1; }
+	: inclusive_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_and_expression AND_OP inclusive_or_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 logical_or_expression
-	: logical_and_expression { $$ = $1; }
+	: logical_and_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_or_expression OR_OP logical_and_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_OR, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
 conditional_expression
-	: logical_or_expression { $$ = $1; }
+	: logical_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_or_expression '?' expression ':' conditional_expression {
         $$ = (Expr)new ConditionalExpr_($1, $3, $5);
+        rootNode = (Node)$$;
 	}
 	;
 
 assignment_expression
-	: conditional_expression { $$ = $1; }
+	: conditional_expression { $$ = $1;rootNode = (Node)$$; }
 	| unary_expression assignment_operator assignment_expression {
         $$ = (Expr)new AssignExpr_($1, $2, $3);
+        rootNode = (Node)$$;
 	}
 	;
 
@@ -266,14 +308,15 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression { $$ = $1; }
+	: assignment_expression { $$ = $1;rootNode = (Node)$$; }
 	| expression ',' assignment_expression {
 	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
+	    rootNode = (Node)$$;
 	}
 	;
 
 constant_expression
-	: conditional_expression { $$ = $1; }
+	: conditional_expression { $$ = $1;rootNode = (Node)$$; }
 	;
 
 declaration
@@ -466,25 +509,46 @@ initializer_list
 	;
 
 statement
-	: labeled_statement
-	| compound_statement
-	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
+	: labeled_statement { $$ = $1; rootNode = (Node)$$; }
+	| compound_statement { $$ = $1; rootNode = (Node)$$; }
+	| expression_statement { $$ = $1; rootNode = (Node)$$; }
+	| selection_statement { $$ = $1; rootNode = (Node)$$; }
+	| iteration_statement { $$ = $1; rootNode = (Node)$$; }
+	| jump_statement { $$ = $1; rootNode = (Node)$$; }
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement
-	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement
+	: IDENTIFIER ':' statement {
+	    $$ = (Stmt)new LabelStmt_(std::string($1), $3);
+	    free($1);
+	    rootNode = (Node)$$;
+	}
+	| CASE constant_expression ':' statement {
+        $$ = (Stmt)new CaseStmt_($2, $4);
+        rootNode = (Node)$$;
+	}
+	| DEFAULT ':' statement {
+	    $$ = (Stmt)new DefaultStmt_($3);
+	    rootNode = (Node)$$;
+	}
 	;
 
 compound_statement
-	: '{' '}'
-	| '{' statement_list '}'
-	| '{' declaration_list '}'
-	| '{' declaration_list statement_list '}'
+	: '{' '}' {
+	    $$ = (Stmt)new CompoundStmt_();
+	    rootNode = (Node)$$;
+	}
+	| '{' statement_list '}' {
+        $$ = (Stmt)new CompoundStmt_(*$2);
+        rootNode = (Node)$$;
+        delete $2;
+	}
+	| '{' declaration_list '}' {
+
+	}
+	| '{' declaration_list statement_list '}' {
+
+	}
 	;
 
 declaration_list
@@ -493,34 +557,100 @@ declaration_list
 	;
 
 statement_list
-	: statement
-	| statement_list statement
+	: statement {
+	    $$ = new std::list<Stmt>;
+	    $$->push_back($1);
+	}
+	| statement_list statement {
+	    $$->push_back($2);
+	}
 	;
 
 expression_statement
-	: ';'
-	| expression ';'
+	: ';' {
+	    $$ = (Stmt)new NullStmt_();
+        rootNode = (Node)$$;
+	}
+	| expression ';' {
+	    $$ = (Stmt)new ExprStmt_($1);
+	    rootNode = (Node)$$;
+	}
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement
+	: IF '(' expression ')' statement {
+	    $$ = (Stmt)new IfStmt_($3, $5, NULL);
+        rootNode = (Node)$$;
+	}
+	| IF '(' expression ')' statement ELSE statement {
+        $$ = (Stmt)new IfStmt_($3, $5, $7);
+        rootNode = (Node)$$;
+	}
+	| SWITCH '(' expression ')' statement {
+        $$ = (Stmt)new SwitchStmt_($3, $5);
+        rootNode = (Node)$$;
+	}
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
+	: WHILE '(' expression ')' statement {
+        $$ = (Stmt)new WhileStmt_($5, $3);
+        rootNode = (Node)$$;
+	}
+	| DO statement WHILE '(' expression ')' ';' {
+	    $$ = (Stmt)new DoStmt_($2, $5);
+        rootNode = (Node)$$;
+	}
+	| FOR '(' expression_statement expression_statement ')' statement {
+        Expr expr1, expr2;
+        if($3->id == NODE_STM_NULL)
+            expr1 = NULL;
+        else
+            expr1 = ((ExprStmt)$3)->expr;
+        if($4->id == NODE_STM_NULL)
+            expr2 = NULL;
+        else
+            expr2 = ((ExprStmt)$4)->expr;
+        $$ = (Stmt)new ForStmt_(expr1, expr2, NULL, $6);
+        rootNode = (Node)$$;
+	}
+	| FOR '(' expression_statement expression_statement expression ')' statement {
+        Expr expr1, expr2;
+        if($3->id == NODE_STM_NULL)
+            expr1 = NULL;
+        else
+            expr1 = ((ExprStmt)$3)->expr;
+        if($4->id == NODE_STM_NULL)
+            expr2 = NULL;
+        else
+            expr2 = ((ExprStmt)$4)->expr;
+        $$ = (Stmt)new ForStmt_(expr1, expr2, $5, $7);
+        rootNode = (Node)$$;
+	}
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
+	: GOTO IDENTIFIER ';' {
+        $$ = (Stmt)new GoToStmt_(std::string($2));
+        rootNode = (Node)$$;
+        free($2);
+	}
+	| CONTINUE ';' {
+        $$ = (Stmt)new ContinueStmt_();
+        rootNode = (Node)$$;
+	}
+	| BREAK ';'{
+        $$ = (Stmt)new BreakStmt_();
+        rootNode = (Node)$$;
+	}
+	| RETURN ';'{
+        $$ = (Stmt)new ReturnStmt_(NULL);
+        rootNode = (Node)$$;
+	}
+	| RETURN expression ';'{
+        $$ = (Stmt)new ReturnStmt_($2);
+        rootNode = (Node)$$;
+	}
 	;
 
 translation_unit
@@ -541,6 +671,7 @@ function_definition
 	;
 
 %%
+
 void yyerror(char const *s)
 {
 	fflush(stdout);
@@ -549,6 +680,8 @@ void yyerror(char const *s)
 
 int main(int argc, char *argv[]) {
     yyparse();
+    std::cout << std::endl << "-------------------------------------------------------" << std::endl;
+    rootNode->show();
     return 0;
 }
 

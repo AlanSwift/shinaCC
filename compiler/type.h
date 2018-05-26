@@ -10,18 +10,12 @@
 #include "constant.h"
 using namespace std;
 
-typedef struct Type_ *Type;
 typedef struct BuiltinType_ *BuiltinType;
 typedef struct PointerType_ *PointerType;
 typedef struct RecordType_ *RecordType;
 typedef struct ArrayType_ *ArrayType;
 typedef struct FunctionType_ *FunctionType;
 typedef struct TypedefType_ *TypedefType;
-
-struct Type_:public Node_
-{
-
-};
 
 struct BuiltinType_:public Type_
 {

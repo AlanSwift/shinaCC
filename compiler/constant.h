@@ -5,7 +5,8 @@
 #ifndef COMPILER_CONSTANT_H
 #define COMPILER_CONSTANT_H
 
-#include "string"
+#include <string>
+#include <cstdio>
 
 typedef int A_identifier;
 typedef int BasicOperator;
@@ -18,7 +19,53 @@ typedef int AssignOperator;
 struct Node_
 {
     A_identifier id;
+    virtual void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf(" ");
+        printf("Node_\n");
+    }
 };
+
+typedef struct Type_ *Type;
+typedef struct Decl_ *Decl;
+typedef struct Stmt_ *Stmt;
+typedef struct Expr_ *Expr;
+
+struct Type_:public Node_
+{
+
+};
+
+
+struct Stmt_:public Node_
+{
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf(" ");
+        printf("Stmt_\n");
+    }
+};
+
+struct Expr_:public Node_
+{
+    Type type;
+
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf(" ");
+        printf("Expr_\n");
+    }
+};
+
+struct Decl_:public Node_
+{
+
+};
+
+
 
 
 const int CONST_TYPE_POINTER=1;

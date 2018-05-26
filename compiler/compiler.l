@@ -10,6 +10,11 @@
 #include "y.tab.h"
 extern YYSTYPE yylval;
 
+extern "C"{
+    int yywrap(void);
+    int yylex(void);// 这个是lex产生的词法分析函数，必须在这里进行声明
+}
+
 void count(void);
 void comment();
 int check_type();
@@ -63,16 +68,16 @@ IS			(u|U|l|L)*
 
 {L}({L}|{D})*		{ count(); return(check_type()); }
 
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); long a; sscanf(yytext, "%lx", &a); yylval.expr = new IntLiteral_(a);}
-0{D}+{IS}?		{ count(); return(CONSTANT); long a; sscanf(yytext, "%lo", &a); yylval.expr = new IntLiteral_(a);}
-{D}+{IS}?		{ count(); return(CONSTANT); long a; sscanf(yytext, "%ld", &a); yylval.expr = new IntLiteral_(a);}
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); char a = yytext[1]; yylval.expr = new CharLiteral_(a);}
+0[xX]{H}+{IS}?		{ count(); long a; sscanf(yytext, "%lx", &a); yylval.expr = (Expr)new IntLiteral_(a); return(CONSTANT); }
+0{D}+{IS}?		{ count(); long a; sscanf(yytext, "%lo", &a); yylval.expr = (Expr)new IntLiteral_(a);return(CONSTANT); }
+{D}+{IS}?		{ count(); long a; sscanf(yytext, "%ld", &a); yylval.expr = (Expr)new IntLiteral_(a);return(CONSTANT); }
+L?'(\\.|[^\\'])+'	{ count(); char a = yytext[1]; yylval.expr = (Expr)new CharLiteral_(a);return(CONSTANT); }
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); double a; sscanf(yytext, "%lf", &a); yylval.expr = new FloatLiteral_(a);}
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); double a; sscanf(yytext, "%lf", &a); yylval.expr = new FloatLiteral_(a);}
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); double a; sscanf(yytext, "%lf", &a); yylval.expr = new FloatLiteral_(a);}
+{D}+{E}{FS}?		{ count(); double a; sscanf(yytext, "%lf", &a); yylval.expr = (Expr)new FloatLiteral_(a);return(CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{ count(); double a; sscanf(yytext, "%lf", &a); yylval.expr = (Expr)new FloatLiteral_(a);return(CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{ count(); double a; sscanf(yytext, "%lf", &a); yylval.expr = (Expr)new FloatLiteral_(a);return(CONSTANT); }
 
-L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); yylval.expr = new StrLiteral_(yytext);}
+L?\"(\\.|[^\\"])*\"	{ count(); yylval.expr = (Expr)new StrLiteral_(yytext); return(STRING_LITERAL);}
 
 "..."			{ count(); return(ELLIPSIS); }
 ">>="			{ count(); return(RIGHT_ASSIGN); }

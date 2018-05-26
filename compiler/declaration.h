@@ -11,18 +11,12 @@
 #include "constant.h"
 using namespace std;
 
-typedef struct CompoundStmt_ *CompoundStmt;
-
-struct Decl_;
 struct VarDecl_;
 struct FunctionDecl_;
 struct ParmVarDecl_;
 struct RecordDecl_;
 struct FieldDecl_;
 struct TypedefDecl_;
-
-typedef struct Expr_ *Expr;
-typedef struct Decl_ *Decl;
 
 typedef struct VarDecl_ *VarDecl;
 typedef struct FunctionDecl_ *FunctionDecl;
@@ -32,10 +26,6 @@ typedef struct FieldDecl_ *FieldDecl;
 typedef struct TypedefDecl_ *TypdefDecl;
 
 
-struct Decl_:public Node_
-{
-
-};
 
 struct VarDecl_:public Decl_
 {
@@ -48,7 +38,7 @@ struct FunctionDecl_:public Decl_
 {
     Type returnType;
     list<ParmVarDecl> parameters;
-    CompoundStmt stmt; /*function body, can be null*/
+    Stmt stmt; /*function body, can be null*/
 };
 
 struct ParmVarDecl_:public Decl_
