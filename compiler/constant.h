@@ -115,7 +115,7 @@ const int OP_BINARY_EQ=417;//==
 const int OP_BINARY_NEQ=418;//!=
 const int OP_BINARY_AND=419;// 1&2
 const int OP_BINARY_OR=420;// 1|2
-const int OP_BINARY_NOR=421;// 1^2
+const int OP_BINARY_XOR=421;// 1^2
 const int OP_BINARY_LOGICAL_AND=422;//&&
 const int OP_BINARY_LOGICAL_OR=423;// ||
 
@@ -126,7 +126,7 @@ const int OP_ASSIGN_EQ_MULTIPLY=433;
 const int OP_ASSIGN_EQ_DIV=434;
 const int OP_ASSIGN_EQ_MOD=435;
 const int OP_ASSIGN_EQ_AND=436;
-const int OP_ASSIGN_EQ_NOR=437;
+const int OP_ASSIGN_EQ_XOR=437;
 const int OP_ASSIGN_EQ_OR=438;
 const int OP_ASSIGN_EQ_SHIFTLEFT=439;
 const int OP_ASSIGN_EQ_SHIFTRIGHT=440;
