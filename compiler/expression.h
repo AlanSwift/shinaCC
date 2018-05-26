@@ -90,10 +90,10 @@ struct ConditionalExpr_:public Expr_
 struct AssignExpr_:public Expr_
 {
     AssignOperator operator_;
-    DeclRefExpr var;
+    Expr var;
     Expr expr;
 
-    AssignExpr_(DeclRefExpr var, AssignOperator operator_, Expr expr):var(var), expr(expr),
+    AssignExpr_(Expr var, AssignOperator operator_, Expr expr):var(var), expr(expr),
                                                                       operator_(operator_){
         this->id = NODE_EXP_ASSIGN;
     }
@@ -101,21 +101,25 @@ struct AssignExpr_:public Expr_
 
 struct CallExpr_:public Expr_
 {
-    DeclRefExpr func;
+    Expr func;
     list<Expr> args;
 
-    CallExpr_(DeclRefExpr func, list<Expr> &args):func(func), args(args){
+    CallExpr_(Expr func):func(func){
+        this->id = NODE_EXP_CALL;
+    }
+
+    CallExpr_(Expr func, list<Expr> &args):func(func), args(args){
         this->id = NODE_EXP_CALL;
     }
 };
 
 struct MemberExpr_:public Expr_
 {
-    DeclRefExpr parent;
+    Expr parent;
     bool isPointer;
     string member;
 
-    MemberExpr_(DeclRefExpr parent, string member, bool isPointer):parent(parent), isPointer(isPointer),
+    MemberExpr_(Expr parent, string member, bool isPointer):parent(parent), isPointer(isPointer),
                                                                    member(member){
         this->id = NODE_EXP_MEMBER;
     }
@@ -123,10 +127,10 @@ struct MemberExpr_:public Expr_
 
 struct ArraySubscriptExpr_:public Expr_
 {
-    DeclRefExpr array;
+    Expr array;
     Expr offset;
 
-    ArraySubscriptExpr_(DeclRefExpr array, Expr offset):array(array), offset(offset){
+    ArraySubscriptExpr_(Expr array, Expr offset):array(array), offset(offset){
         this->id = NODE_EXP_ARRAYSUBSCRIPT;
     }
 };

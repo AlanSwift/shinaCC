@@ -93,6 +93,10 @@ const int NODE_STM_EXPR=313;
 const int NODE_STM_DECL=314;
 const int NODE_STM_NULL=315;
 
+const int OP_UNARY_NOT=398; //~
+const int OP_UNARY_LOGICAL_NOT=398; //!
+const int OP_UNARY_POSITIVE=398; //+
+const int OP_UNARY_NEGATIVE=399; //-
 const int OP_UNARY_CAST=400;
 const int OP_UNARY_STAR=401;//*
 const int OP_UNARY_AND=402;//&
@@ -118,6 +122,7 @@ const int OP_BINARY_OR=420;// 1|2
 const int OP_BINARY_XOR=421;// 1^2
 const int OP_BINARY_LOGICAL_AND=422;//&&
 const int OP_BINARY_LOGICAL_OR=423;// ||
+const int OP_BINARY_COMMA=424;// ,
 
 const int OP_ASSIGN_EQ=430;// =
 const int OP_ASSIGN_EQ_ADD=431;//+=

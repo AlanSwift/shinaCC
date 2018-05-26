@@ -8,6 +8,8 @@
 #include "statement.h"
 #include "expression.h"
 
+Node rootNode;
+
 extern char *yytext;
 extern int column;
 extern FILE * yyin;
@@ -31,7 +33,7 @@ multiplicative_expression additive_expression shift_expression
 relational_expression equality_expression and_expression
 exclusive_or_expression inclusive_or_expression
 logical_and_expression logical_or_expression conditional_expression
-constant_expression
+constant_expression argument_expression_list
 
 %type <stmt> statement labeled_statement compound_statement
 expression_statement selection_statement iteration_statement
@@ -58,43 +60,71 @@ jump_statement
 
 primary_expression
 	: IDENTIFIER {
-	    DeclRefExpr p = new DeclRefExpr_(std::string($1));
-	    $$ = (Expr)p;
+	    $$ = (Expr)new DeclRefExpr_(std::string($1));
 	    free($1);
+	    rootNode = (Node)$$;
 	}
 	| CONSTANT {
         $$ = (Expr)$1;
+        rootNode = (Node)$$;
 	}
 	| STRING_LITERAL {
         $$ = (Expr)$1;
+        rootNode = (Node)$$;
     }
 	| '(' expression ')' {
 	    ParenExpr p = new ParenExpr_($2);
 	    $$ = (Expr)p;
+	    rootNode = (Node)$$;
 	}
 	;
 
 postfix_expression
-	: primary_expression { $$ = $1; }
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' IDENTIFIER
-	| postfix_expression PTR_OP IDENTIFIER
-	| postfix_expression INC_OP
-	| postfix_expression DEC_OP
+	: primary_expression { $$ = $1; rootNode = (Node)$$; }
+	| postfix_expression '[' expression ']' {
+        $$ = (Expr)new ArraySubscriptExpr_($1, $3);
+        rootNode = (Node)$$;
+	}
+	| postfix_expression '(' ')' {
+        $$ = (Expr)new CallExpr_($1);
+        
+	}
+	| postfix_expression '(' argument_expression_list ')' {
+
+	}
+	| postfix_expression '.' IDENTIFIER {
+        $$ = (Expr)new MemberExpr_($1, $3, false);
+	}
+	| postfix_expression PTR_OP IDENTIFIER {
+        $$ = (Expr)new MemberExpr_($1, $3, true);
+	}
+	| postfix_expression INC_OP {
+        $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEADD, true);
+	}
+	| postfix_expression DEC_OP {
+        $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEMINUS, true);
+	}
 	;
 
+//OP_BINARY_COMMA
 argument_expression_list
-	: assignment_expression
-	| argument_expression_list ',' assignment_expression
+	: assignment_expression { $$ = $1; }
+	| argument_expression_list ',' assignment_expression {
+	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
+	}
 	;
 
 unary_expression
 	: postfix_expression { $$ = $1; }
-	| INC_OP unary_expression
-	| DEC_OP unary_expression
-	| unary_operator cast_expression
+	| INC_OP unary_expression {
+	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEADD, false);
+	}
+	| DEC_OP unary_expression {
+	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEMINUS, false);
+	}
+	| unary_operator cast_expression {
+	    $$ = (Expr)new UnaryOpExpr_($2, $1, false);
+	}
 	| SIZEOF unary_expression
 	| SIZEOF '(' type_name ')'
 	;
@@ -102,10 +132,10 @@ unary_expression
 unary_operator
 	: '&' { $$ = OP_UNARY_AND; }
 	| '*' { $$ = OP_UNARY_STAR; }
-	| '+' { $$ = OP_UNARY_AND; }
-	| '-' { $$ = OP_UNARY_AND; }
-	| '~' { $$ = OP_UNARY_AND; }
-	| '!' { $$ = OP_UNARY_AND; }
+	| '+' { $$ = OP_UNARY_POSITIVE; }
+	| '-' { $$ = OP_UNARY_NEGATIVE; }
+	| '~' { $$ = OP_UNARY_NOT; }
+	| '!' { $$ = OP_UNARY_LOGICAL_NOT; }
 	;
 
 cast_expression
@@ -115,89 +145,131 @@ cast_expression
 
 multiplicative_expression
 	: cast_expression { $$ = $1; }
-	| multiplicative_expression '*' cast_expression
-	| multiplicative_expression '/' cast_expression
-	| multiplicative_expression '%' cast_expression
+	| multiplicative_expression '*' cast_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MULTIPLY, $3);
+	}
+	| multiplicative_expression '/' cast_expression {
+	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_DIV, $3);
+	}
+	| multiplicative_expression '%' cast_expression {
+	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MOD, $3);
+	}
 	;
 
 additive_expression
 	: multiplicative_expression { $$ = $1; }
-	| additive_expression '+' multiplicative_expression
-	| additive_expression '-' multiplicative_expression
+	| additive_expression '+' multiplicative_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ADD, $3);
+	}
+	| additive_expression '-' multiplicative_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MINUS, $3);
+	}
 	;
 
 shift_expression
 	: additive_expression { $$ = $1; }
-	| shift_expression LEFT_OP additive_expression
-	| shift_expression RIGHT_OP additive_expression
+	| shift_expression LEFT_OP additive_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTLEFT, $3);
+	}
+	| shift_expression RIGHT_OP additive_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTRIGHT, $3);
+	}
 	;
 
 relational_expression
 	: shift_expression { $$ = $1; }
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
-	| relational_expression LE_OP shift_expression
-	| relational_expression GE_OP shift_expression
+	| relational_expression '<' shift_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ST, $3);
+	}
+	| relational_expression '>' shift_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_GT, $3);
+	}
+	| relational_expression LE_OP shift_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SE, $3);
+	}
+	| relational_expression GE_OP shift_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_BE, $3);
+	}
 	;
 
 equality_expression
 	: relational_expression { $$ = $1; }
-	| equality_expression EQ_OP relational_expression
-	| equality_expression NE_OP relational_expression
+	| equality_expression EQ_OP relational_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_EQ, $3);
+	}
+	| equality_expression NE_OP relational_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_NEQ, $3);
+	}
 	;
 
 and_expression
 	: equality_expression { $$ = $1; }
-	| and_expression '&' equality_expression
+	| and_expression '&' equality_expression {
+         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_AND, $3);
+	}
 	;
 
 exclusive_or_expression
 	: and_expression { $$ = $1; }
-	| exclusive_or_expression '^' and_expression
+	| exclusive_or_expression '^' and_expression {
+         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_XOR, $3);
+	}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression { $$ = $1; }
-	| inclusive_or_expression '|' exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression {
+         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_OR, $3);
+	}
 	;
 
 logical_and_expression
 	: inclusive_or_expression { $$ = $1; }
-	| logical_and_expression AND_OP inclusive_or_expression
+	| logical_and_expression AND_OP inclusive_or_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
+	}
 	;
 
 logical_or_expression
 	: logical_and_expression { $$ = $1; }
-	| logical_or_expression OR_OP logical_and_expression
+	| logical_or_expression OR_OP logical_and_expression {
+        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_OR, $3);
+	}
 	;
 
 conditional_expression
 	: logical_or_expression { $$ = $1; }
-	| logical_or_expression '?' expression ':' conditional_expression
+	| logical_or_expression '?' expression ':' conditional_expression {
+        $$ = (Expr)new ConditionalExpr_($1, $3, $5);
+	}
 	;
 
 assignment_expression
 	: conditional_expression { $$ = $1; }
-	| unary_expression assignment_operator assignment_expression
+	| unary_expression assignment_operator assignment_expression {
+        $$ = (Expr)new AssignExpr_($1, $2, $3);
+	}
 	;
 
 assignment_operator
-	: '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
+	: '=' { $$ = OP_ASSIGN_EQ; }
+	| MUL_ASSIGN { $$ = OP_ASSIGN_EQ_MULTIPLY; }
+	| DIV_ASSIGN { $$ = OP_ASSIGN_EQ_DIV; }
+	| MOD_ASSIGN { $$ = OP_ASSIGN_EQ_MOD; }
+	| ADD_ASSIGN { $$ = OP_ASSIGN_EQ_ADD; }
+	| SUB_ASSIGN { $$ = OP_ASSIGN_EQ_MINUS; }
+	| LEFT_ASSIGN { $$ = OP_ASSIGN_EQ_SHIFTLEFT; }
+	| RIGHT_ASSIGN { $$ = OP_ASSIGN_EQ_SHIFTRIGHT; }
+	| AND_ASSIGN { $$ = OP_ASSIGN_EQ_AND; }
+	| XOR_ASSIGN { $$ = OP_ASSIGN_EQ_XOR; }
+	| OR_ASSIGN { $$ = OP_ASSIGN_EQ_OR; }
 	;
 
 expression
 	: assignment_expression { $$ = $1; }
-	| expression ',' assignment_expression
+	| expression ',' assignment_expression {
+	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
+	}
 	;
 
 constant_expression
