@@ -1,6 +1,7 @@
 %{
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include "constant.h"
 #include "type.h"
 #include "declaration.h"
@@ -20,6 +21,7 @@ void yyerror(const char*);
     struct Expr_ *expr;
     struct Stmt_ *stmt;
     struct Decl_ *decl;
+    char *sval;
     int operator_;
 }
 
@@ -37,7 +39,9 @@ jump_statement
 
 %type <operator_> unary_operator assignment_operator
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
+%token <sval> IDENTIFIER
+%token <expr> CONSTANT STRING_LITERAL
+%token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -53,14 +57,25 @@ jump_statement
 %%
 
 primary_expression
-	: IDENTIFIER
-	| CONSTANT
-	| STRING_LITERAL
-	| '(' expression ')'
+	: IDENTIFIER {
+	    DeclRefExpr p = new DeclRefExpr_(std::string($1));
+	    $$ = (Expr)p;
+	    free($1);
+	}
+	| CONSTANT {
+        $$ = (Expr)$1;
+	}
+	| STRING_LITERAL {
+        $$ = (Expr)$1;
+    }
+	| '(' expression ')' {
+	    ParenExpr p = new ParenExpr_($2);
+	    $$ = (Expr)p;
+	}
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression { $$ = $1; }
 	| postfix_expression '[' expression ']'
 	| postfix_expression '(' ')'
 	| postfix_expression '(' argument_expression_list ')'
@@ -76,7 +91,7 @@ argument_expression_list
 	;
 
 unary_expression
-	: postfix_expression
+	: postfix_expression { $$ = $1; }
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| unary_operator cast_expression
@@ -85,40 +100,40 @@ unary_expression
 	;
 
 unary_operator
-	: '&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
+	: '&' { $$ = OP_UNARY_AND; }
+	| '*' { $$ = OP_UNARY_STAR; }
+	| '+' { $$ = OP_UNARY_AND; }
+	| '-' { $$ = OP_UNARY_AND; }
+	| '~' { $$ = OP_UNARY_AND; }
+	| '!' { $$ = OP_UNARY_AND; }
 	;
 
 cast_expression
-	: unary_expression
+	: unary_expression { $$ = $1; }
 	| '(' type_name ')' cast_expression
 	;
 
 multiplicative_expression
-	: cast_expression
+	: cast_expression { $$ = $1; }
 	| multiplicative_expression '*' cast_expression
 	| multiplicative_expression '/' cast_expression
 	| multiplicative_expression '%' cast_expression
 	;
 
 additive_expression
-	: multiplicative_expression
+	: multiplicative_expression { $$ = $1; }
 	| additive_expression '+' multiplicative_expression
 	| additive_expression '-' multiplicative_expression
 	;
 
 shift_expression
-	: additive_expression
+	: additive_expression { $$ = $1; }
 	| shift_expression LEFT_OP additive_expression
 	| shift_expression RIGHT_OP additive_expression
 	;
 
 relational_expression
-	: shift_expression
+	: shift_expression { $$ = $1; }
 	| relational_expression '<' shift_expression
 	| relational_expression '>' shift_expression
 	| relational_expression LE_OP shift_expression
@@ -126,43 +141,43 @@ relational_expression
 	;
 
 equality_expression
-	: relational_expression
+	: relational_expression { $$ = $1; }
 	| equality_expression EQ_OP relational_expression
 	| equality_expression NE_OP relational_expression
 	;
 
 and_expression
-	: equality_expression
+	: equality_expression { $$ = $1; }
 	| and_expression '&' equality_expression
 	;
 
 exclusive_or_expression
-	: and_expression
+	: and_expression { $$ = $1; }
 	| exclusive_or_expression '^' and_expression
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression
+	: exclusive_or_expression { $$ = $1; }
 	| inclusive_or_expression '|' exclusive_or_expression
 	;
 
 logical_and_expression
-	: inclusive_or_expression
+	: inclusive_or_expression { $$ = $1; }
 	| logical_and_expression AND_OP inclusive_or_expression
 	;
 
 logical_or_expression
-	: logical_and_expression
+	: logical_and_expression { $$ = $1; }
 	| logical_or_expression OR_OP logical_and_expression
 	;
 
 conditional_expression
-	: logical_or_expression
+	: logical_or_expression { $$ = $1; }
 	| logical_or_expression '?' expression ':' conditional_expression
 	;
 
 assignment_expression
-	: conditional_expression
+	: conditional_expression { $$ = $1; }
 	| unary_expression assignment_operator assignment_expression
 	;
 
@@ -181,12 +196,12 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression
+	: assignment_expression { $$ = $1; }
 	| expression ',' assignment_expression
 	;
 
 constant_expression
-	: conditional_expression
+	: conditional_expression { $$ = $1; }
 	;
 
 declaration

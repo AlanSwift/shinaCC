@@ -172,13 +172,13 @@ int check_type()
 *
 *	if (yytext == type_name)
 *		return(TYPE_NAME);
-*   yyval.sval = strdup(yytext);
+*
 *	return(IDENTIFIER);
 */
 
 /*
 *	it actually will only return IDENTIFIER
 */
-
+    yylval.sval = strdup(yytext);
 	return(IDENTIFIER);
 }
