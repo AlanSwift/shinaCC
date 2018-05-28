@@ -142,7 +142,8 @@ unary_expression
 	    rootNode = (Node)$$;
 	}
 	| SIZEOF unary_expression {
-
+        $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_SIZEOF, false);
+        rootNode = (Node)$$;
 	}
 	| SIZEOF '(' type_name ')'{
 

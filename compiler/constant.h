@@ -8,6 +8,8 @@
 #include <string>
 #include <cstdio>
 
+#define SPACE ' '
+
 typedef int A_identifier;
 typedef int BasicOperator;
 typedef int BinaryOperator;
@@ -34,7 +36,17 @@ typedef struct Expr_ *Expr;
 
 struct Type_:public Node_
 {
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Type_\n");
+    }
 
+    virtual std::string getType()
+    {
+        return "AbstractType";
+    }
 };
 
 
@@ -43,7 +55,7 @@ struct Stmt_:public Node_
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
-            printf(" ");
+            printf("%c", SPACE);
         printf("Stmt_\n");
     }
 };
@@ -55,7 +67,7 @@ struct Expr_:public Node_
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
-            printf(" ");
+            printf("%c", SPACE);
         printf("Expr_\n");
     }
 };
