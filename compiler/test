@@ -1,3 +1,4 @@
+int f(int b);
 int main()
 {
     a = 1;
@@ -14,3 +15,4 @@ int main()
     d->a = 1;
     d.a = 1;
 }
+

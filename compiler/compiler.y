@@ -50,7 +50,7 @@ jump_statement
 
 %type <stmtList> statement_list
 
-%type <decl> translation_unit function_definition init_declarator
+%type <decl> translation_unit function_definition init_declarator declarator direct_declarator
 
 %type <declList> declaration external_declaration init_declarator_list
 
@@ -360,13 +360,20 @@ declaration_specifiers
 init_declarator_list
 	: init_declarator
 	{
-
+        $$=new std::list<Decl>();
+        $$->push_back($1);
 	}
 	| init_declarator_list ',' init_declarator
+	{
+	    $$=$1->push_back($2);
+	}
 	;
 
 init_declarator
 	: declarator
+	{
+	    $$=$1;
+	}
 	| declarator '=' initializer
 	;
 
@@ -400,17 +407,51 @@ type_qualifier
 
 declarator
 	: pointer direct_declarator
+
 	| direct_declarator
+	{
+	    $$=$1;
+	}
 	;
 
 direct_declarator
 	: IDENTIFIER
+	{
+        $$=new Decl();
+        $$->name=std::string($1);
+        free($1);
+	}
 	| '(' declarator ')'
+	{
+        $$=$2;
+	}
+
 	| direct_declarator '[' constant_expression ']'
+	{
+	    $$=new VarDecl_();
+	    $$->name=$1->name;
+	    delete $1;
+	    $$->type=new ArrayType_(NULL,$3);
+	}
 	| direct_declarator '[' ']'
+	{
+	    $$=new VarDecl_();
+	    $$->name=$1->name;
+	    delete $1;
+	    $$->type=new ArrayType_(NULL,NULL);
+	}
 	| direct_declarator '(' parameter_type_list ')'
+	{
+	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	}
 	| direct_declarator '(' identifier_list ')'
+	{
+	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	}
 	| direct_declarator '(' ')'
+	{
+	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	}
 	;
 
 pointer

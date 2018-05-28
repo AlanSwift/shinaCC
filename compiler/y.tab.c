@@ -588,6 +588,7 @@ static const yytype_uint16 yyrline[] =
      263,   264,   271,   272,   279,   280,   287,   288,   295,   296,
      303,   304,   311,   312,   313,   314,   315,   316,   317,   318,
      319,   320,   321,   325,   326,   333,   337,   338,   342,   343,
+<<<<<<< HEAD
      346,   349,   353,   354,   360,   364,   368,   369,   373,   374,
      375,   376,   377,   381,   382,   383,   384,   385,   386,   387,
      388,   389,   390,   391,   392,   396,   397,   401,   402,   406,
@@ -602,6 +603,22 @@ static const yytype_uint16 yyrline[] =
      615,   621,   625,   632,   636,   640,   647,   651,   655,   668,
      684,   689,   693,   697,   701,   708,   717,   729,   733,   745,
      748,   751,   754
+=======
+     344,   345,   346,   347,   351,   352,   356,   357,   361,   362,
+     363,   364,   365,   369,   370,   371,   372,   373,   374,   375,
+     376,   377,   378,   379,   380,   384,   385,   389,   390,   394,
+     395,   396,   397,   398,   399,   400,   404,   405,   406,   407,
+     411,   412,   417,   418,   422,   423,   427,   428,   429,   433,
+     434,   438,   439,   443,   444,   445,   449,   450,   451,   452,
+     453,   454,   455,   456,   457,   461,   462,   463,   467,   468,
+     472,   473,   474,   478,   479,   483,   484,   488,   492,   493,
+     494,   495,   499,   500,   504,   505,   506,   510,   511,   512,
+     516,   517,   521,   522,   526,   527,   528,   529,   530,   531,
+     535,   540,   544,   551,   555,   560,   570,   588,   592,   599,
+     603,   609,   613,   620,   624,   628,   635,   639,   643,   656,
+     672,   677,   681,   685,   689,   696,   705,   717,   721,   733,
+     736,   739,   742
+>>>>>>> delcare shina
 };
 #endif
 
@@ -2407,6 +2424,7 @@ yyreduce:
 #line 2408 "y.tab.c" /* yacc.c:1646  */
     break;
 
+<<<<<<< HEAD
   case 84:
 #line 361 "compiler.y" /* yacc.c:1646  */
     {
@@ -2525,6 +2543,40 @@ yyreduce:
 
   case 180:
 #line 547 "compiler.y" /* yacc.c:1646  */
+=======
+  case 174:
+#line 526 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 175:
+#line 527 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 176:
+#line 528 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 177:
+#line 529 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 178:
+#line 530 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 179:
+#line 531 "compiler.y"
+    { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
+    break;
+
+  case 180:
+#line 535 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new LabelStmt_(std::string((yyvsp[-2].sval)), (yyvsp[0].stmt));
 	    free((yyvsp[-2].sval));
@@ -2534,7 +2586,11 @@ yyreduce:
     break;
 
   case 181:
+<<<<<<< HEAD
 #line 552 "compiler.y" /* yacc.c:1646  */
+=======
+#line 540 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new CaseStmt_((yyvsp[-2].expr), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2543,7 +2599,11 @@ yyreduce:
     break;
 
   case 182:
+<<<<<<< HEAD
 #line 556 "compiler.y" /* yacc.c:1646  */
+=======
+#line 544 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new DefaultStmt_((yyvsp[0].stmt));
 	    rootNode = (Node)(yyval.stmt);
@@ -2552,7 +2612,11 @@ yyreduce:
     break;
 
   case 183:
+<<<<<<< HEAD
 #line 563 "compiler.y" /* yacc.c:1646  */
+=======
+#line 551 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
 	    rootNode = (Node)(yyval.stmt);
@@ -2561,7 +2625,11 @@ yyreduce:
     break;
 
   case 184:
+<<<<<<< HEAD
 #line 567 "compiler.y" /* yacc.c:1646  */
+=======
+#line 555 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_(*(yyvsp[-1].stmtList));
         rootNode = (Node)(yyval.stmt);
@@ -2571,7 +2639,11 @@ yyreduce:
     break;
 
   case 185:
+<<<<<<< HEAD
 #line 572 "compiler.y" /* yacc.c:1646  */
+=======
+#line 560 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2586,7 +2658,11 @@ yyreduce:
     break;
 
   case 186:
+<<<<<<< HEAD
 #line 582 "compiler.y" /* yacc.c:1646  */
+=======
+#line 570 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2606,7 +2682,11 @@ yyreduce:
     break;
 
   case 187:
+<<<<<<< HEAD
 #line 600 "compiler.y" /* yacc.c:1646  */
+=======
+#line 588 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.declsList) = new std::list<std::list<struct Decl_ *>*>;
 	    (yyval.declsList)->push_back((yyvsp[0].declList));
@@ -2615,7 +2695,11 @@ yyreduce:
     break;
 
   case 188:
+<<<<<<< HEAD
 #line 604 "compiler.y" /* yacc.c:1646  */
+=======
+#line 592 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyvsp[-1].declsList)->push_back((yyvsp[0].declList));
 	    (yyval.declsList) = (yyvsp[-1].declsList);
@@ -2624,7 +2708,11 @@ yyreduce:
     break;
 
   case 189:
+<<<<<<< HEAD
 #line 611 "compiler.y" /* yacc.c:1646  */
+=======
+#line 599 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmtList) = new std::list<Stmt>;
 	    (yyval.stmtList)->push_back((yyvsp[0].stmt));
@@ -2633,7 +2721,11 @@ yyreduce:
     break;
 
   case 190:
+<<<<<<< HEAD
 #line 615 "compiler.y" /* yacc.c:1646  */
+=======
+#line 603 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmtList)->push_back((yyvsp[0].stmt));
 	}
@@ -2641,7 +2733,11 @@ yyreduce:
     break;
 
   case 191:
+<<<<<<< HEAD
 #line 621 "compiler.y" /* yacc.c:1646  */
+=======
+#line 609 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new NullStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2650,7 +2746,11 @@ yyreduce:
     break;
 
   case 192:
+<<<<<<< HEAD
 #line 625 "compiler.y" /* yacc.c:1646  */
+=======
+#line 613 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new ExprStmt_((yyvsp[-1].expr));
 	    rootNode = (Node)(yyval.stmt);
@@ -2659,7 +2759,11 @@ yyreduce:
     break;
 
   case 193:
+<<<<<<< HEAD
 #line 632 "compiler.y" /* yacc.c:1646  */
+=======
+#line 620 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[-2].expr), (yyvsp[0].stmt), NULL);
         rootNode = (Node)(yyval.stmt);
@@ -2668,7 +2772,11 @@ yyreduce:
     break;
 
   case 194:
+<<<<<<< HEAD
 #line 636 "compiler.y" /* yacc.c:1646  */
+=======
+#line 624 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[-4].expr), (yyvsp[-2].stmt), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2677,7 +2785,11 @@ yyreduce:
     break;
 
   case 195:
+<<<<<<< HEAD
 #line 640 "compiler.y" /* yacc.c:1646  */
+=======
+#line 628 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new SwitchStmt_((yyvsp[-2].expr), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2686,7 +2798,11 @@ yyreduce:
     break;
 
   case 196:
+<<<<<<< HEAD
 #line 647 "compiler.y" /* yacc.c:1646  */
+=======
+#line 635 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new WhileStmt_((yyvsp[0].stmt), (yyvsp[-2].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2695,7 +2811,11 @@ yyreduce:
     break;
 
   case 197:
+<<<<<<< HEAD
 #line 651 "compiler.y" /* yacc.c:1646  */
+=======
+#line 639 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.stmt) = (Stmt)new DoStmt_((yyvsp[-5].stmt), (yyvsp[-2].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2704,7 +2824,11 @@ yyreduce:
     break;
 
   case 198:
+<<<<<<< HEAD
 #line 655 "compiler.y" /* yacc.c:1646  */
+=======
+#line 643 "compiler.y"
+>>>>>>> delcare shina
     {
         Expr expr1, expr2;
         if((yyvsp[-3].stmt)->id == NODE_STM_NULL)
@@ -2722,7 +2846,11 @@ yyreduce:
     break;
 
   case 199:
+<<<<<<< HEAD
 #line 668 "compiler.y" /* yacc.c:1646  */
+=======
+#line 656 "compiler.y"
+>>>>>>> delcare shina
     {
         Expr expr1, expr2;
         if((yyvsp[-4].stmt)->id == NODE_STM_NULL)
@@ -2740,7 +2868,11 @@ yyreduce:
     break;
 
   case 200:
+<<<<<<< HEAD
 #line 684 "compiler.y" /* yacc.c:1646  */
+=======
+#line 672 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new GoToStmt_(std::string((yyvsp[-1].sval)));
         rootNode = (Node)(yyval.stmt);
@@ -2750,7 +2882,11 @@ yyreduce:
     break;
 
   case 201:
+<<<<<<< HEAD
 #line 689 "compiler.y" /* yacc.c:1646  */
+=======
+#line 677 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new ContinueStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2759,7 +2895,11 @@ yyreduce:
     break;
 
   case 202:
+<<<<<<< HEAD
 #line 693 "compiler.y" /* yacc.c:1646  */
+=======
+#line 681 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new BreakStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2768,7 +2908,11 @@ yyreduce:
     break;
 
   case 203:
+<<<<<<< HEAD
 #line 697 "compiler.y" /* yacc.c:1646  */
+=======
+#line 685 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_(NULL);
         rootNode = (Node)(yyval.stmt);
@@ -2777,7 +2921,11 @@ yyreduce:
     break;
 
   case 204:
+<<<<<<< HEAD
 #line 701 "compiler.y" /* yacc.c:1646  */
+=======
+#line 689 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_((yyvsp[-1].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2786,7 +2934,11 @@ yyreduce:
     break;
 
   case 205:
+<<<<<<< HEAD
 #line 708 "compiler.y" /* yacc.c:1646  */
+=======
+#line 696 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.decl) = (Decl)new TranslationUnitDecl_();
 	    std::list<Decl>::iterator it;
@@ -2800,7 +2952,11 @@ yyreduce:
     break;
 
   case 206:
+<<<<<<< HEAD
 #line 717 "compiler.y" /* yacc.c:1646  */
+=======
+#line 705 "compiler.y"
+>>>>>>> delcare shina
     {
 	    std::list<Decl>::iterator it;
 	    for(it = (yyvsp[0].declList)->begin(); it != (yyvsp[0].declList)->end(); it++){
@@ -2814,7 +2970,11 @@ yyreduce:
     break;
 
   case 207:
+<<<<<<< HEAD
 #line 729 "compiler.y" /* yacc.c:1646  */
+=======
+#line 717 "compiler.y"
+>>>>>>> delcare shina
     {
         (yyval.declList) = new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[0].decl));
@@ -2823,7 +2983,11 @@ yyreduce:
     break;
 
   case 208:
+<<<<<<< HEAD
 #line 733 "compiler.y" /* yacc.c:1646  */
+=======
+#line 721 "compiler.y"
+>>>>>>> delcare shina
     {
 	    (yyval.declList) = new std::list<Decl>();
         std::list<Decl>::iterator it;
@@ -2837,7 +3001,11 @@ yyreduce:
     break;
 
   case 209:
+<<<<<<< HEAD
 #line 745 "compiler.y" /* yacc.c:1646  */
+=======
+#line 733 "compiler.y"
+>>>>>>> delcare shina
     {
         //$$ = (Decl)new FunctionDecl_($1, $4);
 	}
@@ -2845,7 +3013,11 @@ yyreduce:
     break;
 
   case 210:
+<<<<<<< HEAD
 #line 748 "compiler.y" /* yacc.c:1646  */
+=======
+#line 736 "compiler.y"
+>>>>>>> delcare shina
     {
 
 	}
@@ -2853,7 +3025,11 @@ yyreduce:
     break;
 
   case 211:
+<<<<<<< HEAD
 #line 751 "compiler.y" /* yacc.c:1646  */
+=======
+#line 739 "compiler.y"
+>>>>>>> delcare shina
     {
 
 	}
@@ -2861,7 +3037,11 @@ yyreduce:
     break;
 
   case 212:
+<<<<<<< HEAD
 #line 754 "compiler.y" /* yacc.c:1646  */
+=======
+#line 742 "compiler.y"
+>>>>>>> delcare shina
     {
 
 	}
@@ -2869,7 +3049,12 @@ yyreduce:
     break;
 
 
+<<<<<<< HEAD
 #line 2873 "y.tab.c" /* yacc.c:1646  */
+=======
+/* Line 1267 of yacc.c.  */
+#line 2836 "y.tab.c"
+>>>>>>> delcare shina
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3097,7 +3282,13 @@ yyreturn:
 #endif
   return yyresult;
 }
+<<<<<<< HEAD
 #line 759 "compiler.y" /* yacc.c:1906  */
+=======
+
+
+#line 747 "compiler.y"
+>>>>>>> delcare shina
 
 
 void yyerror(char const *s)

@@ -74,7 +74,7 @@ struct Expr_:public Node_
 
 struct Decl_:public Node_
 {
-
+    std::string name;
 };
 
 

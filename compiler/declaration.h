@@ -63,15 +63,13 @@ struct TranslationUnitDecl_:public Decl_
 struct VarDecl_:public Decl_
 {
     Type type;
-    string name;
     Expr init;
 };
 
 struct FunctionDecl_:public Decl_
 {
-    string name;
     Type returnType;
-    list<ParmVarDecl> parameters;
+    list<Decl> parameters;
     Stmt stmt; /*function body, can be null*/
 
     FunctionDecl_(string name, Type returnType, Stmt stmt):stmt(stmt), name(name),
@@ -79,9 +77,10 @@ struct FunctionDecl_:public Decl_
         this->id = NODE_DECL_FUNCTION;
     }
 
-    FunctionDecl_(string name, Type returnType, list<ParmVarDecl> parameters, Stmt stmt):
+    FunctionDecl_(string name, Type returnType, list<Decl> parameters, Stmt stmt):
             FunctionDecl_(name, returnType, stmt)
     {
+        this->id = NODE_DECL_FUNCTION;
         this->parameters = parameters;
     }
 
@@ -94,7 +93,6 @@ struct FunctionDecl_:public Decl_
 struct ParmVarDecl_:public Decl_
 {
     Type type;
-    string name;
 };
 
 struct RecordDecl_:public Decl_
@@ -106,7 +104,6 @@ struct RecordDecl_:public Decl_
 struct FieldDecl_:public Decl_
 {
     Type type;
-    string name;
 };
 
 struct TypedefDecl_:public Decl_

@@ -53,9 +53,9 @@ struct RecordType_:public Type_
 
 struct ArrayType_:public Type_
 {
-    int size;
+    Expr size;
     Type basicType;
-    ArrayType_(Type basicType, int size):size(size), basicType(basicType){
+    ArrayType_(Type basicType, Expr size):size(size), basicType(basicType){
         this->id = CONST_TYPE_ARRAY;
     }
 };
