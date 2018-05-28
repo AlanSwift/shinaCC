@@ -8,7 +8,7 @@
 #include <string>
 #include <cstdio>
 
-#define SPACE ' '
+#define SPACE '-'
 
 typedef int A_identifier;
 typedef int BasicOperator;

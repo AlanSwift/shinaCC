@@ -47,6 +47,17 @@ struct TranslationUnitDecl_:public Decl_
         return true;
     }
 
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("TranslationUnitDecl_\n");
+        list<Decl>::iterator it;
+        for(it = declarations.begin(); it != declarations.end(); it++){
+            //printf("%d\n", *it);
+            //(*it)->show();
+        }
+    }
 };
 
 struct VarDecl_:public Decl_
