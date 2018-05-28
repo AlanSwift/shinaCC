@@ -97,6 +97,11 @@ struct FunctionDecl_:public Decl_
         this->parameters = parameters;
     }
 
+    bool hasParameters()
+    {
+        return parameters.size();
+    }
+
     void setParameters(list<Decl> parameters)
     {
         this->parameters = parameters;

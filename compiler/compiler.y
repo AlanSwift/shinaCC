@@ -412,7 +412,17 @@ type_qualifier
 declarator
 	: pointer direct_declarator
 	{
-	    ;
+	    if($2->id==NODE_DECL_VAR)
+	    {
+	        $$=((VarDecl)$2)->type=PointerType_(NULL);
+	    }
+	    else if($2->id==NODE_DECL_FUNCTION)
+	    {
+	        $$=((FunctionDecl)$2)->returnType=PointerType_(NULL);
+	    }
+	    else{
+	        assert(0);
+	    }
 	}
 
 	| direct_declarator
@@ -424,7 +434,7 @@ declarator
 direct_declarator
 	: IDENTIFIER
 	{
-        $$=new Decl_();
+        $$=new VarDecl_();
         $$->name=std::string($1);
         free($1);
 	}
@@ -437,23 +447,46 @@ direct_declarator
 	{
 	    if($1->id==NODE_DECL_VAR)
 	    {
-	        $$=new VarDecl_();
-            $$->name=$1->name;
-       	    delete $1;
-      	    ((VarDecl)$$)->type=new ArrayType_(NULL,$3);
+	        $$=$1;
+      	    ((VarDecl)$$)->type=new ArrayType_(((VarDecl)$$)->type,$3);
 	    }
 	    else if($1->id==NODE_DECL_FUNCTION)
 	    {
+	        FunctionType funType
+	        if(((FunctionDecl)$1)->hasParameters())
+	        {
+	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,((FunctionDecl)$1)->parameters);
+	        }
+	        else
+	        {
+	            funType=new FunctionType_(((FunctionDecl)$1)->returnType);
+	        }
 
+            $$=new VarDecl_(new ArrayType_(funType,$3),NULL);
 	    }
 
 	}
 	| direct_declarator '[' ']'
 	{
-	    $$=new VarDecl_();
-	    $$->name=$1->name;
-	    delete $1;
-	    ((VarDecl)$$)->type=new ArrayType_(NULL,NULL);
+	    if($1->id==NODE_DECL_VAR)
+        {
+            $$=$1;
+            ((VarDecl)$$)->type=new ArrayType_(((VarDecl)$$)->type,NULL);
+        }
+        else if($1->id==NODE_DECL_FUNCTION)
+        {
+            FunctionType funType
+            if(((FunctionDecl)$1)->hasParameters())
+            {
+                funType=new FunctionType_(((FunctionDecl)$1)->returnType,((FunctionDecl)$1)->parameters);
+            }
+            else
+            {
+                funType=new FunctionType_(((FunctionDecl)$1)->returnType);
+            }
+
+            $$=new VarDecl_(new ArrayType_(funType,NULL),NULL);
+        }
 	}
 	| direct_declarator '(' parameter_type_list ')'
 	{

@@ -75,6 +75,10 @@ struct Expr_:public Node_
 struct Decl_:public Node_
 {
     std::string name;
+    Decl_()
+    {
+        this->id=NODE_DECL_FATHER;
+    }
     void show(int space=0)
     {
         for(int i = 0; i < space; i++)
@@ -145,6 +149,7 @@ const int NODE_DECL_RECORD=203;
 const int NODE_DECL_FIELD=204;
 const int NODE_DECL_TYPEDEF=205;
 const int NODE_DECL_TRANSLATION=206;
+const int NODE_DECL_FATHER=207;
 
 
 const int NODE_STM_BREAK=300;
