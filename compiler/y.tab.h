@@ -29,8 +29,7 @@
 
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
-#include <iostream>
-#include <list>
+
 #ifndef YY_YY_Y_TAB_H_INCLUDED
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -165,7 +164,8 @@ extern int yydebug;
 #define CONTINUE 313
 #define BREAK 314
 #define RETURN 315
-
+#include <iostream>
+#include <list>
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
