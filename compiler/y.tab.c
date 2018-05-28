@@ -645,21 +645,21 @@ static const yytype_uint16 yyrline[] =
      224,   225,   229,   233,   237,   244,   245,   249,   256,   257,
      264,   265,   272,   273,   280,   281,   288,   289,   296,   297,
      304,   305,   312,   313,   314,   315,   316,   317,   318,   319,
-     320,   321,   322,   326,   327,   334,   338,   339,   346,   348,
-     351,   354,   358,   359,   365,   370,   378,   382,   386,   387,
-     388,   389,   390,   394,   395,   396,   397,   398,   399,   400,
-     401,   402,   403,   404,   405,   409,   410,   414,   431,   438,
-     444,   449,   477,   504,   508,   512,   519,   520,   521,   522,
-     526,   527,   532,   536,   543,   548,   556,   557,   558,   565,
-     573,   583,   584,   588,   589,   590,   594,   595,   596,   597,
-     598,   599,   600,   601,   602,   606,   607,   608,   612,   613,
-     617,   618,   619,   623,   624,   628,   629,   633,   637,   638,
-     639,   640,   644,   645,   649,   650,   651,   655,   656,   657,
-     661,   662,   666,   667,   671,   672,   673,   674,   675,   676,
-     680,   685,   689,   696,   700,   705,   715,   733,   737,   744,
-     748,   754,   758,   765,   769,   773,   780,   784,   788,   801,
-     817,   822,   826,   830,   834,   841,   850,   862,   866,   878,
-     881,   884,   887
+     320,   321,   322,   326,   327,   334,   338,   339,   359,   361,
+     364,   367,   371,   372,   378,   383,   391,   395,   399,   400,
+     401,   402,   403,   407,   408,   409,   410,   411,   412,   413,
+     414,   415,   416,   417,   418,   422,   423,   427,   444,   451,
+     457,   462,   492,   519,   523,   527,   534,   535,   536,   537,
+     541,   542,   547,   551,   558,   563,   571,   572,   573,   580,
+     588,   598,   599,   603,   604,   605,   609,   610,   611,   612,
+     613,   614,   615,   616,   617,   621,   622,   623,   627,   628,
+     632,   633,   634,   638,   639,   643,   644,   648,   652,   653,
+     654,   655,   659,   660,   664,   665,   666,   670,   671,   672,
+     676,   677,   681,   682,   686,   687,   688,   689,   690,   691,
+     695,   700,   704,   711,   715,   720,   730,   748,   752,   759,
+     763,   769,   773,   780,   784,   788,   795,   799,   803,   816,
+     832,   837,   841,   845,   849,   856,   865,   877,   881,   893,
+     896,   899,   902
 };
 #endif
 
@@ -2492,32 +2492,45 @@ yyreduce:
   case 77:
 #line 340 "compiler.y"
     {
+	    for(auto &e:*(yyvsp[(2) - (3)].declList))
+	    {
+	        if(e->id==NODE_DECL_VAR)
+            {
+                ((VarDecl)e)->add2Tail((yyvsp[(1) - (3)].type));
+            }
+            else if(e->id==NODE_DECL_FUNCTION)
+            {
+                //TODO
+                assert(0);
+            }
+	    }
 	    (yyval.declList)=(yyvsp[(2) - (3)].declList);
+
 	}
     break;
 
   case 78:
-#line 346 "compiler.y"
+#line 359 "compiler.y"
     {
 	}
     break;
 
   case 79:
-#line 348 "compiler.y"
+#line 361 "compiler.y"
     {
         (yyval.type) = (yyvsp[(2) - (2)].type);
     }
     break;
 
   case 80:
-#line 351 "compiler.y"
+#line 364 "compiler.y"
     {
         (yyval.type) = (yyvsp[(1) - (1)].type);
 	}
     break;
 
   case 81:
-#line 354 "compiler.y"
+#line 367 "compiler.y"
     {
         ((BuiltinType)(yyvsp[(1) - (2)].type))->next = (yyvsp[(2) - (2)].type);
         (yyval.type) = (yyvsp[(1) - (2)].type);
@@ -2525,14 +2538,14 @@ yyreduce:
     break;
 
   case 83:
-#line 359 "compiler.y"
+#line 372 "compiler.y"
     {
 	    (yyval.type) = (yyvsp[(2) - (2)].type);
 	}
     break;
 
   case 84:
-#line 366 "compiler.y"
+#line 379 "compiler.y"
     {
         (yyval.declList)=new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -2540,7 +2553,7 @@ yyreduce:
     break;
 
   case 85:
-#line 371 "compiler.y"
+#line 384 "compiler.y"
     {
 	    (yyvsp[(1) - (3)].declList)->push_back((yyvsp[(3) - (3)].decl));
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
@@ -2548,78 +2561,78 @@ yyreduce:
     break;
 
   case 86:
-#line 379 "compiler.y"
+#line 392 "compiler.y"
     {
 	    (yyval.decl)=(yyvsp[(1) - (1)].decl);
 	}
     break;
 
   case 93:
-#line 394 "compiler.y"
+#line 407 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_VOID, NULL); }
     break;
 
   case 94:
-#line 395 "compiler.y"
+#line 408 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL); }
     break;
 
   case 95:
-#line 396 "compiler.y"
+#line 409 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SHORT, NULL); }
     break;
 
   case 96:
-#line 397 "compiler.y"
+#line 410 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL); }
     break;
 
   case 97:
-#line 398 "compiler.y"
+#line 411 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_LONG, NULL); }
     break;
 
   case 98:
-#line 399 "compiler.y"
+#line 412 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_FLOAT, NULL); }
     break;
 
   case 99:
-#line 400 "compiler.y"
+#line 413 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL); }
     break;
 
   case 100:
-#line 401 "compiler.y"
+#line 414 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SIGNED, NULL); }
     break;
 
   case 101:
-#line 402 "compiler.y"
+#line 415 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED, NULL); }
     break;
 
   case 102:
-#line 403 "compiler.y"
+#line 416 "compiler.y"
     {}
     break;
 
   case 103:
-#line 404 "compiler.y"
+#line 417 "compiler.y"
     {}
     break;
 
   case 104:
-#line 405 "compiler.y"
+#line 418 "compiler.y"
     {}
     break;
 
   case 107:
-#line 415 "compiler.y"
+#line 428 "compiler.y"
     {
 	    if((yyvsp[(2) - (2)].decl)->id==NODE_DECL_VAR)
 	    {
-	        ((VarDecl)(yyvsp[(2) - (2)].decl))->type=new PointerType_(NULL);
+	        ((VarDecl)(yyvsp[(2) - (2)].decl))->add2Tail(new PointerType_(NULL));
 	        (yyval.decl)=(yyvsp[(2) - (2)].decl);
 	    }
 	    else if((yyvsp[(2) - (2)].decl)->id==NODE_DECL_FUNCTION)
@@ -2634,14 +2647,14 @@ yyreduce:
     break;
 
   case 108:
-#line 432 "compiler.y"
+#line 445 "compiler.y"
     {
 	    (yyval.decl)=(yyvsp[(1) - (1)].decl);
 	}
     break;
 
   case 109:
-#line 439 "compiler.y"
+#line 452 "compiler.y"
     {
         (yyval.decl)=new VarDecl_(NULL,NULL);
         (yyval.decl)->name=std::string((yyvsp[(1) - (1)].sval));
@@ -2650,19 +2663,21 @@ yyreduce:
     break;
 
   case 110:
-#line 445 "compiler.y"
+#line 458 "compiler.y"
     {
         (yyval.decl)=(yyvsp[(2) - (3)].decl);
 	}
     break;
 
   case 111:
-#line 450 "compiler.y"
+#line 463 "compiler.y"
     {
+	    //("&&&&&%d\n",$1->id);
+	    //printf("-----%d\n",((VarDecl)$$)->type->id);
 	    if((yyvsp[(1) - (4)].decl)->id==NODE_DECL_VAR)
 	    {
 	        (yyval.decl)=(yyvsp[(1) - (4)].decl);
-      	    ((VarDecl)(yyval.decl))->type=new ArrayType_(((VarDecl)(yyval.decl))->type,(yyvsp[(3) - (4)].expr));
+            ((VarDecl)(yyval.decl))->add2Tail(new ArrayType_(NULL,(yyvsp[(3) - (4)].expr)));
 	    }
 	    else if((yyvsp[(1) - (4)].decl)->id==NODE_DECL_FUNCTION)
 	    {
@@ -2688,7 +2703,7 @@ yyreduce:
     break;
 
   case 112:
-#line 478 "compiler.y"
+#line 493 "compiler.y"
     {
 	    if((yyvsp[(1) - (3)].decl)->id==NODE_DECL_VAR)
         {
@@ -2718,42 +2733,42 @@ yyreduce:
     break;
 
   case 113:
-#line 505 "compiler.y"
+#line 520 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (4)].decl)->name,NULL,*(yyvsp[(3) - (4)].declList),NULL);
 	}
     break;
 
   case 114:
-#line 509 "compiler.y"
+#line 524 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (4)].decl)->name,NULL,*(yyvsp[(3) - (4)].declList),NULL);
 	}
     break;
 
   case 115:
-#line 513 "compiler.y"
+#line 528 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (3)].decl)->name,NULL,NULL);
 	}
     break;
 
   case 122:
-#line 533 "compiler.y"
+#line 548 "compiler.y"
     {
 	    (yyval.declList)=(yyvsp[(1) - (1)].declList);
 	}
     break;
 
   case 123:
-#line 537 "compiler.y"
+#line 552 "compiler.y"
     {
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
 	}
     break;
 
   case 124:
-#line 544 "compiler.y"
+#line 559 "compiler.y"
     {
 	    (yyval.declList)=new list<Decl>();
 	    (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -2761,7 +2776,7 @@ yyreduce:
     break;
 
   case 125:
-#line 549 "compiler.y"
+#line 564 "compiler.y"
     {
 	    (yyvsp[(1) - (3)].declList)->push_back((yyvsp[(3) - (3)].decl));
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
@@ -2769,14 +2784,14 @@ yyreduce:
     break;
 
   case 128:
-#line 559 "compiler.y"
+#line 574 "compiler.y"
     {
 	    (yyval.decl)=new ParmVarDecl_((yyvsp[(1) - (1)].type));
 	}
     break;
 
   case 129:
-#line 566 "compiler.y"
+#line 581 "compiler.y"
     {
 	    (yyval.declList)=new list<Decl>();
 	    auto p = new Decl_();
@@ -2787,7 +2802,7 @@ yyreduce:
     break;
 
   case 130:
-#line 574 "compiler.y"
+#line 589 "compiler.y"
     {
 	    auto p=new Decl_();
 	    p->name=string((yyvsp[(3) - (3)].sval));
@@ -2797,37 +2812,37 @@ yyreduce:
     break;
 
   case 174:
-#line 671 "compiler.y"
+#line 686 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 175:
-#line 672 "compiler.y"
+#line 687 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 176:
-#line 673 "compiler.y"
+#line 688 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 177:
-#line 674 "compiler.y"
+#line 689 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 178:
-#line 675 "compiler.y"
+#line 690 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 179:
-#line 676 "compiler.y"
+#line 691 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 180:
-#line 680 "compiler.y"
+#line 695 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new LabelStmt_(std::string((yyvsp[(1) - (3)].sval)), (yyvsp[(3) - (3)].stmt));
 	    free((yyvsp[(1) - (3)].sval));
@@ -2836,7 +2851,7 @@ yyreduce:
     break;
 
   case 181:
-#line 685 "compiler.y"
+#line 700 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CaseStmt_((yyvsp[(2) - (4)].expr), (yyvsp[(4) - (4)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2844,7 +2859,7 @@ yyreduce:
     break;
 
   case 182:
-#line 689 "compiler.y"
+#line 704 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new DefaultStmt_((yyvsp[(3) - (3)].stmt));
 	    rootNode = (Node)(yyval.stmt);
@@ -2852,7 +2867,7 @@ yyreduce:
     break;
 
   case 183:
-#line 696 "compiler.y"
+#line 711 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
 	    rootNode = (Node)(yyval.stmt);
@@ -2860,7 +2875,7 @@ yyreduce:
     break;
 
   case 184:
-#line 700 "compiler.y"
+#line 715 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_(*(yyvsp[(2) - (3)].stmtList));
         rootNode = (Node)(yyval.stmt);
@@ -2869,7 +2884,7 @@ yyreduce:
     break;
 
   case 185:
-#line 705 "compiler.y"
+#line 720 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2883,7 +2898,7 @@ yyreduce:
     break;
 
   case 186:
-#line 715 "compiler.y"
+#line 730 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2902,7 +2917,7 @@ yyreduce:
     break;
 
   case 187:
-#line 733 "compiler.y"
+#line 748 "compiler.y"
     {
 	    (yyval.declsList) = new std::list<std::list<struct Decl_ *>*>();
 	    (yyval.declsList)->push_back((yyvsp[(1) - (1)].declList));
@@ -2910,7 +2925,7 @@ yyreduce:
     break;
 
   case 188:
-#line 737 "compiler.y"
+#line 752 "compiler.y"
     {
 	    (yyvsp[(1) - (2)].declsList)->push_back((yyvsp[(2) - (2)].declList));
 	    (yyval.declsList) = (yyvsp[(1) - (2)].declsList);
@@ -2918,7 +2933,7 @@ yyreduce:
     break;
 
   case 189:
-#line 744 "compiler.y"
+#line 759 "compiler.y"
     {
 	    (yyval.stmtList) = new std::list<Stmt>;
 	    (yyval.stmtList)->push_back((yyvsp[(1) - (1)].stmt));
@@ -2926,14 +2941,14 @@ yyreduce:
     break;
 
   case 190:
-#line 748 "compiler.y"
+#line 763 "compiler.y"
     {
 	    (yyval.stmtList)->push_back((yyvsp[(2) - (2)].stmt));
 	}
     break;
 
   case 191:
-#line 754 "compiler.y"
+#line 769 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new NullStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2941,7 +2956,7 @@ yyreduce:
     break;
 
   case 192:
-#line 758 "compiler.y"
+#line 773 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new ExprStmt_((yyvsp[(1) - (2)].expr));
 	    rootNode = (Node)(yyval.stmt);
@@ -2949,7 +2964,7 @@ yyreduce:
     break;
 
   case 193:
-#line 765 "compiler.y"
+#line 780 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].stmt), NULL);
         rootNode = (Node)(yyval.stmt);
@@ -2957,7 +2972,7 @@ yyreduce:
     break;
 
   case 194:
-#line 769 "compiler.y"
+#line 784 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[(3) - (7)].expr), (yyvsp[(5) - (7)].stmt), (yyvsp[(7) - (7)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2965,7 +2980,7 @@ yyreduce:
     break;
 
   case 195:
-#line 773 "compiler.y"
+#line 788 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new SwitchStmt_((yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2973,7 +2988,7 @@ yyreduce:
     break;
 
   case 196:
-#line 780 "compiler.y"
+#line 795 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new WhileStmt_((yyvsp[(5) - (5)].stmt), (yyvsp[(3) - (5)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2981,7 +2996,7 @@ yyreduce:
     break;
 
   case 197:
-#line 784 "compiler.y"
+#line 799 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new DoStmt_((yyvsp[(2) - (7)].stmt), (yyvsp[(5) - (7)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2989,7 +3004,7 @@ yyreduce:
     break;
 
   case 198:
-#line 788 "compiler.y"
+#line 803 "compiler.y"
     {
         Expr expr1, expr2;
         if((yyvsp[(3) - (6)].stmt)->id == NODE_STM_NULL)
@@ -3006,7 +3021,7 @@ yyreduce:
     break;
 
   case 199:
-#line 801 "compiler.y"
+#line 816 "compiler.y"
     {
         Expr expr1, expr2;
         if((yyvsp[(3) - (7)].stmt)->id == NODE_STM_NULL)
@@ -3023,7 +3038,7 @@ yyreduce:
     break;
 
   case 200:
-#line 817 "compiler.y"
+#line 832 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new GoToStmt_(std::string((yyvsp[(2) - (3)].sval)));
         rootNode = (Node)(yyval.stmt);
@@ -3032,7 +3047,7 @@ yyreduce:
     break;
 
   case 201:
-#line 822 "compiler.y"
+#line 837 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ContinueStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -3040,7 +3055,7 @@ yyreduce:
     break;
 
   case 202:
-#line 826 "compiler.y"
+#line 841 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new BreakStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -3048,7 +3063,7 @@ yyreduce:
     break;
 
   case 203:
-#line 830 "compiler.y"
+#line 845 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_(NULL);
         rootNode = (Node)(yyval.stmt);
@@ -3056,7 +3071,7 @@ yyreduce:
     break;
 
   case 204:
-#line 834 "compiler.y"
+#line 849 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_((yyvsp[(2) - (3)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -3064,7 +3079,7 @@ yyreduce:
     break;
 
   case 205:
-#line 841 "compiler.y"
+#line 856 "compiler.y"
     {
 	    (yyval.decl) = (Decl)new TranslationUnitDecl_();
 	    std::list<Decl>::iterator it;
@@ -3077,7 +3092,7 @@ yyreduce:
     break;
 
   case 206:
-#line 850 "compiler.y"
+#line 865 "compiler.y"
     {
 	    std::list<Decl>::iterator it;
 	    for(it = (yyvsp[(2) - (2)].declList)->begin(); it != (yyvsp[(2) - (2)].declList)->end(); it++){
@@ -3090,7 +3105,7 @@ yyreduce:
     break;
 
   case 207:
-#line 862 "compiler.y"
+#line 877 "compiler.y"
     {
         (yyval.declList) = new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -3098,7 +3113,7 @@ yyreduce:
     break;
 
   case 208:
-#line 866 "compiler.y"
+#line 881 "compiler.y"
     {
 	    (yyval.declList) = new std::list<Decl>();
         std::list<Decl>::iterator it;
@@ -3111,28 +3126,28 @@ yyreduce:
     break;
 
   case 209:
-#line 878 "compiler.y"
+#line 893 "compiler.y"
     {
         //$$ = (Decl)new FunctionDecl_($1, $4);
 	}
     break;
 
   case 210:
-#line 881 "compiler.y"
+#line 896 "compiler.y"
     {
 
 	}
     break;
 
   case 211:
-#line 884 "compiler.y"
+#line 899 "compiler.y"
     {
 
 	}
     break;
 
   case 212:
-#line 887 "compiler.y"
+#line 902 "compiler.y"
     {
 
 	}
@@ -3140,7 +3155,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 3144 "y.tab.c"
+#line 3159 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -3354,7 +3369,7 @@ yyreturn:
 }
 
 
-#line 892 "compiler.y"
+#line 907 "compiler.y"
 
 
 void yyerror(char const *s)

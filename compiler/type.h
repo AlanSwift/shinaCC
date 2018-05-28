@@ -25,6 +25,16 @@ struct BuiltinType_:public Type_
     BuiltinType_(int builtinType, Type next):builtinType(builtinType), next(next){
         this->id = CONST_TYPE_BUILTIN;
     }
+    void add2Tail(Type c)
+    {
+        if(!next)
+        {
+            next=c;
+        }
+        else{
+            next->add2Tail(c);
+        }
+    }
 
     void show(int space)
     {
@@ -48,6 +58,17 @@ struct PointerType_:public Type_
 
     PointerType_(Type pointTo):pointTo(pointTo){
         this->id = CONST_TYPE_POINTER;
+    }
+
+    void add2Tail(Type c)
+    {
+        if(!pointTo)
+        {
+            pointTo=c;
+        }
+        else{
+            pointTo->add2Tail(c);
+        }
     }
 
     void show(int space = 0)
@@ -80,6 +101,10 @@ struct RecordType_:public Type_
             printf("%c", SPACE);
         printf("RecordType_: %s\n", this->getType().c_str());
     }
+    void add2Tail(Type c)
+    {
+    }
+
 
     std::string getType()
     {
@@ -93,6 +118,16 @@ struct ArrayType_:public Type_
     Type basicType;
     ArrayType_(Type basicType, Expr size):size(size), basicType(basicType){
         this->id = CONST_TYPE_ARRAY;
+    }
+    void add2Tail(Type c)
+    {
+        if(!basicType)
+        {
+            basicType=c;
+        }
+        else{
+            basicType->add2Tail(c);
+        }
     }
 
     void show(int space = 0)
@@ -121,6 +156,11 @@ struct FunctionType_:public Type_
 
     FunctionType_(Type returnType, list<Type> &argsType):FunctionType_(returnType){
         this->argsType = argsType;
+    }
+
+    void add2Tail(Type c)
+    {
+
     }
 
     void show(int space = 0)

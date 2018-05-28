@@ -1,4 +1,2 @@
-int f(int);
-int a;
-int b;
-
+int (*c)[3][2][5];
+unsigned int a[2][3];

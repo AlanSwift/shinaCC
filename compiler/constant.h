@@ -42,6 +42,10 @@ struct Type_:public Node_
             printf("%c", SPACE);
         printf("Type_\n");
     }
+    virtual void add2Tail(Type c)
+    {
+
+    }
 
     virtual std::string getType()
     {

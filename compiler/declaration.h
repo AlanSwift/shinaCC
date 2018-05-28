@@ -54,7 +54,7 @@ struct TranslationUnitDecl_:public Decl_
         printf("TranslationUnitDecl_\n");
         list<Decl>::iterator it;
         for(it = declarations.begin(); it != declarations.end(); it++){
-            printf("%d\n", *it);
+            //printf("%d\n", *it);
             (*it)->show(space+1);
         }
     }
@@ -69,10 +69,22 @@ struct VarDecl_:public Decl_
     {
         this->id=NODE_DECL_VAR;
     }
+    void add2Tail(Type c)
+    {
+        if(!type)
+        {
+            type=c;
+        }
+        else{
+            type->add2Tail(c);
+        }
+    }
     void show(int space=0)
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
+        //printf("%s......\n",this->name.c_str());
+        //exit(0);
         printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
         if(init)
             init->show(space + 1);
@@ -114,7 +126,7 @@ struct FunctionDecl_:public Decl_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
-        exit(0);
+        //exit(0);
         printf("FunctionDecl_: %s, %s\n", this->name.c_str(), returnType->getType().c_str());
         if(returnType)
         {

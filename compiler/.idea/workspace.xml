@@ -26,18 +26,18 @@
       <file leaf-file-name="expression.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/expression.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5704">
+            <state relative-caret-position="3912">
               <caret line="190" column="5" lean-forward="true" selection-start-line="190" selection-start-column="5" selection-end-line="190" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="declaration.h" pinned="false" current-in-tab="false">
+      <file leaf-file-name="declaration.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/declaration.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="596">
-              <caret line="56" column="32" lean-forward="true" selection-start-line="56" selection-start-column="32" selection-end-line="56" selection-end-column="32" />
+            <state relative-caret-position="168">
+              <caret line="49" column="14" lean-forward="false" selection-start-line="49" selection-start-column="14" selection-end-line="49" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -46,8 +46,18 @@
       <file leaf-file-name="constant.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/constant.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
+            <state relative-caret-position="229">
+              <caret line="126" column="35" lean-forward="false" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="constant.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/constant.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="24" column="26" lean-forward="false" selection-start-line="24" selection-start-column="26" selection-end-line="24" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -56,18 +66,22 @@
       <file leaf-file-name="type.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/type.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1004">
-              <caret line="118" column="5" lean-forward="false" selection-start-line="118" selection-start-column="5" selection-end-line="118" selection-end-column="5" />
-              <folding />
+            <state relative-caret-position="415">
+              <caret line="141" column="5" lean-forward="true" selection-start-line="141" selection-start-column="5" selection-end-line="141" selection-end-column="5" />
+              <folding>
+                <element signature="e#429#1135#1" expanded="false" />
+                <element signature="e#1138#1805#1" expanded="false" />
+                <element signature="e#1808#2264#1" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="compiler.y" pinned="false" current-in-tab="true">
+      <file leaf-file-name="compiler.y" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compiler.y">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="846" column="8" lean-forward="false" selection-start-line="846" selection-start-column="8" selection-end-line="846" selection-end-column="8" />
+            <state relative-caret-position="648">
+              <caret line="435" column="43" lean-forward="true" selection-start-line="435" selection-start-column="43" selection-end-line="435" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -76,8 +90,8 @@
       <file leaf-file-name="test" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="32">
+              <caret line="1" column="21" lean-forward="false" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -91,7 +105,6 @@
       <find>struct_or_union_specifier</find>
       <find>IDENTIFIER</find>
       <find>struct_declaration_list</find>
-      <find>pointer</find>
       <find>type_qualifier</find>
       <find>struct Decl_</find>
       <find>Constant</find>
@@ -99,15 +112,19 @@
       <find>constant_expression</find>
       <find>parameter_type_list</find>
       <find>parameter_list</find>
-      <find>declaration_specifiers</find>
       <find>parameter_declaration</find>
       <find>identifier_list</find>
       <find>delete</find>
+      <find>direct_declarator</find>
+      <find>declaration_specifiers</find>
       <find>declaration</find>
       <find>init_declarator_list</find>
       <find>init_declarator</find>
       <find>declarator</find>
-      <find>direct_declarator</find>
+      <find>ex</find>
+      <find>exit</find>
+      <find>printf</find>
+      <find>pointer</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -115,10 +132,11 @@
       <list>
         <option value="$PROJECT_DIR$/y.tab.h" />
         <option value="$PROJECT_DIR$/constant.h" />
-        <option value="$PROJECT_DIR$/type.h" />
-        <option value="$PROJECT_DIR$/test" />
         <option value="$PROJECT_DIR$/declaration.h" />
         <option value="$PROJECT_DIR$/compiler.y" />
+        <option value="$PROJECT_DIR$/type.h" />
+        <option value="$PROJECT_DIR$/constant.cpp" />
+        <option value="$PROJECT_DIR$/test" />
       </list>
     </option>
   </component>
@@ -129,8 +147,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-126" />
-    <option name="y" value="26" />
+    <option name="y" value="25" />
     <option name="width" value="1292" />
     <option name="height" value="725" />
   </component>
@@ -181,15 +198,15 @@
       <option name="presentableId" value="Default" />
       <updated>1527488337924</updated>
       <workItem from="1527488341083" duration="11340000" />
-      <workItem from="1527503615379" duration="8904000" />
+      <workItem from="1527503615379" duration="12800000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20244000" />
+    <option name="totallyTimeSpent" value="24140000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-126" y="26" width="1292" height="725" extended-state="0" />
+    <frame x="0" y="25" width="1292" height="725" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24767801" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -258,7 +275,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2304">
           <caret line="72" column="52" lean-forward="false" selection-start-line="72" selection-start-column="52" selection-end-line="72" selection-end-column="52" />
-          <folding />
+          <folding>
+            <element signature="e#429#1135#1" expanded="false" />
+            <element signature="e#1138#1805#1" expanded="false" />
+            <element signature="e#1808#2264#1" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -273,48 +294,60 @@
     <entry file="file://$PROJECT_DIR$/y.tab.h" />
     <entry file="file://$PROJECT_DIR$/expression.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5704">
+        <state relative-caret-position="3912">
           <caret line="190" column="5" lean-forward="true" selection-start-line="190" selection-start-column="5" selection-end-line="190" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/constant.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="79" column="0" lean-forward="true" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/type.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1004">
-          <caret line="118" column="5" lean-forward="false" selection-start-line="118" selection-start-column="5" selection-end-line="118" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/declaration.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="596">
-          <caret line="56" column="32" lean-forward="true" selection-start-line="56" selection-start-column="32" selection-end-line="56" selection-end-column="32" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/compiler.y">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="846" column="8" lean-forward="false" selection-start-line="846" selection-start-column="8" selection-end-line="846" selection-end-column="8" />
+        <state relative-caret-position="648">
+          <caret line="435" column="43" lean-forward="true" selection-start-line="435" selection-start-column="43" selection-end-line="435" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/type.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="141" column="5" lean-forward="true" selection-start-line="141" selection-start-column="5" selection-end-line="141" selection-end-column="5" />
+          <folding>
+            <element signature="e#429#1135#1" expanded="false" />
+            <element signature="e#1138#1805#1" expanded="false" />
+            <element signature="e#1808#2264#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/constant.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="24" column="26" lean-forward="false" selection-start-line="24" selection-start-column="26" selection-end-line="24" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="1" column="21" lean-forward="false" selection-start-line="1" selection-start-column="21" selection-end-line="1" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/constant.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="126" column="35" lean-forward="false" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/declaration.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="49" column="14" lean-forward="false" selection-start-line="49" selection-start-column="14" selection-end-line="49" selection-end-column="14" />
           <folding />
         </state>
       </provider>

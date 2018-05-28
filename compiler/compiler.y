@@ -338,7 +338,20 @@ declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
 	{
+	    for(auto &e:*$2)
+	    {
+	        if(e->id==NODE_DECL_VAR)
+            {
+                ((VarDecl)e)->add2Tail($1);
+            }
+            else if(e->id==NODE_DECL_FUNCTION)
+            {
+                //TODO
+                assert(0);
+            }
+	    }
 	    $$=$2;
+
 	}
 	;
 
@@ -415,7 +428,7 @@ declarator
 	{
 	    if($2->id==NODE_DECL_VAR)
 	    {
-	        ((VarDecl)$2)->type=new PointerType_(NULL);
+	        ((VarDecl)$2)->add2Tail(new PointerType_(NULL));
 	        $$=$2;
 	    }
 	    else if($2->id==NODE_DECL_FUNCTION)
@@ -448,10 +461,12 @@ direct_declarator
 
 	| direct_declarator '[' constant_expression ']'
 	{
+	    //("&&&&&%d\n",$1->id);
+	    //printf("-----%d\n",((VarDecl)$$)->type->id);
 	    if($1->id==NODE_DECL_VAR)
 	    {
 	        $$=$1;
-      	    ((VarDecl)$$)->type=new ArrayType_(((VarDecl)$$)->type,$3);
+            ((VarDecl)$$)->add2Tail(new ArrayType_(NULL,$3));
 	    }
 	    else if($1->id==NODE_DECL_FUNCTION)
 	    {
@@ -852,7 +867,7 @@ translation_unit
 	    for(it = $2->begin(); it != $2->end(); it++){
             ((TranslationUnitDecl)$1)->addDeclaration(*it);
         }
-        //delete $2;
+        delete $2;
 	    $$ = (TranslationUnitDecl)$1;
 	    rootNode = (Node)$$;
 	}
