@@ -176,11 +176,14 @@ union YYSTYPE
     struct Expr_ *expr;
     struct Stmt_ *stmt;
     struct Decl_ *decl;
+    struct Type_ *type;
     std::list<struct Stmt_ *> *stmtList;
+    std::list<struct Decl_ *> *declList;
+    std::list<std::list<struct Decl_ *> *> *declsList;
     char *sval;
     int operator_;
 
-#line 183 "y.tab.h" /* yacc.c:1909  */
+#line 186 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
