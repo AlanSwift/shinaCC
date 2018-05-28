@@ -33,9 +33,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="declaration.h" pinned="false" current-in-tab="false">
+      <file leaf-file-name="declaration.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/declaration.h">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="320">
               <caret line="74" column="76" lean-forward="false" selection-start-line="74" selection-start-column="76" selection-end-line="74" selection-end-column="76" />
               <folding />
@@ -48,6 +49,10 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="416">
               <caret line="13" column="5" lean-forward="true" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+=======
+            <state relative-caret-position="352">
+              <caret line="77" column="24" lean-forward="false" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
+>>>>>>> declare shina
               <folding />
             </state>
           </provider>
@@ -77,7 +82,11 @@
         <entry file="file://$PROJECT_DIR$/compiler.y">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="264">
+<<<<<<< HEAD
               <caret line="445" column="4" lean-forward="false" selection-start-line="445" selection-start-column="4" selection-end-line="445" selection-end-column="4" />
+=======
+              <caret line="435" column="4" lean-forward="false" selection-start-line="435" selection-start-column="4" selection-end-line="435" selection-end-column="4" />
+>>>>>>> declare shina
               <folding />
             </state>
           </provider>
@@ -113,9 +122,12 @@
         <option value="$PROJECT_DIR$/y.tab.h" />
         <option value="$PROJECT_DIR$/constant.h" />
         <option value="$PROJECT_DIR$/type.h" />
-        <option value="$PROJECT_DIR$/declaration.h" />
         <option value="$PROJECT_DIR$/compiler.y" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/test" />
+=======
+        <option value="$PROJECT_DIR$/declaration.h" />
+>>>>>>> declare shina
       </list>
     </option>
   </component>
@@ -177,12 +189,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1527488337924</updated>
-      <workItem from="1527488341083" duration="10931000" />
+      <workItem from="1527488341083" duration="11340000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="10969000" />
+=======
+    <option name="totallyTimeSpent" value="11340000" />
+>>>>>>> declare shina
   </component>
   <component name="ToolWindowManager">
     <frame x="-13" y="23" width="1292" height="725" extended-state="0" />
@@ -243,6 +259,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/type.h">
+<<<<<<< HEAD
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
           <caret line="71" column="52" lean-forward="false" selection-start-line="71" selection-start-column="52" selection-end-line="71" selection-end-column="52" />
@@ -293,28 +310,44 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="320">
           <caret line="74" column="76" lean-forward="false" selection-start-line="74" selection-start-column="76" selection-end-line="74" selection-end-column="76" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/constant.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="76" column="16" lean-forward="false" selection-start-line="76" selection-start-column="16" selection-end-line="76" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/type.h">
+=======
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
-          <caret line="72" column="52" lean-forward="false" selection-start-line="72" selection-start-column="52" selection-end-line="72" selection-end-column="52" />
+          <caret line="71" column="52" lean-forward="false" selection-start-line="71" selection-start-column="52" selection-end-line="71" selection-end-column="52" />
+>>>>>>> declare shina
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/compiler.y">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="256">
+          <caret line="76" column="16" lean-forward="false" selection-start-line="76" selection-start-column="16" selection-end-line="76" selection-end-column="16" />
+=======
+        <state relative-caret-position="264">
+          <caret line="435" column="4" lean-forward="false" selection-start-line="435" selection-start-column="4" selection-end-line="435" selection-end-column="4" />
+>>>>>>> declare shina
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/constant.h">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="384">
+          <caret line="72" column="52" lean-forward="false" selection-start-line="72" selection-start-column="52" selection-end-line="72" selection-end-column="52" />
+=======
+        <state relative-caret-position="256">
+          <caret line="76" column="16" lean-forward="false" selection-start-line="76" selection-start-column="16" selection-end-line="76" selection-end-column="16" />
+>>>>>>> declare shina
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/declaration.h">
+      <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="264">
           <caret line="445" column="4" lean-forward="false" selection-start-line="445" selection-start-column="4" selection-end-line="445" selection-end-column="4" />
           <folding />
@@ -325,6 +358,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="416">
           <caret line="13" column="5" lean-forward="true" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+=======
+        <state relative-caret-position="352">
+          <caret line="77" column="24" lean-forward="false" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
+>>>>>>> declare shina
           <folding />
         </state>
       </provider>

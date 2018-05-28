@@ -72,9 +72,10 @@ struct FunctionDecl_:public Decl_
     list<Decl> parameters;
     Stmt stmt; /*function body, can be null*/
 
-    FunctionDecl_(string name, Type returnType, Stmt stmt):stmt(stmt), name(name),
+    FunctionDecl_(string name, Type returnType, Stmt stmt):stmt(stmt),
                                                            returnType(returnType){
         this->id = NODE_DECL_FUNCTION;
+        this->name=name;
     }
 
     FunctionDecl_(string name, Type returnType, list<Decl> parameters, Stmt stmt):
@@ -84,7 +85,7 @@ struct FunctionDecl_:public Decl_
         this->parameters = parameters;
     }
 
-    void setParameters(list<ParmVarDecl> parameters)
+    void setParameters(list<Decl> parameters)
     {
         this->parameters = parameters;
     }
