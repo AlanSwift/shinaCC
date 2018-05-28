@@ -1,18 +1,4 @@
-int f(int b);
-int main()
-{
-    a = 1;
-    b = 2;
-    c = a * b;
-    a = a + b;
-    {
-        a = (a, b, c);
-    }
-    c[3] = 1;
-    for(i = 1; i < 10; i++){
-        c[4] += 1;
-    }
-    d->a = 1;
-    d.a = 1;
-}
+int f(int);
+int a;
+int b;
 

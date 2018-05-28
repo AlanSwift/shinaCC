@@ -50,9 +50,9 @@ jump_statement
 
 %type <stmtList> statement_list
 
-%type <decl> translation_unit function_definition init_declarator declarator direct_declarator
+%type <decl> translation_unit function_definition init_declarator declarator direct_declarator parameter_declaration
 
-%type <declList> declaration external_declaration init_declarator_list
+%type <declList> declaration external_declaration init_declarator_list parameter_type_list parameter_list identifier_list
 
 %type <declsList> declaration_list
 
@@ -336,6 +336,9 @@ constant_expression
 declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
+	{
+	    $$=$2;
+	}
 	;
 
 declaration_specifiers
@@ -365,7 +368,8 @@ init_declarator_list
 	}
 	| init_declarator_list ',' init_declarator
 	{
-	    $$=$1->push_back($2);
+	    $1->push_back($3);
+	    $$=$1;
 	}
 	;
 
@@ -407,6 +411,9 @@ type_qualifier
 
 declarator
 	: pointer direct_declarator
+	{
+	    ;
+	}
 
 	| direct_declarator
 	{
@@ -417,7 +424,7 @@ declarator
 direct_declarator
 	: IDENTIFIER
 	{
-        $$=new Decl();
+        $$=new Decl_();
         $$->name=std::string($1);
         free($1);
 	}
@@ -428,29 +435,37 @@ direct_declarator
 
 	| direct_declarator '[' constant_expression ']'
 	{
-	    $$=new VarDecl_();
-	    $$->name=$1->name;
-	    delete $1;
-	    $$->type=new ArrayType_(NULL,$3);
+	    if($1->id==NODE_DECL_VAR)
+	    {
+	        $$=new VarDecl_();
+            $$->name=$1->name;
+       	    delete $1;
+      	    ((VarDecl)$$)->type=new ArrayType_(NULL,$3);
+	    }
+	    else if($1->id==NODE_DECL_FUNCTION)
+	    {
+
+	    }
+
 	}
 	| direct_declarator '[' ']'
 	{
 	    $$=new VarDecl_();
 	    $$->name=$1->name;
 	    delete $1;
-	    $$->type=new ArrayType_(NULL,NULL);
+	    ((VarDecl)$$)->type=new ArrayType_(NULL,NULL);
 	}
 	| direct_declarator '(' parameter_type_list ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	    $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
 	}
 	| direct_declarator '(' identifier_list ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	    $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
 	}
 	| direct_declarator '(' ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,$3,NULL);
+	    $$=new FunctionDecl_($1->name,NULL,NULL);
 	}
 	;
 
@@ -469,23 +484,53 @@ type_qualifier_list
 
 parameter_type_list
 	: parameter_list
+	{
+	    $$=$1;
+	}
 	| parameter_list ',' ELLIPSIS
+	{
+	    $$=$1;
+	}
 	;
 
 parameter_list
 	: parameter_declaration
+	{
+	    $$=new list<Decl>();
+	    $$->push_back($1);
+	}
 	| parameter_list ',' parameter_declaration
+	{
+	    $1->push_back($3);
+	    $$=$1;
+	}
 	;
 
 parameter_declaration
 	: declaration_specifiers declarator
 	| declaration_specifiers abstract_declarator
 	| declaration_specifiers
+	{
+	    $$=new ParmVarDecl_($1);
+	}
 	;
 
 identifier_list
 	: IDENTIFIER
+	{
+	    $$=new list<Decl>();
+	    auto p = new Decl_();
+	    p->name=string($1);
+	    free($1);
+	    $$->push_back(p);
+	}
 	| identifier_list ',' IDENTIFIER
+	{
+	    auto p=new Decl_();
+	    p->name=string($3);
+	    $1->push_back(p);
+	    $$=$1;
+	}
 	;
 
 type_name
@@ -640,7 +685,7 @@ compound_statement
 
 declaration_list
 	: declaration {
-	    $$ = new std::list<std::list<struct Decl_ *>*>;
+	    $$ = new std::list<std::list<struct Decl_ *>*>();
 	    $$->push_back($1);
 	}
 	| declaration_list declaration {

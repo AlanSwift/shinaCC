@@ -55,7 +55,7 @@ struct TranslationUnitDecl_:public Decl_
         list<Decl>::iterator it;
         for(it = declarations.begin(); it != declarations.end(); it++){
             //printf("%d\n", *it);
-            //(*it)->show();
+            (*it)->show(space+1);
         }
     }
 };
@@ -64,6 +64,17 @@ struct VarDecl_:public Decl_
 {
     Type type;
     Expr init;
+    VarDecl_(Type type,Expr init):
+            type(type),init(init)
+    {
+        this->id=NODE_DECL_VAR;
+    }
+    void show(int space=0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("VarDecl_\n");
+    }
 };
 
 struct FunctionDecl_:public Decl_
@@ -81,7 +92,6 @@ struct FunctionDecl_:public Decl_
     FunctionDecl_(string name, Type returnType, list<Decl> parameters, Stmt stmt):
             FunctionDecl_(name, returnType, stmt)
     {
-        this->id = NODE_DECL_FUNCTION;
         this->parameters = parameters;
     }
 
@@ -89,11 +99,31 @@ struct FunctionDecl_:public Decl_
     {
         this->parameters = parameters;
     }
+    void show(int space=0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("FunctionDecl_\n");
+        for(auto &i:parameters)
+        {
+            i->show(space+1);
+        }
+    }
 };
 
 struct ParmVarDecl_:public Decl_
 {
     Type type;
+    ParmVarDecl_(string name,Type type):
+            type(type)
+    {
+        this->name=name;
+        this->id=NODE_DECL_PARMVAR;
+    }
+    ParmVarDecl_(Type type):type(type)
+    {
+        this->id=NODE_DECL_PARMVAR;
+    }
 };
 
 struct RecordDecl_:public Decl_

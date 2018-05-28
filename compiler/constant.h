@@ -75,6 +75,12 @@ struct Expr_:public Node_
 struct Decl_:public Node_
 {
     std::string name;
+    void show(int space=0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Decl_\n");
+    }
 };
 
 
