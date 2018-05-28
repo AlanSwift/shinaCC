@@ -77,7 +77,7 @@ struct Decl_:public Node_
     std::string name;
     Decl_()
     {
-        this->id=NODE_DECL_FATHER;
+
     }
     void show(int space=0)
     {

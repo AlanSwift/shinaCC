@@ -54,7 +54,7 @@ struct TranslationUnitDecl_:public Decl_
         printf("TranslationUnitDecl_\n");
         list<Decl>::iterator it;
         for(it = declarations.begin(); it != declarations.end(); it++){
-            //printf("%d\n", *it);
+            printf("%d\n", *it);
             (*it)->show(space+1);
         }
     }
@@ -76,6 +76,10 @@ struct VarDecl_:public Decl_
         printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
         if(init)
             init->show(space + 1);
+        if(type)
+        {
+            type->show(space+1);
+        }
     }
 };
 
@@ -110,7 +114,12 @@ struct FunctionDecl_:public Decl_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
+        exit(0);
         printf("FunctionDecl_: %s, %s\n", this->name.c_str(), returnType->getType().c_str());
+        if(returnType)
+        {
+            returnType->show(space+1);
+        }
         for(auto &i:parameters)
         {
             i->show(space+1);

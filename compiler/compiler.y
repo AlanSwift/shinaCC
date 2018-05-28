@@ -9,6 +9,7 @@
 #include "expression.h"
 #include <iostream>
 #include <list>
+#include <cassert>
 
 Node rootNode;
 
@@ -414,11 +415,13 @@ declarator
 	{
 	    if($2->id==NODE_DECL_VAR)
 	    {
-	        $$=((VarDecl)$2)->type=PointerType_(NULL);
+	        ((VarDecl)$2)->type=new PointerType_(NULL);
+	        $$=$2;
 	    }
 	    else if($2->id==NODE_DECL_FUNCTION)
 	    {
-	        $$=((FunctionDecl)$2)->returnType=PointerType_(NULL);
+	        ((FunctionDecl)$2)->returnType=new PointerType_(NULL);
+	        $$=$2;
 	    }
 	    else{
 	        assert(0);
@@ -434,7 +437,7 @@ declarator
 direct_declarator
 	: IDENTIFIER
 	{
-        $$=new VarDecl_();
+        $$=new VarDecl_(NULL,NULL);
         $$->name=std::string($1);
         free($1);
 	}
@@ -452,10 +455,15 @@ direct_declarator
 	    }
 	    else if($1->id==NODE_DECL_FUNCTION)
 	    {
-	        FunctionType funType
+	        FunctionType funType;
 	        if(((FunctionDecl)$1)->hasParameters())
 	        {
-	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,((FunctionDecl)$1)->parameters);
+	            list<Type> args;
+                for(auto & e:(((FunctionDecl)$1)->parameters))
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                }
+	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,args);
 	        }
 	        else
 	        {
@@ -475,10 +483,15 @@ direct_declarator
         }
         else if($1->id==NODE_DECL_FUNCTION)
         {
-            FunctionType funType
+            FunctionType funType;
             if(((FunctionDecl)$1)->hasParameters())
             {
-                funType=new FunctionType_(((FunctionDecl)$1)->returnType,((FunctionDecl)$1)->parameters);
+                list<Type> args;
+                for(auto & e:(((FunctionDecl)$1)->parameters))
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                }
+	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,args);
             }
             else
             {
@@ -839,7 +852,7 @@ translation_unit
 	    for(it = $2->begin(); it != $2->end(); it++){
             ((TranslationUnitDecl)$1)->addDeclaration(*it);
         }
-        delete $2;
+        //delete $2;
 	    $$ = (TranslationUnitDecl)$1;
 	    rootNode = (Node)$$;
 	}

@@ -166,7 +166,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 27 "compiler.y"
+#line 28 "compiler.y"
 {
     struct Expr_ *expr;
     struct Stmt_ *stmt;

@@ -202,6 +202,7 @@
 #include "expression.h"
 #include <iostream>
 #include <list>
+#include <cassert>
 
 Node rootNode;
 
@@ -237,7 +238,7 @@ extern "C"{
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 27 "compiler.y"
+#line 28 "compiler.y"
 {
     struct Expr_ *expr;
     struct Stmt_ *stmt;
@@ -250,7 +251,7 @@ typedef union YYSTYPE
     int operator_;
 }
 /* Line 193 of yacc.c.  */
-#line 254 "y.tab.c"
+#line 255 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -263,7 +264,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 267 "y.tab.c"
+#line 268 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -637,28 +638,28 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    83,    83,    88,    92,    96,   104,   105,   109,   113,
-     116,   120,   124,   128,   136,   137,   144,   145,   149,   153,
-     157,   161,   167,   168,   169,   170,   171,   172,   176,   177,
-     183,   184,   188,   192,   199,   200,   204,   211,   212,   216,
-     223,   224,   228,   232,   236,   243,   244,   248,   255,   256,
-     263,   264,   271,   272,   279,   280,   287,   288,   295,   296,
-     303,   304,   311,   312,   313,   314,   315,   316,   317,   318,
-     319,   320,   321,   325,   326,   333,   337,   338,   345,   347,
-     350,   353,   357,   358,   364,   369,   377,   381,   385,   386,
-     387,   388,   389,   393,   394,   395,   396,   397,   398,   399,
-     400,   401,   402,   403,   404,   408,   409,   413,   415,   422,
-     428,   433,   440,   447,   451,   455,   462,   463,   464,   465,
-     469,   470,   475,   479,   486,   491,   499,   500,   501,   508,
-     516,   526,   527,   531,   532,   533,   537,   538,   539,   540,
-     541,   542,   543,   544,   545,   549,   550,   551,   555,   556,
-     560,   561,   562,   566,   567,   571,   572,   576,   580,   581,
-     582,   583,   587,   588,   592,   593,   594,   598,   599,   600,
-     604,   605,   609,   610,   614,   615,   616,   617,   618,   619,
-     623,   628,   632,   639,   643,   648,   658,   676,   680,   687,
-     691,   697,   701,   708,   712,   716,   723,   727,   731,   744,
-     760,   765,   769,   773,   777,   784,   793,   805,   809,   821,
-     824,   827,   830
+       0,    84,    84,    89,    93,    97,   105,   106,   110,   114,
+     117,   121,   125,   129,   137,   138,   145,   146,   150,   154,
+     158,   162,   168,   169,   170,   171,   172,   173,   177,   178,
+     184,   185,   189,   193,   200,   201,   205,   212,   213,   217,
+     224,   225,   229,   233,   237,   244,   245,   249,   256,   257,
+     264,   265,   272,   273,   280,   281,   288,   289,   296,   297,
+     304,   305,   312,   313,   314,   315,   316,   317,   318,   319,
+     320,   321,   322,   326,   327,   334,   338,   339,   346,   348,
+     351,   354,   358,   359,   365,   370,   378,   382,   386,   387,
+     388,   389,   390,   394,   395,   396,   397,   398,   399,   400,
+     401,   402,   403,   404,   405,   409,   410,   414,   431,   438,
+     444,   449,   477,   504,   508,   512,   519,   520,   521,   522,
+     526,   527,   532,   536,   543,   548,   556,   557,   558,   565,
+     573,   583,   584,   588,   589,   590,   594,   595,   596,   597,
+     598,   599,   600,   601,   602,   606,   607,   608,   612,   613,
+     617,   618,   619,   623,   624,   628,   629,   633,   637,   638,
+     639,   640,   644,   645,   649,   650,   651,   655,   656,   657,
+     661,   662,   666,   667,   671,   672,   673,   674,   675,   676,
+     680,   685,   689,   696,   700,   705,   715,   733,   737,   744,
+     748,   754,   758,   765,   769,   773,   780,   784,   788,   801,
+     817,   822,   826,   830,   834,   841,   850,   862,   866,   878,
+     881,   884,   887
 };
 #endif
 
@@ -2003,7 +2004,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 83 "compiler.y"
+#line 84 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new DeclRefExpr_(std::string((yyvsp[(1) - (1)].sval)));
 	    free((yyvsp[(1) - (1)].sval));
@@ -2012,7 +2013,7 @@ yyreduce:
     break;
 
   case 3:
-#line 88 "compiler.y"
+#line 89 "compiler.y"
     {
         (yyval.expr) = (Expr)(yyvsp[(1) - (1)].expr);
         rootNode = (Node)(yyval.expr);
@@ -2020,7 +2021,7 @@ yyreduce:
     break;
 
   case 4:
-#line 92 "compiler.y"
+#line 93 "compiler.y"
     {
         (yyval.expr) = (Expr)(yyvsp[(1) - (1)].expr);
         rootNode = (Node)(yyval.expr);
@@ -2028,7 +2029,7 @@ yyreduce:
     break;
 
   case 5:
-#line 96 "compiler.y"
+#line 97 "compiler.y"
     {
 	    ParenExpr p = new ParenExpr_((yyvsp[(2) - (3)].expr));
 	    (yyval.expr) = (Expr)p;
@@ -2037,12 +2038,12 @@ yyreduce:
     break;
 
   case 6:
-#line 104 "compiler.y"
+#line 105 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr); rootNode = (Node)(yyval.expr); }
     break;
 
   case 7:
-#line 105 "compiler.y"
+#line 106 "compiler.y"
     {
         (yyval.expr) = (Expr)new ArraySubscriptExpr_((yyvsp[(1) - (4)].expr), (yyvsp[(3) - (4)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2050,7 +2051,7 @@ yyreduce:
     break;
 
   case 8:
-#line 109 "compiler.y"
+#line 110 "compiler.y"
     {
         (yyval.expr) = (Expr)new CallExpr_((yyvsp[(1) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2058,14 +2059,14 @@ yyreduce:
     break;
 
   case 9:
-#line 113 "compiler.y"
+#line 114 "compiler.y"
     {
         rootNode = (Node)(yyval.expr);
 	}
     break;
 
   case 10:
-#line 116 "compiler.y"
+#line 117 "compiler.y"
     {
         (yyval.expr) = (Expr)new MemberExpr_((yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].sval), false);
         rootNode = (Node)(yyval.expr);
@@ -2073,7 +2074,7 @@ yyreduce:
     break;
 
   case 11:
-#line 120 "compiler.y"
+#line 121 "compiler.y"
     {
         (yyval.expr) = (Expr)new MemberExpr_((yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].sval), true);
         rootNode = (Node)(yyval.expr);
@@ -2081,7 +2082,7 @@ yyreduce:
     break;
 
   case 12:
-#line 124 "compiler.y"
+#line 125 "compiler.y"
     {
         (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(1) - (2)].expr), OP_UNARY_DOUBLEADD, true);
         rootNode = (Node)(yyval.expr);
@@ -2089,7 +2090,7 @@ yyreduce:
     break;
 
   case 13:
-#line 128 "compiler.y"
+#line 129 "compiler.y"
     {
         (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(1) - (2)].expr), OP_UNARY_DOUBLEMINUS, true);
         rootNode = (Node)(yyval.expr);
@@ -2097,12 +2098,12 @@ yyreduce:
     break;
 
   case 14:
-#line 136 "compiler.y"
+#line 137 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 15:
-#line 137 "compiler.y"
+#line 138 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_COMMA, (yyvsp[(3) - (3)].expr));
 	    rootNode = (Node)(yyval.expr);
@@ -2110,12 +2111,12 @@ yyreduce:
     break;
 
   case 16:
-#line 144 "compiler.y"
+#line 145 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr); }
     break;
 
   case 17:
-#line 145 "compiler.y"
+#line 146 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(2) - (2)].expr), OP_UNARY_DOUBLEADD, false);
 	    rootNode = (Node)(yyval.expr);
@@ -2123,7 +2124,7 @@ yyreduce:
     break;
 
   case 18:
-#line 149 "compiler.y"
+#line 150 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(2) - (2)].expr), OP_UNARY_DOUBLEMINUS, false);
 	    rootNode = (Node)(yyval.expr);
@@ -2131,7 +2132,7 @@ yyreduce:
     break;
 
   case 19:
-#line 153 "compiler.y"
+#line 154 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(2) - (2)].expr), (yyvsp[(1) - (2)].operator_), false);
 	    rootNode = (Node)(yyval.expr);
@@ -2139,7 +2140,7 @@ yyreduce:
     break;
 
   case 20:
-#line 157 "compiler.y"
+#line 158 "compiler.y"
     {
         (yyval.expr) = (Expr)new UnaryOpExpr_((yyvsp[(2) - (2)].expr), OP_UNARY_SIZEOF, false);
         rootNode = (Node)(yyval.expr);
@@ -2147,61 +2148,61 @@ yyreduce:
     break;
 
   case 21:
-#line 161 "compiler.y"
+#line 162 "compiler.y"
     {
 
 	}
     break;
 
   case 22:
-#line 167 "compiler.y"
+#line 168 "compiler.y"
     { (yyval.operator_) = OP_UNARY_AND; }
     break;
 
   case 23:
-#line 168 "compiler.y"
+#line 169 "compiler.y"
     { (yyval.operator_) = OP_UNARY_STAR; }
     break;
 
   case 24:
-#line 169 "compiler.y"
+#line 170 "compiler.y"
     { (yyval.operator_) = OP_UNARY_POSITIVE; }
     break;
 
   case 25:
-#line 170 "compiler.y"
+#line 171 "compiler.y"
     { (yyval.operator_) = OP_UNARY_NEGATIVE; }
     break;
 
   case 26:
-#line 171 "compiler.y"
+#line 172 "compiler.y"
     { (yyval.operator_) = OP_UNARY_NOT; }
     break;
 
   case 27:
-#line 172 "compiler.y"
+#line 173 "compiler.y"
     { (yyval.operator_) = OP_UNARY_LOGICAL_NOT; }
     break;
 
   case 28:
-#line 176 "compiler.y"
+#line 177 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 29:
-#line 177 "compiler.y"
+#line 178 "compiler.y"
     {
 
 	}
     break;
 
   case 30:
-#line 183 "compiler.y"
+#line 184 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 31:
-#line 184 "compiler.y"
+#line 185 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_MULTIPLY, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2209,7 +2210,7 @@ yyreduce:
     break;
 
   case 32:
-#line 188 "compiler.y"
+#line 189 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_DIV, (yyvsp[(3) - (3)].expr));
 	    rootNode = (Node)(yyval.expr);
@@ -2217,7 +2218,7 @@ yyreduce:
     break;
 
   case 33:
-#line 192 "compiler.y"
+#line 193 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_MOD, (yyvsp[(3) - (3)].expr));
 	    rootNode = (Node)(yyval.expr);
@@ -2225,12 +2226,12 @@ yyreduce:
     break;
 
   case 34:
-#line 199 "compiler.y"
+#line 200 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 35:
-#line 200 "compiler.y"
+#line 201 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_ADD, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2238,7 +2239,7 @@ yyreduce:
     break;
 
   case 36:
-#line 204 "compiler.y"
+#line 205 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_MINUS, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2246,12 +2247,12 @@ yyreduce:
     break;
 
   case 37:
-#line 211 "compiler.y"
+#line 212 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 38:
-#line 212 "compiler.y"
+#line 213 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_SHIFTLEFT, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2259,7 +2260,7 @@ yyreduce:
     break;
 
   case 39:
-#line 216 "compiler.y"
+#line 217 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_SHIFTRIGHT, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2267,12 +2268,12 @@ yyreduce:
     break;
 
   case 40:
-#line 223 "compiler.y"
+#line 224 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 41:
-#line 224 "compiler.y"
+#line 225 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_ST, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2280,7 +2281,7 @@ yyreduce:
     break;
 
   case 42:
-#line 228 "compiler.y"
+#line 229 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_GT, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2288,7 +2289,7 @@ yyreduce:
     break;
 
   case 43:
-#line 232 "compiler.y"
+#line 233 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_SE, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2296,7 +2297,7 @@ yyreduce:
     break;
 
   case 44:
-#line 236 "compiler.y"
+#line 237 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_BE, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2304,12 +2305,12 @@ yyreduce:
     break;
 
   case 45:
-#line 243 "compiler.y"
+#line 244 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 46:
-#line 244 "compiler.y"
+#line 245 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_EQ, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2317,7 +2318,7 @@ yyreduce:
     break;
 
   case 47:
-#line 248 "compiler.y"
+#line 249 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_NEQ, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2325,12 +2326,12 @@ yyreduce:
     break;
 
   case 48:
-#line 255 "compiler.y"
+#line 256 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 49:
-#line 256 "compiler.y"
+#line 257 "compiler.y"
     {
          (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_AND, (yyvsp[(3) - (3)].expr));
          rootNode = (Node)(yyval.expr);
@@ -2338,12 +2339,12 @@ yyreduce:
     break;
 
   case 50:
-#line 263 "compiler.y"
+#line 264 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 51:
-#line 264 "compiler.y"
+#line 265 "compiler.y"
     {
          (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_XOR, (yyvsp[(3) - (3)].expr));
          rootNode = (Node)(yyval.expr);
@@ -2351,12 +2352,12 @@ yyreduce:
     break;
 
   case 52:
-#line 271 "compiler.y"
+#line 272 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 53:
-#line 272 "compiler.y"
+#line 273 "compiler.y"
     {
          (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_OR, (yyvsp[(3) - (3)].expr));
          rootNode = (Node)(yyval.expr);
@@ -2364,12 +2365,12 @@ yyreduce:
     break;
 
   case 54:
-#line 279 "compiler.y"
+#line 280 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 55:
-#line 280 "compiler.y"
+#line 281 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_LOGICAL_AND, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2377,12 +2378,12 @@ yyreduce:
     break;
 
   case 56:
-#line 287 "compiler.y"
+#line 288 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 57:
-#line 288 "compiler.y"
+#line 289 "compiler.y"
     {
         (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_LOGICAL_OR, (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2390,12 +2391,12 @@ yyreduce:
     break;
 
   case 58:
-#line 295 "compiler.y"
+#line 296 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 59:
-#line 296 "compiler.y"
+#line 297 "compiler.y"
     {
         (yyval.expr) = (Expr)new ConditionalExpr_((yyvsp[(1) - (5)].expr), (yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2403,12 +2404,12 @@ yyreduce:
     break;
 
   case 60:
-#line 303 "compiler.y"
+#line 304 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 61:
-#line 304 "compiler.y"
+#line 305 "compiler.y"
     {
         (yyval.expr) = (Expr)new AssignExpr_((yyvsp[(1) - (3)].expr), (yyvsp[(2) - (3)].operator_), (yyvsp[(3) - (3)].expr));
         rootNode = (Node)(yyval.expr);
@@ -2416,67 +2417,67 @@ yyreduce:
     break;
 
   case 62:
-#line 311 "compiler.y"
+#line 312 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ; }
     break;
 
   case 63:
-#line 312 "compiler.y"
+#line 313 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_MULTIPLY; }
     break;
 
   case 64:
-#line 313 "compiler.y"
+#line 314 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_DIV; }
     break;
 
   case 65:
-#line 314 "compiler.y"
+#line 315 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_MOD; }
     break;
 
   case 66:
-#line 315 "compiler.y"
+#line 316 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_ADD; }
     break;
 
   case 67:
-#line 316 "compiler.y"
+#line 317 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_MINUS; }
     break;
 
   case 68:
-#line 317 "compiler.y"
+#line 318 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_SHIFTLEFT; }
     break;
 
   case 69:
-#line 318 "compiler.y"
+#line 319 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_SHIFTRIGHT; }
     break;
 
   case 70:
-#line 319 "compiler.y"
+#line 320 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_AND; }
     break;
 
   case 71:
-#line 320 "compiler.y"
+#line 321 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_XOR; }
     break;
 
   case 72:
-#line 321 "compiler.y"
+#line 322 "compiler.y"
     { (yyval.operator_) = OP_ASSIGN_EQ_OR; }
     break;
 
   case 73:
-#line 325 "compiler.y"
+#line 326 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 74:
-#line 326 "compiler.y"
+#line 327 "compiler.y"
     {
 	    (yyval.expr) = (Expr)new BinaryOpExpr_((yyvsp[(1) - (3)].expr), OP_BINARY_COMMA, (yyvsp[(3) - (3)].expr));
 	    rootNode = (Node)(yyval.expr);
@@ -2484,39 +2485,39 @@ yyreduce:
     break;
 
   case 75:
-#line 333 "compiler.y"
+#line 334 "compiler.y"
     { (yyval.expr) = (yyvsp[(1) - (1)].expr);rootNode = (Node)(yyval.expr); }
     break;
 
   case 77:
-#line 339 "compiler.y"
+#line 340 "compiler.y"
     {
 	    (yyval.declList)=(yyvsp[(2) - (3)].declList);
 	}
     break;
 
   case 78:
-#line 345 "compiler.y"
+#line 346 "compiler.y"
     {
 	}
     break;
 
   case 79:
-#line 347 "compiler.y"
+#line 348 "compiler.y"
     {
         (yyval.type) = (yyvsp[(2) - (2)].type);
     }
     break;
 
   case 80:
-#line 350 "compiler.y"
+#line 351 "compiler.y"
     {
         (yyval.type) = (yyvsp[(1) - (1)].type);
 	}
     break;
 
   case 81:
-#line 353 "compiler.y"
+#line 354 "compiler.y"
     {
         ((BuiltinType)(yyvsp[(1) - (2)].type))->next = (yyvsp[(2) - (2)].type);
         (yyval.type) = (yyvsp[(1) - (2)].type);
@@ -2524,14 +2525,14 @@ yyreduce:
     break;
 
   case 83:
-#line 358 "compiler.y"
+#line 359 "compiler.y"
     {
 	    (yyval.type) = (yyvsp[(2) - (2)].type);
 	}
     break;
 
   case 84:
-#line 365 "compiler.y"
+#line 366 "compiler.y"
     {
         (yyval.declList)=new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -2539,7 +2540,7 @@ yyreduce:
     break;
 
   case 85:
-#line 370 "compiler.y"
+#line 371 "compiler.y"
     {
 	    (yyvsp[(1) - (3)].declList)->push_back((yyvsp[(3) - (3)].decl));
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
@@ -2547,152 +2548,212 @@ yyreduce:
     break;
 
   case 86:
-#line 378 "compiler.y"
+#line 379 "compiler.y"
     {
 	    (yyval.decl)=(yyvsp[(1) - (1)].decl);
 	}
     break;
 
   case 93:
-#line 393 "compiler.y"
+#line 394 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_VOID, NULL); }
     break;
 
   case 94:
-#line 394 "compiler.y"
+#line 395 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL); }
     break;
 
   case 95:
-#line 395 "compiler.y"
+#line 396 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SHORT, NULL); }
     break;
 
   case 96:
-#line 396 "compiler.y"
+#line 397 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL); }
     break;
 
   case 97:
-#line 397 "compiler.y"
+#line 398 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_LONG, NULL); }
     break;
 
   case 98:
-#line 398 "compiler.y"
+#line 399 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_FLOAT, NULL); }
     break;
 
   case 99:
-#line 399 "compiler.y"
+#line 400 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL); }
     break;
 
   case 100:
-#line 400 "compiler.y"
+#line 401 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SIGNED, NULL); }
     break;
 
   case 101:
-#line 401 "compiler.y"
+#line 402 "compiler.y"
     { (yyval.type) = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED, NULL); }
     break;
 
   case 102:
-#line 402 "compiler.y"
-    {}
-    break;
-
-  case 103:
 #line 403 "compiler.y"
     {}
     break;
 
-  case 104:
+  case 103:
 #line 404 "compiler.y"
     {}
     break;
 
+  case 104:
+#line 405 "compiler.y"
+    {}
+    break;
+
+  case 107:
+#line 415 "compiler.y"
+    {
+	    if((yyvsp[(2) - (2)].decl)->id==NODE_DECL_VAR)
+	    {
+	        ((VarDecl)(yyvsp[(2) - (2)].decl))->type=new PointerType_(NULL);
+	        (yyval.decl)=(yyvsp[(2) - (2)].decl);
+	    }
+	    else if((yyvsp[(2) - (2)].decl)->id==NODE_DECL_FUNCTION)
+	    {
+	        ((FunctionDecl)(yyvsp[(2) - (2)].decl))->returnType=new PointerType_(NULL);
+	        (yyval.decl)=(yyvsp[(2) - (2)].decl);
+	    }
+	    else{
+	        assert(0);
+	    }
+	}
+    break;
+
   case 108:
-#line 416 "compiler.y"
+#line 432 "compiler.y"
     {
 	    (yyval.decl)=(yyvsp[(1) - (1)].decl);
 	}
     break;
 
   case 109:
-#line 423 "compiler.y"
+#line 439 "compiler.y"
     {
-        (yyval.decl)=new Decl_();
+        (yyval.decl)=new VarDecl_(NULL,NULL);
         (yyval.decl)->name=std::string((yyvsp[(1) - (1)].sval));
         free((yyvsp[(1) - (1)].sval));
 	}
     break;
 
   case 110:
-#line 429 "compiler.y"
+#line 445 "compiler.y"
     {
         (yyval.decl)=(yyvsp[(2) - (3)].decl);
 	}
     break;
 
   case 111:
-#line 434 "compiler.y"
+#line 450 "compiler.y"
     {
-	    (yyval.decl)=new VarDecl_();
-	    (yyval.decl)->name=(yyvsp[(1) - (4)].decl)->name;
-	    delete (yyvsp[(1) - (4)].decl);
-	    ((VarDecl)(yyval.decl))->type=new ArrayType_(NULL,(yyvsp[(3) - (4)].expr));
+	    if((yyvsp[(1) - (4)].decl)->id==NODE_DECL_VAR)
+	    {
+	        (yyval.decl)=(yyvsp[(1) - (4)].decl);
+      	    ((VarDecl)(yyval.decl))->type=new ArrayType_(((VarDecl)(yyval.decl))->type,(yyvsp[(3) - (4)].expr));
+	    }
+	    else if((yyvsp[(1) - (4)].decl)->id==NODE_DECL_FUNCTION)
+	    {
+	        FunctionType funType;
+	        if(((FunctionDecl)(yyvsp[(1) - (4)].decl))->hasParameters())
+	        {
+	            list<Type> args;
+                for(auto & e:(((FunctionDecl)(yyvsp[(1) - (4)].decl))->parameters))
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                }
+	            funType=new FunctionType_(((FunctionDecl)(yyvsp[(1) - (4)].decl))->returnType,args);
+	        }
+	        else
+	        {
+	            funType=new FunctionType_(((FunctionDecl)(yyvsp[(1) - (4)].decl))->returnType);
+	        }
+
+            (yyval.decl)=new VarDecl_(new ArrayType_(funType,(yyvsp[(3) - (4)].expr)),NULL);
+	    }
+
 	}
     break;
 
   case 112:
-#line 441 "compiler.y"
+#line 478 "compiler.y"
     {
-	    (yyval.decl)=new VarDecl_();
-	    (yyval.decl)->name=(yyvsp[(1) - (3)].decl)->name;
-	    delete (yyvsp[(1) - (3)].decl);
-	    ((VarDecl)(yyval.decl))->type=new ArrayType_(NULL,NULL);
+	    if((yyvsp[(1) - (3)].decl)->id==NODE_DECL_VAR)
+        {
+            (yyval.decl)=(yyvsp[(1) - (3)].decl);
+            ((VarDecl)(yyval.decl))->type=new ArrayType_(((VarDecl)(yyval.decl))->type,NULL);
+        }
+        else if((yyvsp[(1) - (3)].decl)->id==NODE_DECL_FUNCTION)
+        {
+            FunctionType funType;
+            if(((FunctionDecl)(yyvsp[(1) - (3)].decl))->hasParameters())
+            {
+                list<Type> args;
+                for(auto & e:(((FunctionDecl)(yyvsp[(1) - (3)].decl))->parameters))
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                }
+	            funType=new FunctionType_(((FunctionDecl)(yyvsp[(1) - (3)].decl))->returnType,args);
+            }
+            else
+            {
+                funType=new FunctionType_(((FunctionDecl)(yyvsp[(1) - (3)].decl))->returnType);
+            }
+
+            (yyval.decl)=new VarDecl_(new ArrayType_(funType,NULL),NULL);
+        }
 	}
     break;
 
   case 113:
-#line 448 "compiler.y"
+#line 505 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (4)].decl)->name,NULL,*(yyvsp[(3) - (4)].declList),NULL);
 	}
     break;
 
   case 114:
-#line 452 "compiler.y"
+#line 509 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (4)].decl)->name,NULL,*(yyvsp[(3) - (4)].declList),NULL);
 	}
     break;
 
   case 115:
-#line 456 "compiler.y"
+#line 513 "compiler.y"
     {
 	    (yyval.decl)=new FunctionDecl_((yyvsp[(1) - (3)].decl)->name,NULL,NULL);
 	}
     break;
 
   case 122:
-#line 476 "compiler.y"
+#line 533 "compiler.y"
     {
 	    (yyval.declList)=(yyvsp[(1) - (1)].declList);
 	}
     break;
 
   case 123:
-#line 480 "compiler.y"
+#line 537 "compiler.y"
     {
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
 	}
     break;
 
   case 124:
-#line 487 "compiler.y"
+#line 544 "compiler.y"
     {
 	    (yyval.declList)=new list<Decl>();
 	    (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -2700,7 +2761,7 @@ yyreduce:
     break;
 
   case 125:
-#line 492 "compiler.y"
+#line 549 "compiler.y"
     {
 	    (yyvsp[(1) - (3)].declList)->push_back((yyvsp[(3) - (3)].decl));
 	    (yyval.declList)=(yyvsp[(1) - (3)].declList);
@@ -2708,14 +2769,14 @@ yyreduce:
     break;
 
   case 128:
-#line 502 "compiler.y"
+#line 559 "compiler.y"
     {
 	    (yyval.decl)=new ParmVarDecl_((yyvsp[(1) - (1)].type));
 	}
     break;
 
   case 129:
-#line 509 "compiler.y"
+#line 566 "compiler.y"
     {
 	    (yyval.declList)=new list<Decl>();
 	    auto p = new Decl_();
@@ -2726,7 +2787,7 @@ yyreduce:
     break;
 
   case 130:
-#line 517 "compiler.y"
+#line 574 "compiler.y"
     {
 	    auto p=new Decl_();
 	    p->name=string((yyvsp[(3) - (3)].sval));
@@ -2736,37 +2797,37 @@ yyreduce:
     break;
 
   case 174:
-#line 614 "compiler.y"
+#line 671 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 175:
-#line 615 "compiler.y"
+#line 672 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 176:
-#line 616 "compiler.y"
+#line 673 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 177:
-#line 617 "compiler.y"
+#line 674 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 178:
-#line 618 "compiler.y"
+#line 675 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 179:
-#line 619 "compiler.y"
+#line 676 "compiler.y"
     { (yyval.stmt) = (yyvsp[(1) - (1)].stmt); rootNode = (Node)(yyval.stmt); }
     break;
 
   case 180:
-#line 623 "compiler.y"
+#line 680 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new LabelStmt_(std::string((yyvsp[(1) - (3)].sval)), (yyvsp[(3) - (3)].stmt));
 	    free((yyvsp[(1) - (3)].sval));
@@ -2775,7 +2836,7 @@ yyreduce:
     break;
 
   case 181:
-#line 628 "compiler.y"
+#line 685 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CaseStmt_((yyvsp[(2) - (4)].expr), (yyvsp[(4) - (4)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2783,7 +2844,7 @@ yyreduce:
     break;
 
   case 182:
-#line 632 "compiler.y"
+#line 689 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new DefaultStmt_((yyvsp[(3) - (3)].stmt));
 	    rootNode = (Node)(yyval.stmt);
@@ -2791,7 +2852,7 @@ yyreduce:
     break;
 
   case 183:
-#line 639 "compiler.y"
+#line 696 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
 	    rootNode = (Node)(yyval.stmt);
@@ -2799,7 +2860,7 @@ yyreduce:
     break;
 
   case 184:
-#line 643 "compiler.y"
+#line 700 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_(*(yyvsp[(2) - (3)].stmtList));
         rootNode = (Node)(yyval.stmt);
@@ -2808,7 +2869,7 @@ yyreduce:
     break;
 
   case 185:
-#line 648 "compiler.y"
+#line 705 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2822,7 +2883,7 @@ yyreduce:
     break;
 
   case 186:
-#line 658 "compiler.y"
+#line 715 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2841,7 +2902,7 @@ yyreduce:
     break;
 
   case 187:
-#line 676 "compiler.y"
+#line 733 "compiler.y"
     {
 	    (yyval.declsList) = new std::list<std::list<struct Decl_ *>*>();
 	    (yyval.declsList)->push_back((yyvsp[(1) - (1)].declList));
@@ -2849,7 +2910,7 @@ yyreduce:
     break;
 
   case 188:
-#line 680 "compiler.y"
+#line 737 "compiler.y"
     {
 	    (yyvsp[(1) - (2)].declsList)->push_back((yyvsp[(2) - (2)].declList));
 	    (yyval.declsList) = (yyvsp[(1) - (2)].declsList);
@@ -2857,7 +2918,7 @@ yyreduce:
     break;
 
   case 189:
-#line 687 "compiler.y"
+#line 744 "compiler.y"
     {
 	    (yyval.stmtList) = new std::list<Stmt>;
 	    (yyval.stmtList)->push_back((yyvsp[(1) - (1)].stmt));
@@ -2865,14 +2926,14 @@ yyreduce:
     break;
 
   case 190:
-#line 691 "compiler.y"
+#line 748 "compiler.y"
     {
 	    (yyval.stmtList)->push_back((yyvsp[(2) - (2)].stmt));
 	}
     break;
 
   case 191:
-#line 697 "compiler.y"
+#line 754 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new NullStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2880,7 +2941,7 @@ yyreduce:
     break;
 
   case 192:
-#line 701 "compiler.y"
+#line 758 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new ExprStmt_((yyvsp[(1) - (2)].expr));
 	    rootNode = (Node)(yyval.stmt);
@@ -2888,7 +2949,7 @@ yyreduce:
     break;
 
   case 193:
-#line 708 "compiler.y"
+#line 765 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].stmt), NULL);
         rootNode = (Node)(yyval.stmt);
@@ -2896,7 +2957,7 @@ yyreduce:
     break;
 
   case 194:
-#line 712 "compiler.y"
+#line 769 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[(3) - (7)].expr), (yyvsp[(5) - (7)].stmt), (yyvsp[(7) - (7)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2904,7 +2965,7 @@ yyreduce:
     break;
 
   case 195:
-#line 716 "compiler.y"
+#line 773 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new SwitchStmt_((yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].stmt));
         rootNode = (Node)(yyval.stmt);
@@ -2912,7 +2973,7 @@ yyreduce:
     break;
 
   case 196:
-#line 723 "compiler.y"
+#line 780 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new WhileStmt_((yyvsp[(5) - (5)].stmt), (yyvsp[(3) - (5)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2920,7 +2981,7 @@ yyreduce:
     break;
 
   case 197:
-#line 727 "compiler.y"
+#line 784 "compiler.y"
     {
 	    (yyval.stmt) = (Stmt)new DoStmt_((yyvsp[(2) - (7)].stmt), (yyvsp[(5) - (7)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -2928,7 +2989,7 @@ yyreduce:
     break;
 
   case 198:
-#line 731 "compiler.y"
+#line 788 "compiler.y"
     {
         Expr expr1, expr2;
         if((yyvsp[(3) - (6)].stmt)->id == NODE_STM_NULL)
@@ -2945,7 +3006,7 @@ yyreduce:
     break;
 
   case 199:
-#line 744 "compiler.y"
+#line 801 "compiler.y"
     {
         Expr expr1, expr2;
         if((yyvsp[(3) - (7)].stmt)->id == NODE_STM_NULL)
@@ -2962,7 +3023,7 @@ yyreduce:
     break;
 
   case 200:
-#line 760 "compiler.y"
+#line 817 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new GoToStmt_(std::string((yyvsp[(2) - (3)].sval)));
         rootNode = (Node)(yyval.stmt);
@@ -2971,7 +3032,7 @@ yyreduce:
     break;
 
   case 201:
-#line 765 "compiler.y"
+#line 822 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ContinueStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2979,7 +3040,7 @@ yyreduce:
     break;
 
   case 202:
-#line 769 "compiler.y"
+#line 826 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new BreakStmt_();
         rootNode = (Node)(yyval.stmt);
@@ -2987,7 +3048,7 @@ yyreduce:
     break;
 
   case 203:
-#line 773 "compiler.y"
+#line 830 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_(NULL);
         rootNode = (Node)(yyval.stmt);
@@ -2995,7 +3056,7 @@ yyreduce:
     break;
 
   case 204:
-#line 777 "compiler.y"
+#line 834 "compiler.y"
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_((yyvsp[(2) - (3)].expr));
         rootNode = (Node)(yyval.stmt);
@@ -3003,7 +3064,7 @@ yyreduce:
     break;
 
   case 205:
-#line 784 "compiler.y"
+#line 841 "compiler.y"
     {
 	    (yyval.decl) = (Decl)new TranslationUnitDecl_();
 	    std::list<Decl>::iterator it;
@@ -3016,7 +3077,7 @@ yyreduce:
     break;
 
   case 206:
-#line 793 "compiler.y"
+#line 850 "compiler.y"
     {
 	    std::list<Decl>::iterator it;
 	    for(it = (yyvsp[(2) - (2)].declList)->begin(); it != (yyvsp[(2) - (2)].declList)->end(); it++){
@@ -3029,7 +3090,7 @@ yyreduce:
     break;
 
   case 207:
-#line 805 "compiler.y"
+#line 862 "compiler.y"
     {
         (yyval.declList) = new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[(1) - (1)].decl));
@@ -3037,7 +3098,7 @@ yyreduce:
     break;
 
   case 208:
-#line 809 "compiler.y"
+#line 866 "compiler.y"
     {
 	    (yyval.declList) = new std::list<Decl>();
         std::list<Decl>::iterator it;
@@ -3050,28 +3111,28 @@ yyreduce:
     break;
 
   case 209:
-#line 821 "compiler.y"
+#line 878 "compiler.y"
     {
         //$$ = (Decl)new FunctionDecl_($1, $4);
 	}
     break;
 
   case 210:
-#line 824 "compiler.y"
+#line 881 "compiler.y"
     {
 
 	}
     break;
 
   case 211:
-#line 827 "compiler.y"
+#line 884 "compiler.y"
     {
 
 	}
     break;
 
   case 212:
-#line 830 "compiler.y"
+#line 887 "compiler.y"
     {
 
 	}
@@ -3079,7 +3140,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 3083 "y.tab.c"
+#line 3144 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -3293,7 +3354,7 @@ yyreturn:
 }
 
 
-#line 835 "compiler.y"
+#line 892 "compiler.y"
 
 
 void yyerror(char const *s)
