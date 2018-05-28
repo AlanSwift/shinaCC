@@ -339,7 +339,8 @@ declaration
 	;
 
 declaration_specifiers
-	: storage_class_specifier
+	: storage_class_specifier {
+	}
 	| storage_class_specifier declaration_specifiers {
         $$ = $2;
     }
