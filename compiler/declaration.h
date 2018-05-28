@@ -73,7 +73,9 @@ struct VarDecl_:public Decl_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
-        printf("VarDecl_\n");
+        printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
+        if(init)
+            init->show(space + 1);
     }
 };
 
@@ -103,11 +105,13 @@ struct FunctionDecl_:public Decl_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
-        printf("FunctionDecl_\n");
+        printf("FunctionDecl_: %s, %s\n", this->name.c_str(), returnType->getType().c_str());
         for(auto &i:parameters)
         {
             i->show(space+1);
         }
+        if(stmt)
+            stmt->show(space + 1);
     }
 };
 
@@ -123,6 +127,17 @@ struct ParmVarDecl_:public Decl_
     ParmVarDecl_(Type type):type(type)
     {
         this->id=NODE_DECL_PARMVAR;
+    }
+
+    void show(int space=0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        if(type){
+            printf("ParmVarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
+        }
+        else
+            printf("ParmVarDecl_: %s, null\n", this->name.c_str());
     }
 };
 
