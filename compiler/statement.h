@@ -87,6 +87,10 @@ struct CompoundStmt_:public Stmt_
             (*it)->show(space + 1);
         }
     }
+
+    bool addStatement(Stmt stmt){
+        stmtList.push_back(stmt);
+    }
 };
 
 struct DoStmt_:public Stmt_

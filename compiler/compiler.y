@@ -28,7 +28,10 @@ extern "C"{
     struct Expr_ *expr;
     struct Stmt_ *stmt;
     struct Decl_ *decl;
+    struct Type_ *type;
     std::list<struct Stmt_ *> *stmtList;
+    std::list<struct Decl_ *> *declList;
+    std::list<std::list<struct Decl_ *> *> *declsList;
     char *sval;
     int operator_;
 }
@@ -46,6 +49,14 @@ expression_statement selection_statement iteration_statement
 jump_statement
 
 %type <stmtList> statement_list
+
+%type <decl> translation_unit function_definition
+
+%type <declList> declaration external_declaration
+
+%type <declsList> declaration_list
+
+%type <type> declaration_specifiers
 
 %type <operator_> unary_operator assignment_operator
 
@@ -65,6 +76,8 @@ jump_statement
 
 %start translation_unit
 %%
+
+/*expression*/
 
 primary_expression
 	: IDENTIFIER {
@@ -367,60 +380,6 @@ type_specifier
 	| TYPE_NAME
 	;
 
-struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
-	;
-
-struct_or_union
-	: STRUCT
-	| UNION
-	;
-
-struct_declaration_list
-	: struct_declaration
-	| struct_declaration_list struct_declaration
-	;
-
-struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
-	;
-
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
-	| type_qualifier specifier_qualifier_list
-	| type_qualifier
-	;
-
-struct_declarator_list
-	: struct_declarator
-	| struct_declarator_list ',' struct_declarator
-	;
-
-struct_declarator
-	: declarator
-	| ':' constant_expression
-	| declarator ':' constant_expression
-	;
-
-enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER
-	;
-
-enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
-	;
-
-enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
-	;
-
 type_qualifier
 	: CONST
 	| VOLATILE
@@ -509,6 +468,60 @@ initializer_list
 	| initializer_list ',' initializer
 	;
 
+struct_or_union_specifier
+	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
+	| struct_or_union '{' struct_declaration_list '}'
+	| struct_or_union IDENTIFIER
+	;
+
+struct_or_union
+	: STRUCT
+	| UNION
+	;
+
+struct_declaration_list
+	: struct_declaration
+	| struct_declaration_list struct_declaration
+	;
+
+struct_declaration
+	: specifier_qualifier_list struct_declarator_list ';'
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier
+	| type_qualifier specifier_qualifier_list
+	| type_qualifier
+	;
+
+struct_declarator_list
+	: struct_declarator
+	| struct_declarator_list ',' struct_declarator
+	;
+
+struct_declarator
+	: declarator
+	| ':' constant_expression
+	| declarator ':' constant_expression
+	;
+
+enum_specifier
+	: ENUM '{' enumerator_list '}'
+	| ENUM IDENTIFIER '{' enumerator_list '}'
+	| ENUM IDENTIFIER
+	;
+
+enumerator_list
+	: enumerator
+	| enumerator_list ',' enumerator
+	;
+
+enumerator
+	: IDENTIFIER
+	| IDENTIFIER '=' constant_expression
+	;
+
 statement
 	: labeled_statement { $$ = $1; rootNode = (Node)$$; }
 	| compound_statement { $$ = $1; rootNode = (Node)$$; }
@@ -545,16 +558,38 @@ compound_statement
         delete $2;
 	}
 	| '{' declaration_list '}' {
-
+        $$ = (Stmt)new CompoundStmt_();
+        std::list<std::list<struct Decl_ *> *>::iterator it;
+        for(it = $2->begin(); it != $2->end(); it++){
+            Decl varDecl = (Decl)new DeclStmt_(*(*it));
+            ((CompoundStmt)$$)->addStatement(varDecl);
+        }
+        rootNode = (Node)$$;
 	}
 	| '{' declaration_list statement_list '}' {
-
+	    $$ = (Stmt)new CompoundStmt_();
+        std::list<std::list<struct Decl_ *> *>::iterator it;
+        for(it = $2->begin(); it != $2->end(); it++){
+            Decl varDecl = (Decl)new DeclStmt_(*(*it));
+            ((CompoundStmt)$$)->addStatement(varDecl);
+        }
+        std::list<struct Stmt_ *>::iterator it2;
+        for(it2 = $3->begin(); it2 != $3->end(); it2++){
+            ((CompoundStmt)$$)->addStatement((*it2));
+        }
+        rootNode = (Node)$$;
 	}
 	;
 
 declaration_list
-	: declaration
-	| declaration_list declaration
+	: declaration {
+	    $$ = new std::list<std::list<struct Decl_ *>*>;
+	    $$->push_back($1);
+	}
+	| declaration_list declaration {
+	    $1->push_back($2);
+	    $$ = $1;
+	}
 	;
 
 statement_list
@@ -655,20 +690,48 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration
-	| translation_unit external_declaration
+	: external_declaration {
+	    $$ = (Decl)new TranslationUnitDecl_();
+	    rootNode = (Node)$$;
+	}
+	| translation_unit external_declaration {
+	    std::list<Decl>::iterator it;
+	    for(it = $2->begin(); it != $2->end(); it++){
+            ((TranslationUnitDecl)$1)->addDeclaration(*it);
+        }
+        delete $2;
+	    $$ = (TranslationUnitDecl)$1;
+	    rootNode = (Node)$$;
+	}
 	;
 
 external_declaration
-	: function_definition
-	| declaration
+	: function_definition {
+        $$ = new std::list<Decl>();
+        $$->push_back($1);
+     }
+	| declaration {
+	    $$ = new std::list<Decl>();
+        std::list<Decl>::iterator it;
+        for(it = $1->begin(); it != $1->end(); it++){
+            $$->push_back(*it);
+        }
+	}
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers declarator compound_statement
-	| declarator declaration_list compound_statement
-	| declarator compound_statement
+	: declaration_specifiers declarator declaration_list compound_statement {
+        //$$ = (Decl)new FunctionDecl_($1, $4);
+	}
+	| declaration_specifiers declarator compound_statement {
+
+	}
+	| declarator declaration_list compound_statement {
+
+	}
+	| declarator compound_statement {
+
+	}
 	;
 
 %%
