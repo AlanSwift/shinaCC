@@ -113,13 +113,12 @@ struct FunctionType_:public Type_
 {
     Type returnType;
     list<Type> argsType;
-    string id;
 
-    FunctionType_(string id, Type returnType){
+    FunctionType_(Type returnType){
         this->id = CONST_TYPE_FUNC;
     }
 
-    FunctionType_(string id, Type returnType, list<Type> &argsType):FunctionType_(id, returnType){
+    FunctionType_(Type returnType, list<Type> &argsType):FunctionType_(returnType){
         this->argsType = argsType;
     }
 
@@ -127,12 +126,18 @@ struct FunctionType_:public Type_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
-        printf("FunctionType_: %s\n", this->id.c_str());
+        printf("FunctionType_: %s\n");
     }
 
     std::string getType()
     {
-        return this->id;
+        string result = returnType->getType() + "  (";
+        list<Type>::iterator it;
+        for(it = args.begin(); it != args.end(); it++){
+            result += (*it)->getType() + ", ";
+        }
+        result += ")";
+        return result;
     }
 };
 
