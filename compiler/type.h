@@ -20,8 +20,9 @@ typedef struct TypedefType_ *TypedefType;
 struct BuiltinType_:public Type_
 {
     int builtinType;
+    Type next;
 
-    BuiltinType_(int builtinType):builtinType(builtinType){
+    BuiltinType_(int builtinType, Type next):builtinType(builtinType), next(next){
         this->id = CONST_TYPE_BUILTIN;
     }
 

@@ -341,8 +341,12 @@ declaration
 declaration_specifiers
 	: storage_class_specifier
 	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
+	| type_specifier {
+
+	}
+	| type_specifier declaration_specifiers {
+
+	}
 	| type_qualifier
 	| type_qualifier declaration_specifiers
 	;
@@ -366,18 +370,18 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	: VOID {}
+	| CHAR {}
+	| SHORT {}
+	| INT {}
+	| LONG {}
+	| FLOAT {}
+	| DOUBLE {}
+	| SIGNED {}
+	| UNSIGNED {}
+	| struct_or_union_specifier {}
+	| enum_specifier {}
+	| TYPE_NAME {}
 	;
 
 type_qualifier
