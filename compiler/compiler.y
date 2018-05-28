@@ -725,6 +725,7 @@ external_declaration
             $$->push_back(*it);
         }
         delete $1;
+
 	}
 	;
 
