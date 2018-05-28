@@ -50,9 +50,9 @@ jump_statement
 
 %type <stmtList> statement_list
 
-%type <decl> translation_unit function_definition
+%type <decl> translation_unit function_definition init_declarator
 
-%type <declList> declaration external_declaration
+%type <declList> declaration external_declaration init_declarator_list
 
 %type <declsList> declaration_list
 
@@ -349,6 +349,9 @@ declaration_specifiers
 
 init_declarator_list
 	: init_declarator
+	{
+
+	}
 	| init_declarator_list ',' init_declarator
 	;
 
