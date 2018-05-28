@@ -561,22 +561,25 @@ compound_statement
         $$ = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
         for(it = $2->begin(); it != $2->end(); it++){
-            Decl varDecl = (Decl)new DeclStmt_(*(*it));
+            Stmt varDecl = (Stmt)new DeclStmt_(*(*it));
             ((CompoundStmt)$$)->addStatement(varDecl);
         }
+        delete $2;
         rootNode = (Node)$$;
 	}
 	| '{' declaration_list statement_list '}' {
 	    $$ = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
         for(it = $2->begin(); it != $2->end(); it++){
-            Decl varDecl = (Decl)new DeclStmt_(*(*it));
+            Stmt varDecl = (Stmt)new DeclStmt_(*(*it));
             ((CompoundStmt)$$)->addStatement(varDecl);
         }
+        delete $2;
         std::list<struct Stmt_ *>::iterator it2;
         for(it2 = $3->begin(); it2 != $3->end(); it2++){
             ((CompoundStmt)$$)->addStatement((*it2));
         }
+        delete $3;
         rootNode = (Node)$$;
 	}
 	;
@@ -692,6 +695,11 @@ jump_statement
 translation_unit
 	: external_declaration {
 	    $$ = (Decl)new TranslationUnitDecl_();
+	    std::list<Decl>::iterator it;
+        for(it = $1->begin(); it != $1->end(); it++){
+            ((TranslationUnitDecl)$$)->addDeclaration(*it);
+        }
+        delete $1;
 	    rootNode = (Node)$$;
 	}
 	| translation_unit external_declaration {
@@ -716,6 +724,7 @@ external_declaration
         for(it = $1->begin(); it != $1->end(); it++){
             $$->push_back(*it);
         }
+        delete $1;
 	}
 	;
 
