@@ -56,7 +56,7 @@ jump_statement
 
 %type <declsList> declaration_list
 
-%type <type> declaration_specifiers
+%type <type> declaration_specifiers type_specifier
 
 %type <operator_> unary_operator assignment_operator
 
@@ -340,15 +340,20 @@ declaration
 
 declaration_specifiers
 	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
+	| storage_class_specifier declaration_specifiers {
+        $$ = $2;
+    }
 	| type_specifier {
-
+        $$ = $1;
 	}
 	| type_specifier declaration_specifiers {
-
+        ((BuiltinType)$1)->next = $2;
+        $$ = $1;
 	}
 	| type_qualifier
-	| type_qualifier declaration_specifiers
+	| type_qualifier declaration_specifiers {
+	    $$ = $2;
+	}
 	;
 
 init_declarator_list
@@ -370,15 +375,15 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID {}
-	| CHAR {}
-	| SHORT {}
-	| INT {}
-	| LONG {}
-	| FLOAT {}
-	| DOUBLE {}
-	| SIGNED {}
-	| UNSIGNED {}
+	: VOID { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_VOID, NULL); }
+	| CHAR { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL); }
+	| SHORT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SHORT, NULL); }
+	| INT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL); }
+	| LONG { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_LONG, NULL); }
+	| FLOAT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_FLOAT, NULL); }
+	| DOUBLE { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL); }
+	| SIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SIGNED, NULL); }
+	| UNSIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED, NULL); }
 	| struct_or_union_specifier {}
 	| enum_specifier {}
 	| TYPE_NAME {}
