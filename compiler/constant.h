@@ -83,6 +83,10 @@ struct Decl_:public Node_
     {
 
     }
+    virtual void add2Tail(Type c)
+    {
+
+    }
     void show(int space=0)
     {
         for(int i = 0; i < space; i++)

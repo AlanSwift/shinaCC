@@ -32,6 +32,7 @@ extern "C"{
     struct Type_ *type;
     std::list<struct Stmt_ *> *stmtList;
     std::list<struct Decl_ *> *declList;
+    std::list<struct Expr_ *> *exprList;
     std::list<std::list<struct Decl_ *> *> *declsList;
     char *sval;
     int operator_;
@@ -43,7 +44,9 @@ multiplicative_expression additive_expression shift_expression
 relational_expression equality_expression and_expression
 exclusive_or_expression inclusive_or_expression
 logical_and_expression logical_or_expression conditional_expression
-constant_expression argument_expression_list
+constant_expression argument_expression_list initializer
+
+%type <exprList> initializer_list
 
 %type <stmt> statement labeled_statement compound_statement
 expression_statement selection_statement iteration_statement
@@ -340,18 +343,9 @@ declaration
 	{
 	    for(auto &e:*$2)
 	    {
-	        if(e->id==NODE_DECL_VAR)
-            {
-                ((VarDecl)e)->add2Tail($1);
-            }
-            else if(e->id==NODE_DECL_FUNCTION)
-            {
-                //TODO
-                assert(0);
-            }
+	        e->add2Tail($1);
 	    }
 	    $$=$2;
-
 	}
 	;
 
@@ -393,6 +387,12 @@ init_declarator
 	    $$=$1;
 	}
 	| declarator '=' initializer
+	{
+	    if($1->id==NODE_DECL_VAR)
+	    {
+	        ((VarDecl)$1)->init=$3;
+	    }
+	}
 	;
 
 storage_class_specifier
@@ -426,21 +426,9 @@ type_qualifier
 declarator
 	: pointer direct_declarator
 	{
-	    if($2->id==NODE_DECL_VAR)
-	    {
-	        ((VarDecl)$2)->add2Tail(new PointerType_(NULL));
-	        $$=$2;
-	    }
-	    else if($2->id==NODE_DECL_FUNCTION)
-	    {
-	        ((FunctionDecl)$2)->returnType=new PointerType_(NULL);
-	        $$=$2;
-	    }
-	    else{
-	        assert(0);
-	    }
+	    $2->add2Tail(new PointerType_(NULL));
+	    $$=$2;
 	}
-
 	| direct_declarator
 	{
 	    $$=$1;
@@ -463,70 +451,112 @@ direct_declarator
 	{
 	    //("&&&&&%d\n",$1->id);
 	    //printf("-----%d\n",((VarDecl)$$)->type->id);
-	    if($1->id==NODE_DECL_VAR)
-	    {
-	        $$=$1;
-            ((VarDecl)$$)->add2Tail(new ArrayType_(NULL,$3));
-	    }
-	    else if($1->id==NODE_DECL_FUNCTION)
-	    {
-	        FunctionType funType;
-	        if(((FunctionDecl)$1)->hasParameters())
-	        {
-	            list<Type> args;
-                for(auto & e:(((FunctionDecl)$1)->parameters))
-                {
-                    args.push_back(((ParmVarDecl)e)->type);
-                }
-	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,args);
-	        }
-	        else
-	        {
-	            funType=new FunctionType_(((FunctionDecl)$1)->returnType);
-	        }
 
-            $$=new VarDecl_(new ArrayType_(funType,$3),NULL);
-	    }
+	    $$=$1;
+        $$->add2Tail(new ArrayType_(NULL,$3));
 
 	}
 	| direct_declarator '[' ']'
 	{
-	    if($1->id==NODE_DECL_VAR)
-        {
-            $$=$1;
-            ((VarDecl)$$)->type=new ArrayType_(((VarDecl)$$)->type,NULL);
-        }
-        else if($1->id==NODE_DECL_FUNCTION)
-        {
-            FunctionType funType;
-            if(((FunctionDecl)$1)->hasParameters())
-            {
-                list<Type> args;
-                for(auto & e:(((FunctionDecl)$1)->parameters))
-                {
-                    args.push_back(((ParmVarDecl)e)->type);
-                }
-	            funType=new FunctionType_(((FunctionDecl)$1)->returnType,args);
-            }
-            else
-            {
-                funType=new FunctionType_(((FunctionDecl)$1)->returnType);
-            }
-
-            $$=new VarDecl_(new ArrayType_(funType,NULL),NULL);
-        }
+	    $$=$1;
+        $$->add2Tail(new ArrayType_(NULL,NULL));
 	}
 	| direct_declarator '(' parameter_type_list ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+	    if($1->id==NODE_DECL_VAR && $1->name!="")
+	    {
+	        if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
+	        {
+	            $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+	            delete $1;
+	        }
+	        else if(((VarDecl)$1)->type!=NULL)
+	        {
+	            list<Type> args;
+                for(auto & e:*$3)
+                {
+                    printf("******%s******\n",id2name(e->id).c_str());
+                    args.push_back(((ParmVarDecl)e)->type);
+                    delete e;
+                }
+                delete $3;
+	            $1->add2Tail(new FunctionType_(NULL,args));
+	            $$=$1;
+	        }
+	        else{
+	            assert(0);
+	        }
+	    }
+	    else{
+	        list<Type> args;
+            for(auto & e:*$3)
+            {
+                args.push_back(((ParmVarDecl)e)->type);
+                delete e;
+            }
+            delete $3;
+	        $1->add2Tail(new FunctionType_(NULL,args));
+	        $$=$1;
+	    }
+
 	}
 	| direct_declarator '(' identifier_list ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+	    if($1->id==NODE_DECL_VAR && $1->name!="")
+        {
+            if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
+            {
+                $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+                delete $1;
+            }
+            else if(((VarDecl)$1)->type!=NULL)
+            {
+                list<Type> args;
+                for(auto & e:*$3)
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                }
+                delete $3;
+                $1->add2Tail(new FunctionType_(NULL,args));
+                $$=$1;
+            }
+            else{
+                assert(0);
+            }
+        }
+        else{
+            list<Type> args;
+            for(auto & e:*$3)
+            {
+                args.push_back(((ParmVarDecl)e)->type);
+            }
+            delete $3;
+            $1->add2Tail(new FunctionType_(NULL,args));
+            $$=$1;
+        }
 	}
 	| direct_declarator '(' ')'
 	{
-	    $$=new FunctionDecl_($1->name,NULL,NULL);
+	    if($1->id==NODE_DECL_VAR && $1->name!="")
+        {
+            if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
+            {
+                $$=new FunctionDecl_($1->name,NULL,NULL);
+                delete $1;
+            }
+            else if(((VarDecl)$1)->type!=NULL)
+            {
+                $1->add2Tail(new FunctionType_(NULL));
+                $$=$1;
+            }
+            else{
+                assert(0);
+            }
+        }
+        else{
+            $1->add2Tail(new FunctionType_(NULL));
+            $$=$1;
+        }
 	}
 	;
 
@@ -569,6 +599,18 @@ parameter_list
 
 parameter_declaration
 	: declaration_specifiers declarator
+	{
+        if($2->id==NODE_DECL_VAR)
+        {
+            $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+            delete $2;
+            $$->add2Tail($1);
+        }
+        else{
+            printf("%s=======\n",id2name($2->id).c_str());
+            assert(0);//error
+        }
+	}
 	| declaration_specifiers abstract_declarator
 	| declaration_specifiers
 	{
@@ -619,13 +661,20 @@ direct_abstract_declarator
 
 initializer
 	: assignment_expression
+	{
+        $$=$1;
+	}
 	| '{' initializer_list '}'
 	| '{' initializer_list ',' '}'
 	;
 
 initializer_list
 	: initializer
+	{
+	}
 	| initializer_list ',' initializer
+	{
+	}
 	;
 
 struct_or_union_specifier
@@ -891,16 +940,19 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement {
-        //$$ = (Decl)new FunctionDecl_($1, $4);
+        assert(0);
 	}
 	| declaration_specifiers declarator compound_statement {
-
+	    $2->add2Tail($1);
+        ((FunctionDecl)$2)->stmt=$3;
+        $$=$2;
 	}
 	| declarator declaration_list compound_statement {
-
+        assert(0);
 	}
 	| declarator compound_statement {
-
+        ((FunctionDecl)$1)->stmt=$2;
+        $$=$1;
 	}
 	;
 

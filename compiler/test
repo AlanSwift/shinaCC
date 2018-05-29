@@ -1,2 +1,9 @@
-int (*c)[3][2][5];
-unsigned int a[2][3];
+int a=1;
+int main(int a)
+{
+    int b=1;
+}
+
+int **  f( void ((*(*p)[ 5]) )( void),int *a );
+void ((*(*p)[ 5]) )( void);
+int ( * ( * pf() ) () ) ();
