@@ -283,7 +283,7 @@ logical_and_expression
 	: inclusive_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_and_expression AND_OP inclusive_or_expression {
         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
-        rootNode = (Node)$$;d
+        rootNode = (Node)$$;
 	}
 	;
 
