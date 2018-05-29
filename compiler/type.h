@@ -149,18 +149,26 @@ struct FunctionType_:public Type_
     Type returnType;
     list<Type> argsType;
 
-    FunctionType_(Type returnType){
+    FunctionType_(Type reType):returnType(reType){
         this->id = CONST_TYPE_FUNC;
     }
 
 
-    FunctionType_(Type returnType, list<Type> &argsType):FunctionType_(returnType){
+    FunctionType_(Type reType, list<Type> &argsType):FunctionType_(reType){
+
         this->argsType = argsType;
     }
 
     void add2Tail(Type c)
     {
 
+        if(!returnType)
+        {
+            returnType=c;
+        }
+        else{
+            returnType->add2Tail(c);
+        }
     }
 
     void show(int space = 0)
@@ -173,7 +181,9 @@ struct FunctionType_:public Type_
 
     std::string getType()
     {
+
         string result = returnType->getType() + "  (";
+
         list<Type>::iterator it;
         for(it = argsType.begin(); it != argsType.end(); it++){
             result += (*it)->getType() + ", ";

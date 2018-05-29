@@ -69,7 +69,7 @@ struct VarDecl_:public Decl_
     {
         this->id=NODE_DECL_VAR;
     }
-    void add2Tail(Type c)
+    void add2Tail(Type c) override
     {
         if(!type)
         {
@@ -83,8 +83,6 @@ struct VarDecl_:public Decl_
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
-        //printf("%s......\n",this->name.c_str());
-        //exit(0);
         printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
         if(init)
             init->show(space + 1);
@@ -139,6 +137,16 @@ struct FunctionDecl_:public Decl_
         if(stmt)
             stmt->show(space + 1);
     }
+    void add2Tail(Type c) override
+    {
+        if(!returnType)
+        {
+            returnType=c;
+        }
+        else{
+            returnType->add2Tail(c);
+        }
+    }
 };
 
 struct ParmVarDecl_:public Decl_
@@ -164,6 +172,16 @@ struct ParmVarDecl_:public Decl_
         }
         else
             printf("ParmVarDecl_: %s, null\n", this->name.c_str());
+    }
+    void add2Tail(Type c) override
+    {
+        if(!type)
+        {
+            type=c;
+        }
+        else{
+            type->add2Tail(c);
+        }
     }
 };
 
