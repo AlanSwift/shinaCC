@@ -177,8 +177,8 @@ const int NODE_STM_EXPR=313;
 const int NODE_STM_DECL=314;
 const int NODE_STM_NULL=315;
 
-const int OP_UNARY_NOT=398; //~
-const int OP_UNARY_LOGICAL_NOT=398; //!
+const int OP_UNARY_NOT=396; //~
+const int OP_UNARY_LOGICAL_NOT=397; //!
 const int OP_UNARY_POSITIVE=398; //+
 const int OP_UNARY_NEGATIVE=399; //-
 const int OP_UNARY_CAST=400;

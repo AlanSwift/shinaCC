@@ -16,15 +16,16 @@ int main()
 	int a[2];
     long c;
     double d;
-    int (**gp)(int, int);
+    int (*fp)(int, int);
     long *p = &c;
     a[0] = 1;
     a[1] = 2;
+    fp = f;
     while(a[0] <= 10){
         a[1] += a[0];
         a[0]++;
     }
-    *p = f(a[0], a[1]);
+    *p = fp(a[0], a[1]);
     printf("c=%ld\n", c);
     return 0;
 }

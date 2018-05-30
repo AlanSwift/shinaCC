@@ -69,7 +69,7 @@ struct BinaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("BinaryOpExpr_: %d\n", operator_);
+        printf("BinaryOpExpr_: %s\n", id2name(operator_).c_str());
         left->show(space + 1);
         right->show(space + 1);
     }
@@ -90,7 +90,7 @@ struct UnaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("UnaryOpExpr_: %d\n", operator_);
+        printf("UnaryOpExpr_: %s\n", id2name(operator_).c_str());
         expr->show(space + 1);
     }
 };
@@ -130,7 +130,7 @@ struct AssignExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("AssignExpr_: %d\n", operator_);
+        printf("AssignExpr_: %s\n", id2name(operator_).c_str());
         var->show(space + 1);
         expr->show(space + 1);
     }
