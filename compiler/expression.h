@@ -28,6 +28,7 @@ struct ParenExpr_;
 
 
 typedef struct BinaryOpExpr_ *BinaryOpExpr;
+typedef struct UnaryOpExpr_ *UnaryOpExpr;
 typedef struct ConditionalExpr_ *ConditionalExpr;
 typedef struct AssignExpr_ *AssignExpr;
 typedef struct CallExpr_ *CallExpr;
@@ -235,7 +236,7 @@ struct ImplicitCastExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ImplicitCastExpr_ %s\n", getType().c_str());
+        printf("ImplicitCastExpr_ To<%s>\n", getType().c_str());
         expr->show(space + 1);
     }
 };
