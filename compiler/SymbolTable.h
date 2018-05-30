@@ -11,7 +11,7 @@
 #include <iostream>
 #define HASH_TABLE_SZIE 149
 
-class SymbolTale
+class SymbolTable
 {
 private:
     int size;
