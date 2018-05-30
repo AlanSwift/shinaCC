@@ -1,9 +1,30 @@
-int a=1;
-int main(int a)
+int g(int a)
 {
-    int b=1;
+	return a * a;
 }
 
-int **  f( void ((*(*p)[ 5]) )( void),int *a );
-void ((*(*p)[ 5]) )( void);
-int ( * ( * pf() ) () ) ();
+int f(int a, int b)
+{
+	int c = g(a);
+	c += g(b);
+	return g(c);
+}
+
+
+int main()
+{
+	int a[2];
+    long c;
+    double d;
+    int (**gp)(int, int);
+    long *p = &c;
+    a[0] = 1;
+    a[1] = 2;
+    while(a[0] <= 10){
+        a[1] += a[0];
+        a[0]++;
+    }
+    *p = f(a[0], a[1]);
+    printf("c=%ld\n", c);
+    return 0;
+}
