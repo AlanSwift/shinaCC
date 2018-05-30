@@ -46,11 +46,10 @@ struct Node_
         printf("Node_\n");
     }
 
-    void setSourceLoc(int line, int colStart, int colEnd)
+    void setSourceLoc(int line, int col)
     {
         sourceLoc.line = line;
-        sourceLoc.colEnd = colEnd;
-        sourceLoc.colStart = colStart;
+        sourceLoc.col = col;
     }
 };
 
