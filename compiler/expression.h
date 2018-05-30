@@ -155,6 +155,10 @@ struct CallExpr_:public Expr_
             printf("-");
         printf("CallExpr_\n");
         func->show(space + 1);
+        list<Expr>::iterator it;
+        for(it = args.begin(); it != args.end(); it++){
+            (*it)->show(space + 1);
+        }
     }
 };
 
@@ -310,7 +314,7 @@ struct StrLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("StrLiteral_: %.3f\n", value.c_str());
+        printf("StrLiteral_: %s\n", value.c_str());
     }
 };
 

@@ -90,6 +90,9 @@ struct VarDecl_:public Decl_
         {
             type->show(space+1);
         }
+        else{
+            printf("*******************null_ptr************************\n");
+        }
     }
 };
 

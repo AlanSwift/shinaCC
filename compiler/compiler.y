@@ -44,9 +44,9 @@ multiplicative_expression additive_expression shift_expression
 relational_expression equality_expression and_expression
 exclusive_or_expression inclusive_or_expression
 logical_and_expression logical_or_expression conditional_expression
-constant_expression argument_expression_list initializer
+constant_expression initializer
 
-%type <exprList> initializer_list
+%type <exprList> initializer_list argument_expression_list
 
 %type <stmt> statement labeled_statement compound_statement
 expression_statement selection_statement iteration_statement
@@ -115,6 +115,8 @@ postfix_expression
         rootNode = (Node)$$;
 	}
 	| postfix_expression '(' argument_expression_list ')' {
+	    $$ = (Expr)new CallExpr_($1, *$3);
+	    delete $3;
         rootNode = (Node)$$;
 	}
 	| postfix_expression '.' IDENTIFIER {
@@ -137,10 +139,13 @@ postfix_expression
 
 //OP_BINARY_COMMA
 argument_expression_list
-	: assignment_expression { $$ = $1;rootNode = (Node)$$; }
+	: assignment_expression {
+	    $$ = new std::list<Expr>();
+	    $$->push_back($1);
+	}
 	| argument_expression_list ',' assignment_expression {
-	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
-	    rootNode = (Node)$$;
+	    $1->push_back($3);
+	    $$ = $1;
 	}
 	;
 
