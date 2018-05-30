@@ -19,14 +19,14 @@ typedef int AssignOperator;
 
 struct SourceLocation
 {
-    int line, colStart, colEnd;
+    int line, col;
 
-    SourceLocation(int line, int colStart, int colEnd):line(line), colStart(colStart), colEnd(colEnd)
+    SourceLocation(int line, int col):line(line), col(col)
     {
 
     }
 
-    SourceLocation():SourceLocation(0, 0, 0)
+    SourceLocation():SourceLocation(0, 0)
     {
 
     }
