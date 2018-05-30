@@ -13,6 +13,8 @@ class SymbolTale
 public:
     bool addSymbol(std::string id, Type type);
     Type lookUp(std::string id);
+
+private:
 };
 
 #endif //CP_SYMBOLTABLE_H
