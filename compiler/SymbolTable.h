@@ -37,20 +37,21 @@ public:
         return true;
     }
 
-    bool popSymbol(std::string id)
+    Type popSymbol(std::string id)
     {
         unsigned int index = hashValue(id);
         std::list<std::pair<std::string, Type>> &hashItem = hashTale[index];
         auto it = hashItem.begin();
         while(it != hashItem.end()){
             if(it->first == id){
+                Type type = it->second;
                 it = hashItem.erase(it);
                 size--;
-                return true;
+                return type;
             }
             it++;
         }
-        return false;
+        return nullptr;
     }
 
     Type lookUp(std::string id)
