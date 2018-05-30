@@ -46,11 +46,12 @@ struct ParenExpr_:public Expr_
 {
     Expr expr;
     ParenExpr_(Expr expr):expr(expr){ this->id = NODE_EXP_PAREN; }
+
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ParenExpr_\n");
+        printf("ParenExpr_ %s\n", getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -69,7 +70,7 @@ struct BinaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("BinaryOpExpr_: %s\n", id2name(operator_).c_str());
+        printf("BinaryOpExpr_: %s, %s\n", id2name(operator_).c_str(), getType().c_str());
         left->show(space + 1);
         right->show(space + 1);
     }
@@ -90,7 +91,7 @@ struct UnaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("UnaryOpExpr_: %s\n", id2name(operator_).c_str());
+        printf("UnaryOpExpr_: %s %s\n", id2name(operator_).c_str(), getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -108,7 +109,7 @@ struct ConditionalExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ConditionalExpr_\n");
+        printf("ConditionalExpr_ %s\n", getType().c_str());
         condition->show(space + 1);
         true_->show(space + 1);
         false_->show(space + 1);
@@ -130,7 +131,7 @@ struct AssignExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("AssignExpr_: %s\n", id2name(operator_).c_str());
+        printf("AssignExpr_: %s, %s\n", id2name(operator_).c_str(), getType().c_str());
         var->show(space + 1);
         expr->show(space + 1);
     }
@@ -153,7 +154,7 @@ struct CallExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("CallExpr_\n");
+        printf("CallExpr_ %s\n", getType().c_str());
         func->show(space + 1);
         list<Expr>::iterator it;
         for(it = args.begin(); it != args.end(); it++){
@@ -198,7 +199,7 @@ struct ArraySubscriptExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ArraySubscriptExpr_\n");
+        printf("ArraySubscriptExpr_ %s\n", getType().c_str());
         array->show(space + 1);
         offset->show(space + 1);
     }
@@ -217,7 +218,7 @@ struct DeclRefExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("DeclRefExpr_: %s\n", name.c_str());
+        printf("DeclRefExpr_: %s, %s\n", name.c_str(), getType().c_str());
     }
 };
 
@@ -234,7 +235,7 @@ struct ImplicitCastExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ImplicitCastExpr_\n");
+        printf("ImplicitCastExpr_ %s\n", getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -253,7 +254,7 @@ struct CStyleCastExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("CStyleCastExpr_\n");
+        printf("CStyleCastExpr_ %s\n", getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -263,13 +264,14 @@ struct IntLiteral_:public Expr_
     long value;
     IntLiteral_(long value):value(value){
         this->id = NODE_EXP_INTLITERAL;
+        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL);
     }
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("IntLiteral_: %ld\n", value);
+        printf("IntLiteral_: %ld %s\n", value, getType().c_str());
     }
 };
 
@@ -278,13 +280,14 @@ struct CharLiteral_:public Expr_
     char value;
     CharLiteral_(char value):value(value){
         this->id = NODE_EXP_CHARLITERAL;
+        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL);
     }
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("CharLiteral_: %c\n", value);
+        printf("CharLiteral_: %c %s\n", value, getType().c_str());
     }
 };
 
@@ -300,21 +303,29 @@ struct FloatLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("FloatLiteral_: %.3f\n", value);
+        printf("FloatLiteral_: %.3f %s\n", value, getType().c_str());
+        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL);
     }
 };
 
 struct StrLiteral_:public Expr_
 {
     string value;
-    StrLiteral_(string &value):value(value){this->id = NODE_EXP_STRLITERAL; }
-    StrLiteral_(char *value){ this->value = string(value);this->id = NODE_EXP_STRLITERAL;}
+    StrLiteral_(string &value):value(value){
+        this->id = NODE_EXP_STRLITERAL;
+        this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
+    }
+    StrLiteral_(char *value){
+        this->value = string(value);
+        this->id = NODE_EXP_STRLITERAL;
+        this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
+    }
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("StrLiteral_: %s\n", value.c_str());
+        printf("StrLiteral_: %s %s\n", value.c_str(), getType().c_str());
     }
 };
 

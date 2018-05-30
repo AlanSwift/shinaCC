@@ -68,11 +68,22 @@ struct Expr_:public Node_
 {
     Type type;
 
+    Expr_():type(NULL){}
+
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
         printf("Expr_\n");
+    }
+
+    std::string getType()
+    {
+        //return "NULL";
+        if(this->type == NULL)
+            return "NULL";
+        else
+            return this->type->getType();
     }
 };
 
