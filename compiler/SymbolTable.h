@@ -51,7 +51,7 @@ public:
             }
             it++;
         }
-        return nullptr;
+        return NULL;
     }
 
     Type lookUp(std::string id)
@@ -61,7 +61,7 @@ public:
             if(p.first == id)
                 return p.second;
         }
-        return nullptr;
+        return NULL;
     }
 };
 
