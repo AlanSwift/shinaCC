@@ -20,6 +20,12 @@ typedef int AssignOperator;
 struct SourceLocation
 {
     int line, colStart, colEnd;
+
+    SourceLocation()
+    {
+
+    }
+
     SourceLocation(int line, int colStart, int colEnd):line(line), colStart(colStart), colEnd(colEnd)
     {
 
@@ -28,7 +34,8 @@ struct SourceLocation
 
 struct Node_
 {
-    A_identifier id;
+    Identifier id;
+
     SourceLocation sourceLoc;
 
     virtual void show(int space = 0)
