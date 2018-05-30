@@ -34,5 +34,5 @@
 *.xml
 y.tab.h
 y.tab.cpp
-.idea
-cmake-build-debug
+./.idea
+./cmake-build-debug
