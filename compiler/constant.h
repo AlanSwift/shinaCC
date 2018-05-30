@@ -7,25 +7,49 @@
 
 #include <string>
 #include <cstdio>
+#include <iostream>
 
 #define SPACE '-'
 
-typedef int A_identifier;
+typedef int Identifier;
 typedef int BasicOperator;
 typedef int BinaryOperator;
 typedef int UnaryOperator;
 typedef int AssignOperator;
 
+struct SourceLocation
+{
+    int line, colStart, colEnd;
 
+    SourceLocation()
+    {
+
+    }
+
+    SourceLocation(int line, int colStart, int colEnd):line(line), colStart(colStart), colEnd(colEnd)
+    {
+
+    }
+};
 
 struct Node_
 {
-    A_identifier id;
+    Identifier id;
+
+    SourceLocation sourceLoc;
+
     virtual void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf(" ");
         printf("Node_\n");
+    }
+
+    void setSourceLoc(int line, int colStart, int colEnd)
+    {
+        sourceLoc.line = line;
+        sourceLoc.colEnd = colEnd;
+        sourceLoc.colStart = colStart;
     }
 };
 
@@ -52,7 +76,6 @@ struct Type_:public Node_
         return "AbstractType";
     }
 };
-
 
 struct Stmt_:public Node_
 {
@@ -105,8 +128,6 @@ struct Decl_:public Node_
         printf("Decl_\n");
     }
 };
-
-
 
 
 const int CONST_TYPE_POINTER=1;

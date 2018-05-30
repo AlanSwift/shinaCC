@@ -30,4 +30,19 @@ IRTreeNode translate(TranslationUnitDecl start)
     }
 }
 
+IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
+{
+
+}
+
+IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
+{
+
+}
+
+IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
+{
+
+}
+
 #endif //CP_TRANSLATE_H
