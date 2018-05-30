@@ -1,4 +1,7 @@
-int g(int a)
+int *f(int *());
+
+int a=1;
+int main(int a)
 {
 	return a * a;
 }

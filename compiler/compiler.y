@@ -55,6 +55,7 @@ jump_statement
 %type <stmtList> statement_list
 
 %type <decl> translation_unit function_definition init_declarator declarator direct_declarator parameter_declaration
+direct_abstract_declarator abstract_declarator
 
 %type <declList> declaration external_declaration init_declarator_list parameter_type_list parameter_list identifier_list
 
@@ -621,10 +622,24 @@ parameter_declaration
         }
         else{
             printf("%s=======\n",id2name($2->id).c_str());
+            $2->show();
             assert(0);//error
         }
 	}
 	| declaration_specifiers abstract_declarator
+	{
+	    if($2->id==NODE_DECL_VAR)
+        {
+            $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+            delete $2;
+            $$->add2Tail($1);
+        }
+        else{
+            printf("%s=======\n",id2name($2->id).c_str());
+            $2->show();
+            assert(0);//error
+        }
+	}
 	| declaration_specifiers
 	{
 	    $$=new ParmVarDecl_($1);
@@ -656,20 +671,125 @@ type_name
 
 abstract_declarator
 	: pointer
+	{
+	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+	}
 	| direct_abstract_declarator
+	{
+	    $$=$1;
+	}
 	| pointer direct_abstract_declarator
+	{
+        if($2->id==NODE_DECL_FUNCTION)
+        {
+            FunctionType funcType=NULL;
+            list<Type> args;
+            for(auto & e:((FunctionDecl)$2)->parameters)
+            {
+                args.push_back(((ParmVarDecl)e)->type);
+                delete e;
+            }
+            $$=new VarDecl_(new PointerType_(new FunctionType_(((FunctionDecl)$2)->returnType,args)),NULL);
+            delete $2;
+        }
+        else{
+            $2->add2Tail(new PointerType_(NULL));
+            $$=$2;
+        }
+	}
 	;
 
 direct_abstract_declarator
 	: '(' abstract_declarator ')'
+	{
+	    $$=$2;
+	}
 	| '[' ']'
+	{
+	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+	}
 	| '[' constant_expression ']'
+	{
+	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+	}
 	| direct_abstract_declarator '[' ']'
+	{
+	    $$=$1;
+        $$->add2Tail(new ArrayType_(NULL,NULL));
+	}
 	| direct_abstract_declarator '[' constant_expression ']'
+	{
+	    $$=$1;
+        $$->add2Tail(new ArrayType_(NULL,$3));
+	}
 	| '(' ')'
+	{
+	    $$=new FunctionDecl_("",NULL,NULL);
+	}
 	| '(' parameter_type_list ')'
+	{
+	    $$=new FunctionDecl_("",NULL,*$2,NULL);
+	}
 	| direct_abstract_declarator '(' ')'
+	{
+	    if($1->id==NODE_DECL_VAR && $1->name=="")
+        {
+            if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
+            {
+                $$=new FunctionDecl_($1->name,NULL,NULL);
+                delete $1;
+            }
+            else if(((VarDecl)$1)->type!=NULL)
+            {
+                $1->add2Tail(new FunctionType_(NULL));
+                $$=$1;
+            }
+            else{
+                assert(0);
+            }
+        }
+        else{
+            $1->add2Tail(new FunctionType_(NULL));
+            $$=$1;
+        }
+	}
 	| direct_abstract_declarator '(' parameter_type_list ')'
+	{
+	    if($1->id==NODE_DECL_VAR && $1->name=="")
+        {
+            if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
+            {
+                $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+                delete $1;
+            }
+            else if(((VarDecl)$1)->type!=NULL)
+            {
+                list<Type> args;
+                for(auto & e:*$3)
+                {
+                    args.push_back(((ParmVarDecl)e)->type);
+                    delete e;
+                }
+                delete $3;
+                $1->add2Tail(new FunctionType_(NULL,args));
+                $$=$1;
+            }
+            else{
+                assert(0);
+            }
+        }
+        else{
+            list<Type> args;
+            for(auto & e:*$3)
+            {
+                args.push_back(((ParmVarDecl)e)->type);
+                delete e;
+            }
+            delete $3;
+            $1->add2Tail(new FunctionType_(NULL,args));
+            $$=$1;
+        }
+	}
 	;
 
 initializer
