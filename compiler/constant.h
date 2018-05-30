@@ -21,15 +21,16 @@ struct SourceLocation
 {
     int line, colStart, colEnd;
 
-    SourceLocation()
-    {
-
-    }
-
     SourceLocation(int line, int colStart, int colEnd):line(line), colStart(colStart), colEnd(colEnd)
     {
 
     }
+
+    SourceLocation():SourceLocation(0, 0, 0)
+    {
+
+    }
+
 };
 
 struct Node_
