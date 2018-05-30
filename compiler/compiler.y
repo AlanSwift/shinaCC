@@ -60,7 +60,7 @@ jump_statement
 
 %type <declsList> declaration_list
 
-%type <type> declaration_specifiers type_specifier
+%type <type> declaration_specifiers type_specifier pointer
 
 %type <operator_> unary_operator assignment_operator
 
@@ -431,7 +431,7 @@ type_qualifier
 declarator
 	: pointer direct_declarator
 	{
-	    $2->add2Tail(new PointerType_(NULL));
+	    $2->add2Tail($1);
 	    $$=$2;
 	}
 	| direct_declarator
@@ -566,10 +566,18 @@ direct_declarator
 	;
 
 pointer
-	: '*'
-	| '*' type_qualifier_list
-	| '*' pointer
-	| '*' type_qualifier_list pointer
+	: '*' {
+	    $$ = new PointerType_(NULL);
+	}
+	| '*' type_qualifier_list {
+	    $$ = new PointerType_(NULL);
+	}
+	| '*' pointer {
+	    $$ = new PointerType_($2);
+	}
+	| '*' type_qualifier_list pointer {
+	    $$ = new PointerType_($3);
+	}
 	;
 
 type_qualifier_list

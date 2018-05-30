@@ -86,13 +86,13 @@ struct VarDecl_:public Decl_
         printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
         if(init)
             init->show(space + 1);
-        if(type)
+        /*if(type)
         {
             type->show(space+1);
         }
         else{
             printf("*******************null_ptr************************\n");
-        }
+        }*/
     }
 };
 
@@ -129,10 +129,10 @@ struct FunctionDecl_:public Decl_
             printf("%c", SPACE);
         //exit(0);
         printf("FunctionDecl_: %s, %s\n", this->name.c_str(), returnType->getType().c_str());
-        if(returnType)
+        /*if(returnType)
         {
             returnType->show(space+1);
-        }
+        }*/
         for(auto &i:parameters)
         {
             i->show(space+1);

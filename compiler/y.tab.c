@@ -593,17 +593,17 @@ static const yytype_uint16 yyrline[] =
      363,   366,   370,   371,   377,   382,   390,   394,   404,   405,
      406,   407,   408,   412,   413,   414,   415,   416,   417,   418,
      419,   420,   421,   422,   423,   427,   428,   432,   437,   444,
-     450,   455,   464,   469,   508,   543,   569,   570,   571,   572,
-     576,   577,   582,   586,   593,   598,   606,   619,   620,   627,
-     635,   645,   646,   650,   651,   652,   656,   657,   658,   659,
-     660,   661,   662,   663,   664,   668,   672,   673,   677,   680,
-     686,   687,   688,   692,   693,   697,   698,   702,   706,   707,
-     708,   709,   713,   714,   718,   719,   720,   724,   725,   726,
-     730,   731,   735,   736,   740,   741,   742,   743,   744,   745,
-     749,   754,   758,   765,   769,   774,   784,   802,   806,   813,
-     817,   823,   827,   834,   838,   842,   849,   853,   857,   870,
-     886,   891,   895,   899,   903,   910,   919,   931,   935,   947,
-     950,   955,   958
+     450,   455,   464,   469,   508,   543,   569,   572,   575,   578,
+     584,   585,   590,   594,   601,   606,   614,   627,   628,   635,
+     643,   653,   654,   658,   659,   660,   664,   665,   666,   667,
+     668,   669,   670,   671,   672,   676,   680,   681,   685,   688,
+     694,   695,   696,   700,   701,   705,   706,   710,   714,   715,
+     716,   717,   721,   722,   726,   727,   728,   732,   733,   734,
+     738,   739,   743,   744,   748,   749,   750,   751,   752,   753,
+     757,   762,   766,   773,   777,   782,   792,   810,   814,   821,
+     825,   831,   835,   842,   846,   850,   857,   861,   865,   878,
+     894,   899,   903,   907,   911,   918,   927,   939,   943,   955,
+     958,   963,   966
 };
 #endif
 
@@ -2545,7 +2545,7 @@ yyreduce:
   case 107:
 #line 433 "compiler.y" /* yacc.c:1646  */
     {
-	    (yyvsp[0].decl)->add2Tail(new PointerType_(NULL));
+	    (yyvsp[0].decl)->add2Tail((yyvsp[-1].type));
 	    (yyval.decl)=(yyvsp[0].decl);
 	}
 #line 2552 "y.tab.c" /* yacc.c:1646  */
@@ -2708,42 +2708,74 @@ yyreduce:
 #line 2709 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 122:
-#line 583 "compiler.y" /* yacc.c:1646  */
+  case 116:
+#line 569 "compiler.y" /* yacc.c:1646  */
     {
-	    (yyval.declList)=(yyvsp[0].declList);
+	    (yyval.type) = new PointerType_(NULL);
 	}
 #line 2717 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 123:
-#line 587 "compiler.y" /* yacc.c:1646  */
+  case 117:
+#line 572 "compiler.y" /* yacc.c:1646  */
     {
-	    (yyval.declList)=(yyvsp[-2].declList);
+	    (yyval.type) = new PointerType_(NULL);
 	}
 #line 2725 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 118:
+#line 575 "compiler.y" /* yacc.c:1646  */
+    {
+	    (yyval.type) = new PointerType_((yyvsp[0].type));
+	}
+#line 2733 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 119:
+#line 578 "compiler.y" /* yacc.c:1646  */
+    {
+	    (yyval.type) = new PointerType_((yyvsp[0].type));
+	}
+#line 2741 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 122:
+#line 591 "compiler.y" /* yacc.c:1646  */
+    {
+	    (yyval.declList)=(yyvsp[0].declList);
+	}
+#line 2749 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 123:
+#line 595 "compiler.y" /* yacc.c:1646  */
+    {
+	    (yyval.declList)=(yyvsp[-2].declList);
+	}
+#line 2757 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 124:
-#line 594 "compiler.y" /* yacc.c:1646  */
+#line 602 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.declList)=new list<Decl>();
 	    (yyval.declList)->push_back((yyvsp[0].decl));
 	}
-#line 2734 "y.tab.c" /* yacc.c:1646  */
+#line 2766 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 599 "compiler.y" /* yacc.c:1646  */
+#line 607 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyvsp[-2].declList)->push_back((yyvsp[0].decl));
 	    (yyval.declList)=(yyvsp[-2].declList);
 	}
-#line 2743 "y.tab.c" /* yacc.c:1646  */
+#line 2775 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 607 "compiler.y" /* yacc.c:1646  */
+#line 615 "compiler.y" /* yacc.c:1646  */
     {
         if((yyvsp[0].decl)->id==NODE_DECL_VAR)
         {
@@ -2756,19 +2788,19 @@ yyreduce:
             assert(0);//error
         }
 	}
-#line 2760 "y.tab.c" /* yacc.c:1646  */
+#line 2792 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 621 "compiler.y" /* yacc.c:1646  */
+#line 629 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.decl)=new ParmVarDecl_((yyvsp[0].type));
 	}
-#line 2768 "y.tab.c" /* yacc.c:1646  */
+#line 2800 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 628 "compiler.y" /* yacc.c:1646  */
+#line 636 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.declList)=new list<Decl>();
 	    auto p = new Decl_();
@@ -2776,127 +2808,127 @@ yyreduce:
 	    free((yyvsp[0].sval));
 	    (yyval.declList)->push_back(p);
 	}
-#line 2780 "y.tab.c" /* yacc.c:1646  */
+#line 2812 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 636 "compiler.y" /* yacc.c:1646  */
+#line 644 "compiler.y" /* yacc.c:1646  */
     {
 	    auto p=new Decl_();
 	    p->name=string((yyvsp[0].sval));
 	    (yyvsp[-2].declList)->push_back(p);
 	    (yyval.declList)=(yyvsp[-2].declList);
 	}
-#line 2791 "y.tab.c" /* yacc.c:1646  */
+#line 2823 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 669 "compiler.y" /* yacc.c:1646  */
+#line 677 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.expr)=(yyvsp[0].expr);
 	}
-#line 2799 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 148:
-#line 678 "compiler.y" /* yacc.c:1646  */
-    {
-	}
-#line 2806 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 149:
-#line 681 "compiler.y" /* yacc.c:1646  */
-    {
-	}
-#line 2813 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 174:
-#line 740 "compiler.y" /* yacc.c:1646  */
-    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
-#line 2819 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 175:
-#line 741 "compiler.y" /* yacc.c:1646  */
-    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
-#line 2825 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 176:
-#line 742 "compiler.y" /* yacc.c:1646  */
-    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
 #line 2831 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 177:
-#line 743 "compiler.y" /* yacc.c:1646  */
+  case 148:
+#line 686 "compiler.y" /* yacc.c:1646  */
+    {
+	}
+#line 2838 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 149:
+#line 689 "compiler.y" /* yacc.c:1646  */
+    {
+	}
+#line 2845 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 174:
+#line 748 "compiler.y" /* yacc.c:1646  */
     { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
-#line 2837 "y.tab.c" /* yacc.c:1646  */
+#line 2851 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 175:
+#line 749 "compiler.y" /* yacc.c:1646  */
+    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
+#line 2857 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 176:
+#line 750 "compiler.y" /* yacc.c:1646  */
+    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
+#line 2863 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 177:
+#line 751 "compiler.y" /* yacc.c:1646  */
+    { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
+#line 2869 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 178:
-#line 744 "compiler.y" /* yacc.c:1646  */
+#line 752 "compiler.y" /* yacc.c:1646  */
     { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
-#line 2843 "y.tab.c" /* yacc.c:1646  */
+#line 2875 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 179:
-#line 745 "compiler.y" /* yacc.c:1646  */
+#line 753 "compiler.y" /* yacc.c:1646  */
     { (yyval.stmt) = (yyvsp[0].stmt); rootNode = (Node)(yyval.stmt); }
-#line 2849 "y.tab.c" /* yacc.c:1646  */
+#line 2881 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 180:
-#line 749 "compiler.y" /* yacc.c:1646  */
+#line 757 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new LabelStmt_(std::string((yyvsp[-2].sval)), (yyvsp[0].stmt));
 	    free((yyvsp[-2].sval));
 	    rootNode = (Node)(yyval.stmt);
 	}
-#line 2859 "y.tab.c" /* yacc.c:1646  */
+#line 2891 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 181:
-#line 754 "compiler.y" /* yacc.c:1646  */
+#line 762 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new CaseStmt_((yyvsp[-2].expr), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 2868 "y.tab.c" /* yacc.c:1646  */
+#line 2900 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 182:
-#line 758 "compiler.y" /* yacc.c:1646  */
+#line 766 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new DefaultStmt_((yyvsp[0].stmt));
 	    rootNode = (Node)(yyval.stmt);
 	}
-#line 2877 "y.tab.c" /* yacc.c:1646  */
+#line 2909 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 183:
-#line 765 "compiler.y" /* yacc.c:1646  */
+#line 773 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
 	    rootNode = (Node)(yyval.stmt);
 	}
-#line 2886 "y.tab.c" /* yacc.c:1646  */
+#line 2918 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 184:
-#line 769 "compiler.y" /* yacc.c:1646  */
+#line 777 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_(*(yyvsp[-1].stmtList));
         rootNode = (Node)(yyval.stmt);
         delete (yyvsp[-1].stmtList);
 	}
-#line 2896 "y.tab.c" /* yacc.c:1646  */
+#line 2928 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 185:
-#line 774 "compiler.y" /* yacc.c:1646  */
+#line 782 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2907,11 +2939,11 @@ yyreduce:
         delete (yyvsp[-1].declsList);
         rootNode = (Node)(yyval.stmt);
 	}
-#line 2911 "y.tab.c" /* yacc.c:1646  */
+#line 2943 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 186:
-#line 784 "compiler.y" /* yacc.c:1646  */
+#line 792 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new CompoundStmt_();
         std::list<std::list<struct Decl_ *> *>::iterator it;
@@ -2927,109 +2959,109 @@ yyreduce:
         delete (yyvsp[-1].stmtList);
         rootNode = (Node)(yyval.stmt);
 	}
-#line 2931 "y.tab.c" /* yacc.c:1646  */
+#line 2963 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 187:
-#line 802 "compiler.y" /* yacc.c:1646  */
+#line 810 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.declsList) = new std::list<std::list<struct Decl_ *>*>();
 	    (yyval.declsList)->push_back((yyvsp[0].declList));
 	}
-#line 2940 "y.tab.c" /* yacc.c:1646  */
+#line 2972 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 188:
-#line 806 "compiler.y" /* yacc.c:1646  */
+#line 814 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyvsp[-1].declsList)->push_back((yyvsp[0].declList));
 	    (yyval.declsList) = (yyvsp[-1].declsList);
 	}
-#line 2949 "y.tab.c" /* yacc.c:1646  */
+#line 2981 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 189:
-#line 813 "compiler.y" /* yacc.c:1646  */
+#line 821 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmtList) = new std::list<Stmt>;
 	    (yyval.stmtList)->push_back((yyvsp[0].stmt));
 	}
-#line 2958 "y.tab.c" /* yacc.c:1646  */
+#line 2990 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 190:
-#line 817 "compiler.y" /* yacc.c:1646  */
+#line 825 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmtList)->push_back((yyvsp[0].stmt));
 	}
-#line 2966 "y.tab.c" /* yacc.c:1646  */
+#line 2998 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 191:
-#line 823 "compiler.y" /* yacc.c:1646  */
+#line 831 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new NullStmt_();
         rootNode = (Node)(yyval.stmt);
 	}
-#line 2975 "y.tab.c" /* yacc.c:1646  */
+#line 3007 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 192:
-#line 827 "compiler.y" /* yacc.c:1646  */
+#line 835 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new ExprStmt_((yyvsp[-1].expr));
 	    rootNode = (Node)(yyval.stmt);
 	}
-#line 2984 "y.tab.c" /* yacc.c:1646  */
+#line 3016 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 193:
-#line 834 "compiler.y" /* yacc.c:1646  */
+#line 842 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[-2].expr), (yyvsp[0].stmt), NULL);
         rootNode = (Node)(yyval.stmt);
 	}
-#line 2993 "y.tab.c" /* yacc.c:1646  */
+#line 3025 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 194:
-#line 838 "compiler.y" /* yacc.c:1646  */
+#line 846 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new IfStmt_((yyvsp[-4].expr), (yyvsp[-2].stmt), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3002 "y.tab.c" /* yacc.c:1646  */
+#line 3034 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 195:
-#line 842 "compiler.y" /* yacc.c:1646  */
+#line 850 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new SwitchStmt_((yyvsp[-2].expr), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3011 "y.tab.c" /* yacc.c:1646  */
+#line 3043 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 196:
-#line 849 "compiler.y" /* yacc.c:1646  */
+#line 857 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new WhileStmt_((yyvsp[0].stmt), (yyvsp[-2].expr));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3020 "y.tab.c" /* yacc.c:1646  */
+#line 3052 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 197:
-#line 853 "compiler.y" /* yacc.c:1646  */
+#line 861 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.stmt) = (Stmt)new DoStmt_((yyvsp[-5].stmt), (yyvsp[-2].expr));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3029 "y.tab.c" /* yacc.c:1646  */
+#line 3061 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 198:
-#line 857 "compiler.y" /* yacc.c:1646  */
+#line 865 "compiler.y" /* yacc.c:1646  */
     {
         Expr expr1, expr2;
         if((yyvsp[-3].stmt)->id == NODE_STM_NULL)
@@ -3043,11 +3075,11 @@ yyreduce:
         (yyval.stmt) = (Stmt)new ForStmt_(expr1, expr2, NULL, (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3047 "y.tab.c" /* yacc.c:1646  */
+#line 3079 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 199:
-#line 870 "compiler.y" /* yacc.c:1646  */
+#line 878 "compiler.y" /* yacc.c:1646  */
     {
         Expr expr1, expr2;
         if((yyvsp[-4].stmt)->id == NODE_STM_NULL)
@@ -3061,57 +3093,57 @@ yyreduce:
         (yyval.stmt) = (Stmt)new ForStmt_(expr1, expr2, (yyvsp[-2].expr), (yyvsp[0].stmt));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3065 "y.tab.c" /* yacc.c:1646  */
+#line 3097 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 200:
-#line 886 "compiler.y" /* yacc.c:1646  */
+#line 894 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new GoToStmt_(std::string((yyvsp[-1].sval)));
         rootNode = (Node)(yyval.stmt);
         free((yyvsp[-1].sval));
 	}
-#line 3075 "y.tab.c" /* yacc.c:1646  */
+#line 3107 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 201:
-#line 891 "compiler.y" /* yacc.c:1646  */
+#line 899 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new ContinueStmt_();
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3084 "y.tab.c" /* yacc.c:1646  */
+#line 3116 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 202:
-#line 895 "compiler.y" /* yacc.c:1646  */
+#line 903 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new BreakStmt_();
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3093 "y.tab.c" /* yacc.c:1646  */
+#line 3125 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 203:
-#line 899 "compiler.y" /* yacc.c:1646  */
+#line 907 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_(NULL);
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3102 "y.tab.c" /* yacc.c:1646  */
+#line 3134 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 204:
-#line 903 "compiler.y" /* yacc.c:1646  */
+#line 911 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.stmt) = (Stmt)new ReturnStmt_((yyvsp[-1].expr));
         rootNode = (Node)(yyval.stmt);
 	}
-#line 3111 "y.tab.c" /* yacc.c:1646  */
+#line 3143 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 205:
-#line 910 "compiler.y" /* yacc.c:1646  */
+#line 918 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.decl) = (Decl)new TranslationUnitDecl_();
 	    std::list<Decl>::iterator it;
@@ -3121,11 +3153,11 @@ yyreduce:
         delete (yyvsp[0].declList);
 	    rootNode = (Node)(yyval.decl);
 	}
-#line 3125 "y.tab.c" /* yacc.c:1646  */
+#line 3157 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 206:
-#line 919 "compiler.y" /* yacc.c:1646  */
+#line 927 "compiler.y" /* yacc.c:1646  */
     {
 	    std::list<Decl>::iterator it;
 	    for(it = (yyvsp[0].declList)->begin(); it != (yyvsp[0].declList)->end(); it++){
@@ -3135,20 +3167,20 @@ yyreduce:
 	    (yyval.decl) = (TranslationUnitDecl)(yyvsp[-1].decl);
 	    rootNode = (Node)(yyval.decl);
 	}
-#line 3139 "y.tab.c" /* yacc.c:1646  */
+#line 3171 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 207:
-#line 931 "compiler.y" /* yacc.c:1646  */
+#line 939 "compiler.y" /* yacc.c:1646  */
     {
         (yyval.declList) = new std::list<Decl>();
         (yyval.declList)->push_back((yyvsp[0].decl));
      }
-#line 3148 "y.tab.c" /* yacc.c:1646  */
+#line 3180 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 208:
-#line 935 "compiler.y" /* yacc.c:1646  */
+#line 943 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyval.declList) = new std::list<Decl>();
         std::list<Decl>::iterator it;
@@ -3158,46 +3190,46 @@ yyreduce:
         delete (yyvsp[0].declList);
 
 	}
-#line 3162 "y.tab.c" /* yacc.c:1646  */
+#line 3194 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 209:
-#line 947 "compiler.y" /* yacc.c:1646  */
+#line 955 "compiler.y" /* yacc.c:1646  */
     {
         assert(0);
 	}
-#line 3170 "y.tab.c" /* yacc.c:1646  */
+#line 3202 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 210:
-#line 950 "compiler.y" /* yacc.c:1646  */
+#line 958 "compiler.y" /* yacc.c:1646  */
     {
 	    (yyvsp[-1].decl)->add2Tail((yyvsp[-2].type));
         ((FunctionDecl)(yyvsp[-1].decl))->stmt=(yyvsp[0].stmt);
         (yyval.decl)=(yyvsp[-1].decl);
 	}
-#line 3180 "y.tab.c" /* yacc.c:1646  */
+#line 3212 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 211:
-#line 955 "compiler.y" /* yacc.c:1646  */
+#line 963 "compiler.y" /* yacc.c:1646  */
     {
         assert(0);
 	}
-#line 3188 "y.tab.c" /* yacc.c:1646  */
+#line 3220 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 212:
-#line 958 "compiler.y" /* yacc.c:1646  */
+#line 966 "compiler.y" /* yacc.c:1646  */
     {
         ((FunctionDecl)(yyvsp[-1].decl))->stmt=(yyvsp[0].stmt);
         (yyval.decl)=(yyvsp[-1].decl);
 	}
-#line 3197 "y.tab.c" /* yacc.c:1646  */
+#line 3229 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 3201 "y.tab.c" /* yacc.c:1646  */
+#line 3233 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3425,7 +3457,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 964 "compiler.y" /* yacc.c:1906  */
+#line 972 "compiler.y" /* yacc.c:1906  */
 
 
 void yyerror(char const *s)
