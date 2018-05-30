@@ -26,7 +26,7 @@ private:
         return value;
     }
 public:
-    SymbolTale():size(0){}
+    SymbolTable():size(0){}
 
     bool addSymbol(std::string id, Type type)
     {
