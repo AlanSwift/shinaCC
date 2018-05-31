@@ -23,6 +23,8 @@ map<int,string>map_id2name={
 {18,"unsigned"},
 {19,"float"},
 {20,"double"},
+{21,"long double"},
+{22,"invalid"},
 {100,"ParenExpr_"},
 {101,"BinaryOpExpr_"},
 {102,"UnaryOpExpr_"},

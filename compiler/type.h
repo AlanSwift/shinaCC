@@ -31,6 +31,7 @@ struct BuiltinType_:public Type_
     static Type unsignedIntType;
     static Type unsignedLongType;
     static Type unsignedCharType;
+    static Type invalidType;
 
     int builtinType;
     Type next;

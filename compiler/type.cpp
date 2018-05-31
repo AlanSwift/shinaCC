@@ -17,3 +17,4 @@ Type BuiltinType_::unsignedShortType = new BuiltinType_(CONST_TYPE_BUILTIN_UNSIG
 Type BuiltinType_::unsignedIntType = new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED_INT, NULL);
 Type BuiltinType_::unsignedLongType = new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED_LONG, NULL);
 Type BuiltinType_::unsignedCharType = new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED_CHAR, NULL);
+Type BuiltinType_::invalidType = new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED_CHAR, NULL);
