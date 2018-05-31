@@ -67,11 +67,8 @@ struct BuiltinType_:public Type_
 
     bool isInteger()
     {
-        if(builtinType != CONST_TYPE_BUILTIN_INT || builtinType != CONST_TYPE_BUILTIN_CHAR
-           || builtinType != CONST_TYPE_BUILTIN_UNSIGNED_INT ||
-                builtinType != CONST_TYPE_BUILTIN_LONG || builtinType != CONST_TYPE_BUILTIN_SHORT ||
-                builtinType != CONST_TYPE_BUILTIN_UNSIGNED_INT || builtinType != CONST_TYPE_BUILTIN_UNSIGNED_SHORT ||
-                builtinType != CONST_TYPE_BUILTIN_UNSIGNED_LONG)
+        if(builtinType == CONST_TYPE_BUILTIN_DOUBLE || builtinType == CONST_TYPE_BUILTIN_FLOAT
+                || builtinType == CONST_TYPE_BUILTIN_LONG_DOUBLE)
             return false;
         return true;
     }

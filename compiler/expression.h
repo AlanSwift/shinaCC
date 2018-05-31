@@ -295,7 +295,7 @@ struct CharLiteral_:public Expr_
 
 struct FloatLiteral_:public Expr_
 {
-    long double value;
+    double value;
     FloatLiteral_(double value):value(value){
         this->id = NODE_EXP_FLOATLITERAL;
     }
@@ -304,7 +304,7 @@ struct FloatLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("FloatLiteral_: %.3f %s\n", value, getType().c_str());
+        printf("FloatLiteral_: %.3lf %s\n", value, getType().c_str());
         this->type = BuiltinType_::doubleType;
     }
 };

@@ -71,6 +71,40 @@ Expr transformImplicitExp(Expr expr, int type)
     }
 }
 
+
+Expr castFromTo(Expr expr, Type type)
+{
+    if(!isMatchType(expr->type, type)){
+        if(type->id == CONST_TYPE_POINTER){
+            if(expr->type->id == CONST_TYPE_FUNC){
+                //printf("impossible!!!!!");
+                //exit(0);
+                if(isMatchType(((PointerType)type)->pointTo, expr->type))
+                    return transformImplicitExp(expr, CONST_TYPE_POINTER);
+                return NULL;
+            }
+            if(expr->type->id == CONST_TYPE_ARRAY){
+                //printf("impossible2!!!!!");
+                //exit(0);
+                printf("%s %s\n", ((ArrayType)expr->type)->basicType->getType().c_str(),
+                       ((PointerType)type)->pointTo->getType().c_str());
+                if(isMatchType(((ArrayType)expr->type)->basicType, ((PointerType)type)->pointTo))
+                    return transformImplicitExp(expr, CONST_TYPE_POINTER);
+                return NULL;
+            }
+            return NULL;
+        }
+        else{
+            //printf("impossible3!!!!!: %s\n",type->getType().c_str());
+            //exit(0);
+            if(expr->type->id != CONST_TYPE_BUILTIN)
+                return NULL;
+            return transformImplicitExp(expr, ((BuiltinType)type)->builtinType);
+        }
+    }
+    return expr;
+}
+
 IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
 {/*type: Func, Pointer, Array, Basic*/
     switch (expr->id){
@@ -107,8 +141,8 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 Expr tmp = transformImplicitExp(expr1->right, CONST_TYPE_POINTER);
                 expr1->right = tmp; //to Pointer
             }
-            if(expr1->left->type->id == CONST_TYPE_POINTER || expr1->right->type->id == CONST_TYPE_POINTER){
-                fprintf(stderr, "%d:%d: error: invalid operands to binary\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+            if(expr1->left->type->id == CONST_TYPE_POINTER && expr1->right->type->id == CONST_TYPE_POINTER){
+                fprintf(stderr, "%d:%d: error: invalid operands to binary(pointer and pointer)\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(expr1->left->type->id == CONST_TYPE_BUILTIN && expr1->right->type->id == CONST_TYPE_BUILTIN){
@@ -137,11 +171,18 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                     }
                 }
                 expr1->type = expr1->left->type;
+                /*if(expr1->left->isIntConstant() && expr1->right->isIntConstant()){
+                    Expr tmp = new IntLiteral_();
+                }*/
             }
             else {
+                if(expr1->operator_ != OP_BINARY_ADD && expr1->operator_ != OP_BINARY_MINUS){
+                    fprintf(stderr, "%d:%d: error: invalid operator to binary(pointer and integer)\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
                 Expr p = (expr1->left->type->id == CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
                 if(!p->isIntConstant() && !(p->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)p->type)->isInteger())){
-                    fprintf(stderr, "%d:%d: error: invalid operands to binary\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    fprintf(stderr, "%d:%d: error: invalid operands to binary(pointer and integer)\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
                 }
                 p = (expr1->left->type->id != CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
@@ -213,10 +254,17 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 exit(0);
             }
             if(expr1->var->type->id == CONST_TYPE_FUNC){
-                printf("%d:%d: error: function type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: function type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             expr1->type = expr1->var->type;
+            expr1->expr->show();
+            Expr tmp = castFromTo(expr1->expr, expr1->var->type);
+            if(!tmp){
+                fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            expr1->expr = tmp;
             //TODO:
         }
             break;
@@ -237,8 +285,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
-            //TODO: character index
-            if(expr1->offset->id != NODE_EXP_INTLITERAL
+            if(!expr1->offset->isIntConstant()
                && (expr1->offset->type->id != CONST_TYPE_BUILTIN || !((BuiltinType)(expr1->offset->type))->isInteger())){
                 printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);

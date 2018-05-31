@@ -6,9 +6,11 @@ void f()
 
 int main()
 {
-	int a, b, c;
-	double d;
-	a =  b + d;
-
+	int a, *pa;
+	long b, *pb;
+	float c, *pc;
+	double d, *pd;
+	int e[10], *pe;
+    pe = e;
 	return 0;
 }
