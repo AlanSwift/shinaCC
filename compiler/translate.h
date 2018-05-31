@@ -77,7 +77,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
         case NODE_EXP_ASSIGN:{
             AssignExpr expr1 = (AssignExpr)expr;
             if(!expr1->var || expr1->var->id != NODE_EXP_DECLREF){
-                printf("expression is not assignable\n");
+                printf("%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             translateExpr(valueEnv, typeEnv, expr1->var);

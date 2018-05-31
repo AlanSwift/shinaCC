@@ -7,6 +7,7 @@
 #include "declaration.h"
 #include "statement.h"
 #include "expression.h"
+#include "translate.h"
 #include <iostream>
 #include <list>
 #include <cassert>
@@ -1101,6 +1102,8 @@ int main(int argc, char *argv[]) {
     yyparse();
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;
     rootNode->show();
+    assert(rootNode->id == NODE_DECL_TRANSLATION);
+    translate((TranslationUnitDecl)rootNode);
     return 0;
 }
 
