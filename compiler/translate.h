@@ -78,7 +78,15 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             AssignExpr expr1 = (AssignExpr)expr;
             if(!expr1->var || expr1->var->id != NODE_EXP_DECLREF){
                 printf("%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
-                exit(0);
+                return;
+            }
+            if(expr1->var->type->id == CONST_TYPE_ARRAY){
+                printf("%d:%d: error: array type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                return;
+            }
+            if(expr1->var->type->id == CONST_TYPE_FUNC){
+                printf("%d:%d: error: function type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                return;
             }
             translateExpr(valueEnv, typeEnv, expr1->var);
             translateExpr(valueEnv, typeEnv, expr1->expr);
@@ -101,7 +109,13 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             break;
         case NODE_EXP_DECLREF:{
             DeclRefExpr expr1 = (DeclRefExpr)expr;
-            //TODO:
+            Type type = valueEnv.lookUp(expr1->name);
+            if(!type){
+                printf("%d:%d: error: use of undeclared identifier \'%s\'\n",
+                       expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
+                return;
+            }
+            expr1->type = type;
         }
             break;
         case NODE_EXP_PAREN:{
