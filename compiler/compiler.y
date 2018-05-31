@@ -8,6 +8,7 @@
 #include "statement.h"
 #include "expression.h"
 #include "translate.h"
+#include "utils.h"
 #include <iostream>
 #include <list>
 #include <cassert>
@@ -193,15 +194,18 @@ cast_expression
 multiplicative_expression
 	: cast_expression { $$ = $1;rootNode = (Node)$$; }
 	| multiplicative_expression '*' cast_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MULTIPLY, $3);
+        if(!($$ = doBinaryOp($1, OP_BINARY_MULTIPLY, $3)))
+            $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MULTIPLY, $3);
         rootNode = (Node)$$;
 	}
 	| multiplicative_expression '/' cast_expression {
-	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_DIV, $3);
+	    if(!($$ = doBinaryOp($1, OP_BINARY_DIV, $3)))
+	        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_DIV, $3);
 	    rootNode = (Node)$$;
 	}
 	| multiplicative_expression '%' cast_expression {
-	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MOD, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_MOD, $3)))
+	    	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MOD, $3);
 	    rootNode = (Node)$$;
 	}
 	;
@@ -209,11 +213,13 @@ multiplicative_expression
 additive_expression
 	: multiplicative_expression { $$ = $1;rootNode = (Node)$$; }
 	| additive_expression '+' multiplicative_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ADD, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_ADD, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ADD, $3);
         rootNode = (Node)$$;
 	}
 	| additive_expression '-' multiplicative_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MINUS, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_MINUS, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MINUS, $3);
         rootNode = (Node)$$;
 	}
 	;
@@ -221,11 +227,13 @@ additive_expression
 shift_expression
 	: additive_expression { $$ = $1;rootNode = (Node)$$; }
 	| shift_expression LEFT_OP additive_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTLEFT, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_SHIFTLEFT, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTLEFT, $3);
         rootNode = (Node)$$;
 	}
 	| shift_expression RIGHT_OP additive_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTRIGHT, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_SHIFTRIGHT, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTRIGHT, $3);
         rootNode = (Node)$$;
 	}
 	;
@@ -233,19 +241,23 @@ shift_expression
 relational_expression
 	: shift_expression { $$ = $1;rootNode = (Node)$$; }
 	| relational_expression '<' shift_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ST, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_ST, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ST, $3);
         rootNode = (Node)$$;
 	}
 	| relational_expression '>' shift_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_GT, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_GT, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_GT, $3);
         rootNode = (Node)$$;
 	}
 	| relational_expression LE_OP shift_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SE, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_SE, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SE, $3);
         rootNode = (Node)$$;
 	}
 	| relational_expression GE_OP shift_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_BE, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_BE, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_BE, $3);
         rootNode = (Node)$$;
 	}
 	;
@@ -253,11 +265,13 @@ relational_expression
 equality_expression
 	: relational_expression { $$ = $1;rootNode = (Node)$$; }
 	| equality_expression EQ_OP relational_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_EQ, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_EQ, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_EQ, $3);
         rootNode = (Node)$$;
 	}
 	| equality_expression NE_OP relational_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_NEQ, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_NEQ, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_NEQ, $3);
         rootNode = (Node)$$;
 	}
 	;
@@ -265,7 +279,8 @@ equality_expression
 and_expression
 	: equality_expression { $$ = $1;rootNode = (Node)$$; }
 	| and_expression '&' equality_expression {
-         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_AND, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_AND, $3)))
+         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_AND, $3);
          rootNode = (Node)$$;
 	}
 	;
@@ -273,7 +288,8 @@ and_expression
 exclusive_or_expression
 	: and_expression { $$ = $1;rootNode = (Node)$$; }
 	| exclusive_or_expression '^' and_expression {
-         $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_XOR, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_XOR, $3)))
+         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_XOR, $3);
          rootNode = (Node)$$;
 	}
 	;
@@ -281,6 +297,7 @@ exclusive_or_expression
 inclusive_or_expression
 	: exclusive_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| inclusive_or_expression '|' exclusive_or_expression {
+		if(!($$ = doBinaryOp($1, OP_BINARY_OR, $3)))
          $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_OR, $3);
          rootNode = (Node)$$;
 	}
@@ -289,7 +306,8 @@ inclusive_or_expression
 logical_and_expression
 	: inclusive_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_and_expression AND_OP inclusive_or_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_LOGICAL_AND, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
         rootNode = (Node)$$;
 	}
 	;
@@ -297,7 +315,8 @@ logical_and_expression
 logical_or_expression
 	: logical_and_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_or_expression OR_OP logical_and_expression {
-        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_OR, $3);
+		if(!($$ = doBinaryOp($1, OP_BINARY_LOGICAL_OR, $3)))
+        	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_OR, $3);
         rootNode = (Node)$$;
 	}
 	;

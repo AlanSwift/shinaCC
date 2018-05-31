@@ -2,8 +2,9 @@
 
 int main()
 {
-	int a;
-	double b;
-	(1 > 2 ? a : b);
+	int a, *ap;
+	int d[5];
+	double b, *bp;
+	a = 1 + 3 * 5;
 	return 0;
 }
