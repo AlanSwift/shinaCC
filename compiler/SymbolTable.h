@@ -75,7 +75,7 @@ public:
     }
     void startEnv()
     {
-        buffer.push_back(std::vector<string>());
+        buffer.push_back(std::vector<std::string>());
         bufferSize=buffer.size();
     }
     void popEnv()

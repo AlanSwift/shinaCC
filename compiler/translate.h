@@ -56,9 +56,9 @@ Expr transformImplicitExp(Expr expr, int type)
             if(expr->type->id == CONST_TYPE_POINTER)
                 return expr;
             if(expr->type->id == CONST_TYPE_FUNC)
-                return new ImplicitCastExpr_(new PointerType(expr->type), expr);
+                return new ImplicitCastExpr_((Type)new PointerType_(expr->type), expr);
             if(expr->type->id == CONST_TYPE_ARRAY)
-                return new ImplicitCastExpr_(new PointerType(((ArrayType)expr->type)->basicType), expr);
+                return new ImplicitCastExpr_((Type)new PointerType_(((ArrayType)expr->type)->basicType), expr);
         default:
             assert(0);
             break;
@@ -98,7 +98,49 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
         case NODE_EXP_UNARY:{
             UnaryOpExpr expr1 = (UnaryOpExpr)expr;
             translateExpr(valueEnv, typeEnv, expr1->expr);
-            //TODO:
+            const int OP_UNARY_NOT=396; //~
+            const int OP_UNARY_LOGICAL_NOT=397; //!
+            const int OP_UNARY_POSITIVE=398; //+
+            const int OP_UNARY_NEGATIVE=399; //-
+            const int OP_UNARY_CAST=400;
+            const int OP_UNARY_STAR=401;//*
+            const int OP_UNARY_AND=402;//&
+            const int OP_UNARY_DOUBLEADD=403;//++
+            const int OP_UNARY_DOUBLEMINUS=404;//--
+            const int OP_UNARY_SIZEOF=405;
+            if(expr1->operator_ == OP_UNARY_SIZEOF){
+                //TODO:
+            }
+            else if(expr1->operator_ == OP_UNARY_CAST){
+                //TODO:
+            }
+            else if(expr1->operator_ == OP_UNARY_STAR){
+                if(expr1->expr->type->id == CONST_TYPE_ARRAY)
+                    expr1->type = ((ArrayType)expr1->type)->basicType;
+                else if(expr1->expr->type->id != CONST_TYPE_POINTER){
+                    printf("%d:%d: error: invalid unary operation '*'\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
+                else
+                    expr1->type = ((PointerType)expr1->expr->type)->pointTo;
+            }
+            else if(expr1->operator_ == OP_UNARY_AND){
+                if(expr1->expr->type->id != CONST_TYPE_FUNC)
+                    expr1->type = new PointerType_(expr1->expr->type);
+            }
+            else{
+                if(expr1->expr->type->id == CONST_TYPE_ARRAY || expr1->expr->type->id == CONST_TYPE_FUNC){
+                    fprintf(stderr, "%d:%d: error: invalid unary operation\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
+                if(expr1->expr->type->id == CONST_TYPE_POINTER)
+                    if(expr1->operator_ != OP_UNARY_DOUBLEADD && expr1->operator_ != OP_UNARY_DOUBLEMINUS){
+                        fprintf(stderr, "%d:%d: error: invalid unary operation\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                        exit(0);
+                    }
+                expr1->type = expr1->expr->type;
+            }
+
         }
             break;
         case NODE_EXP_CONDITIONAL:{
@@ -172,7 +214,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
         case NODE_EXP_PAREN:{
             ParenExpr expr1 = (ParenExpr)expr;
             translateExpr(valueEnv, typeEnv, expr1->expr);
-            expr1->type = expr->type;
+            expr1->type = expr1->expr->type;
         }
             break;
         case NODE_EXP_IMPLICITCAST:{
