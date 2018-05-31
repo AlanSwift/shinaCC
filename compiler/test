@@ -16,7 +16,7 @@ int f(int a, int b)
 
 int main()
 {
-	int a[2];
+	int a[2], e;
     long c;
     double d;
     int (*fp)(int, int);
