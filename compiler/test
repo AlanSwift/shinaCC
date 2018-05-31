@@ -1,2 +1,16 @@
-double f(double){}
-int f(double){}
+void f()
+{
+
+}
+
+
+int main()
+{
+	int b;
+	int *p;
+	int a[10];
+	int c[10][10];
+	*c;
+	*f;
+	return 0;
+}

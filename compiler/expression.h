@@ -225,18 +225,18 @@ struct DeclRefExpr_:public Expr_
 
 struct ImplicitCastExpr_:public Expr_
 {
-    Type castType;
     Expr expr;
 
-    ImplicitCastExpr_(Type castType, Expr expr):castType(castType), expr(expr){
+    ImplicitCastExpr_(Type castType, Expr expr):expr(expr){
         this->id = NODE_EXP_IMPLICITCAST;
+        this->type = castType;
     }
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ImplicitCastExpr_ To<%s>\n", getType().c_str());
+        printf("ImplicitCastExpr_ To <%s>\n", getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -244,11 +244,11 @@ struct ImplicitCastExpr_:public Expr_
 
 struct CStyleCastExpr_:public Expr_
 {
-    Type castType;
     Expr expr;
 
-    CStyleCastExpr_(Type castType, Expr expr):castType(castType), expr(expr){
+    CStyleCastExpr_(Type castType, Expr expr):expr(expr){
         this->id = NODE_EXP_CSTYLECAST;
+        this->type = castType;
     }
 
     void show(int space = 0)

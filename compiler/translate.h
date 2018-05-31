@@ -56,10 +56,15 @@ Expr transformImplicitExp(Expr expr, int type)
         case CONST_TYPE_POINTER:
             if(expr->type->id == CONST_TYPE_POINTER)
                 return expr;
-            if(expr->type->id == CONST_TYPE_FUNC)
+            if(expr->type->id == CONST_TYPE_FUNC){
+                //Expr tmpq = new ImplicitCastExpr_((Type)new PointerType_(expr->type), expr);
+                //printf("DEBUG> %d\n", tmpq->type);
                 return new ImplicitCastExpr_((Type)new PointerType_(expr->type), expr);
-            if(expr->type->id == CONST_TYPE_ARRAY)
+            }
+            if(expr->type->id == CONST_TYPE_ARRAY){
                 return new ImplicitCastExpr_((Type)new PointerType_(((ArrayType)expr->type)->basicType), expr);
+            }
+            assert(0);
         default:
             assert(0);
             break;
@@ -67,7 +72,7 @@ Expr transformImplicitExp(Expr expr, int type)
 }
 
 IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
-{
+{/*type: Func, Pointer, Array, Basic*/
     switch (expr->id){
         case NODE_EXP_STRLITERAL:{
             StrLiteral expr1 = (StrLiteral)expr;
@@ -99,16 +104,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
         case NODE_EXP_UNARY:{
             UnaryOpExpr expr1 = (UnaryOpExpr)expr;
             translateExpr(valueEnv, typeEnv, expr1->expr);
-            const int OP_UNARY_NOT=396; //~
-            const int OP_UNARY_LOGICAL_NOT=397; //!
-            const int OP_UNARY_POSITIVE=398; //+
-            const int OP_UNARY_NEGATIVE=399; //-
-            const int OP_UNARY_CAST=400;
-            const int OP_UNARY_STAR=401;//*
-            const int OP_UNARY_AND=402;//&
-            const int OP_UNARY_DOUBLEADD=403;//++
-            const int OP_UNARY_DOUBLEMINUS=404;//--
-            const int OP_UNARY_SIZEOF=405;
             if(expr1->operator_ == OP_UNARY_SIZEOF){
                 //TODO:
             }
@@ -116,9 +111,15 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 //TODO:
             }
             else if(expr1->operator_ == OP_UNARY_STAR){
-                if(expr1->expr->type->id == CONST_TYPE_ARRAY)
-                    expr1->type = ((ArrayType)expr1->type)->basicType;
-                else if(expr1->expr->type->id != CONST_TYPE_POINTER){
+                if(expr1->expr->type->id == CONST_TYPE_ARRAY) {
+                    Expr tmp = transformImplicitExp(expr1->expr, CONST_TYPE_POINTER);
+                    expr1->expr = tmp;//to Pointer
+                }
+                else if(expr1->expr->type->id == CONST_TYPE_FUNC){
+                    Expr tmp = transformImplicitExp(expr1->expr, CONST_TYPE_POINTER);
+                    expr1->expr = tmp;//to Pointer
+                }
+                if(expr1->expr->type->id != CONST_TYPE_POINTER){
                     printf("%d:%d: error: invalid unary operation '*'\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
                 }
@@ -126,10 +127,9 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                     expr1->type = ((PointerType)expr1->expr->type)->pointTo;
             }
             else if(expr1->operator_ == OP_UNARY_AND){
-                if(expr1->expr->type->id != CONST_TYPE_FUNC)
-                    expr1->type = new PointerType_(expr1->expr->type);
+                expr1->type = new PointerType_(expr1->expr->type);
             }
-            else{
+            else{ //+, -, ++, --, ~, !
                 if(expr1->expr->type->id == CONST_TYPE_ARRAY || expr1->expr->type->id == CONST_TYPE_FUNC){
                     fprintf(stderr, "%d:%d: error: invalid unary operation\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
@@ -154,7 +154,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             break;
         case NODE_EXP_ASSIGN:{
             AssignExpr expr1 = (AssignExpr)expr;
-            //printf("here!%d %d\n", expr1->var, expr1->expr);
             translateExpr(valueEnv, typeEnv, expr1->var);
             translateExpr(valueEnv, typeEnv, expr1->expr);
             if(!expr1->var || expr1->var->id != NODE_EXP_DECLREF){
@@ -169,8 +168,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 printf("%d:%d: error: function type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
-            //printf("here!%d %d\n", expr1->var, expr1->expr);
-            //exit(0);
             expr1->type = expr1->var->type;
             //TODO:
         }
@@ -212,6 +209,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                        expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
             }
+            //printf("DEBUG> %s %s\n", expr1->name.c_str(), type->getType().c_str());
             expr1->type = type;
         }
             break;
