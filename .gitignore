@@ -32,7 +32,7 @@
 *.app
 
 *.xml
-./compiler/y.tab.h
-./compiler/y.tab.c
+y.tab.h
+y.tab.c
 ./.idea/*
 ./cmake-build-debug/*
