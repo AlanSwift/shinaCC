@@ -2,11 +2,8 @@
 
 int main()
 {
-	unsigned a;
-	unsigned int b;
-	unsigned short c;
-	int signed d;
-	signed long int e;
-	unsigned short f;
+	int a;
+	double b;
+	(1 > 2 ? a : b);
 	return 0;
 }

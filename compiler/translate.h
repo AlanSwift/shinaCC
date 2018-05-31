@@ -129,11 +129,60 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             //TODO:
         }
             break;
+        case NODE_EXP_CONDITIONAL:{
+            ConditionalExpr expr1 = (ConditionalExpr)expr;
+            translateExpr(valueEnv, typeEnv, expr1->condition);
+            translateExpr(valueEnv, typeEnv, expr1->true_);
+            translateExpr(valueEnv, typeEnv, expr1->false_);
+            if(expr1->true_->type->id == CONST_TYPE_FUNC || expr1->true_->type->id == CONST_TYPE_ARRAY){
+                Expr tmp = transformImplicitExp(expr1->true_, CONST_TYPE_POINTER);
+                expr1->true_ = tmp; //to Pointer
+            }
+            if(expr1->false_->type->id == CONST_TYPE_FUNC || expr1->false_->type->id == CONST_TYPE_ARRAY){
+                Expr tmp = transformImplicitExp(expr1->false_, CONST_TYPE_POINTER);
+                expr1->false_ = tmp; //to Pointer
+            }
+            if(expr1->true_->type->id == CONST_TYPE_BUILTIN && expr1->false_->type->id == CONST_TYPE_BUILTIN){
+                int types[7] = {CONST_TYPE_BUILTIN_INT, CONST_TYPE_BUILTIN_UNSIGNED_INT, CONST_TYPE_BUILTIN_LONG,
+                                CONST_TYPE_BUILTIN_UNSIGNED_LONG, CONST_TYPE_BUILTIN_FLOAT, CONST_TYPE_BUILTIN_DOUBLE,
+                                CONST_TYPE_BUILTIN_LONG_DOUBLE};
+                for(int i = 6; i >= 0; i--){
+                    if(i == 0 || ((BuiltinType)(expr1->true_->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->true_->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->true_, types[i]);
+                            expr1->true_ = tmp;
+                            break;
+                        }
+                        if(((BuiltinType)(expr1->false_->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->false_, types[i]);
+                            expr1->false_ = tmp;
+                            break;
+                        }
+                    }
+                    else if(((BuiltinType)(expr1->false_->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->true_->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->true_, types[i]);
+                            expr1->true_ = tmp;
+                            break;
+                        }
+                    }
+                }
+                expr1->type = expr1->true_->type;
+            }
+            else if(!isMatchType(expr1->true_->type, expr1->false_->type)){
+                fprintf(stderr, "%d:%d: error: type mismatch in conditional expression\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            else{
+                expr1->type = expr1->true_->type;
+            }
+        }
+            break;
         case NODE_EXP_BINARY:{
             BinaryOpExpr expr1 = (BinaryOpExpr)expr;
             translateExpr(valueEnv, typeEnv, expr1->left);
             translateExpr(valueEnv, typeEnv, expr1->right);
-            //TODO:
             if(expr1->left->type->id == CONST_TYPE_FUNC || expr1->left->type->id == CONST_TYPE_ARRAY){
                 Expr tmp = transformImplicitExp(expr1->left, CONST_TYPE_POINTER);
                 expr1->left = tmp; //to Pointer
@@ -229,14 +278,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 expr1->type = expr1->expr->type;
             }
 
-        }
-            break;
-        case NODE_EXP_CONDITIONAL:{
-            ConditionalExpr expr1 = (ConditionalExpr)expr;
-            translateExpr(valueEnv, typeEnv, expr1->condition);
-            translateExpr(valueEnv, typeEnv, expr1->true_);
-            translateExpr(valueEnv, typeEnv, expr1->false_);
-            //TODO:
         }
             break;
         case NODE_EXP_ASSIGN:{
