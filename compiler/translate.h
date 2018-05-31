@@ -18,7 +18,9 @@
 
 typedef void IRTreeNode;
 
-bool checkType(Type type);
+void changeType(Type &type, int t);
+
+bool checkType(Type &type);
 
 IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr);
 
@@ -70,7 +72,6 @@ Expr transformImplicitExp(Expr expr, int type)
             break;
     }
 }
-
 
 Expr castFromTo(Expr expr, Type type)
 {
@@ -171,9 +172,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                     }
                 }
                 expr1->type = expr1->left->type;
-                /*if(expr1->left->isIntConstant() && expr1->right->isIntConstant()){
-                    Expr tmp = new IntLiteral_();
-                }*/
             }
             else {
                 if(expr1->operator_ != OP_BINARY_ADD && expr1->operator_ != OP_BINARY_MINUS){

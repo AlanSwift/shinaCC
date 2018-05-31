@@ -348,6 +348,7 @@ declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
 	{
+	    checkType($1);
 	    for(auto &e:*$2)
 	    {
 	        e->add2Tail($1);
@@ -615,6 +616,7 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
 	{
+	    checkType($1);
         if($2->id==NODE_DECL_VAR)
         {
             $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
@@ -629,6 +631,7 @@ parameter_declaration
 	}
 	| declaration_specifiers abstract_declarator
 	{
+	    checkType($1);
 	    if($2->id==NODE_DECL_VAR)
         {
             $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
@@ -643,6 +646,7 @@ parameter_declaration
 	}
 	| declaration_specifiers
 	{
+	    checkType($1);
 	    $$=new ParmVarDecl_($1);
 	}
 	;
@@ -1077,6 +1081,7 @@ function_definition
         assert(0);
 	}
 	| declaration_specifiers declarator compound_statement {
+	    checkType($1);
 	    $2->add2Tail($1);
         ((FunctionDecl)$2)->stmt=$3;
         $$=$2;

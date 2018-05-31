@@ -1,9 +1,12 @@
 
-void g(int a);
 
 int main()
 {
-	double a;
-    a(2, 3);
+	unsigned a;
+	unsigned int b;
+	unsigned short c;
+	int signed d;
+	signed long int e;
+	unsigned short f;
 	return 0;
 }

@@ -1,8 +1,16 @@
 #include "type.h"
 
-void changeType(Type type, int t)
+void freeSpace(Type type)
 {
-	BuiltinType now_BuiltinType = reinterpret_cast<BuiltinType>(type);
+	if(type)
+		freeSpace(((BuiltinType)type)->next);
+	delete type;
+}
+
+void changeType(Type &type, int t)
+{
+	//printf("\nchange To..............%s\n", id2name(t).c_str());
+	freeSpace(type);
 	switch (t)
 	{
 	case CONST_TYPE_BUILTIN_VOID:
@@ -49,8 +57,10 @@ void changeType(Type type, int t)
 		break;
 	}
 }
-bool checkType(Type type) 
+
+bool checkType(Type &type)
 {
+    //printf("\nbegin to check..............%s\n", type->getType().c_str());
 	switch (type->id)
 	{
 	case CONST_TYPE_BUILTIN:
@@ -521,9 +531,8 @@ bool checkType(Type type)
 				}
 			}
 			else {
-				printf("unsigned error!");
-				changeType(type, CONST_TYPE_BUILTIN_INVALID);
-				return false;
+				changeType(type, CONST_TYPE_BUILTIN_UNSIGNED_INT);
+				return true;
 			}
 		case CONST_TYPE_BUILTIN_FLOAT:
 			if (next_BuiltinType != NULL) {
