@@ -111,6 +111,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
+            //TODO: character index
             if(expr1->offset->id != NODE_EXP_INTLITERAL
                && (expr1->offset->type->id != CONST_TYPE_BUILTIN || !((BuiltinType)(expr1->offset->type))->isInteger())){
                 printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
@@ -137,7 +138,6 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             ParenExpr expr1 = (ParenExpr)expr;
             translateExpr(valueEnv, typeEnv, expr1->expr);
             expr1->type = expr->type;
-            //TODO:
         }
             break;
         case NODE_EXP_IMPLICITCAST:{

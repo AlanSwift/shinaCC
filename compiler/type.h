@@ -19,6 +19,19 @@ typedef struct TypedefType_ *TypedefType;
 
 struct BuiltinType_:public Type_
 {
+    static Type voidType;
+    static Type shortType;
+    static Type intType;
+    static Type longType;
+    static Type charType;
+    static Type floatType;
+    static Type doubleType;
+    static Type longDoubleType;
+    static Type unsignedShortType;
+    static Type unsignedIntType;
+    static Type unsignedLongType;
+    static Type unsignedCharType;
+
     int builtinType;
     Type next;
 
