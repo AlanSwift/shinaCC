@@ -73,7 +73,7 @@ public:
         }
         return NULL;
     }
-    void startEnv()
+    void pushEnv()
     {
         buffer.push_back(std::vector<std::string>());
         bufferSize=buffer.size();

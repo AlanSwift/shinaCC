@@ -270,6 +270,7 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
                 assert(0);
             }
             else{
+                
                 valueEnv.addSymbol(decl->name,((VarDecl)decl)->type);
                 //TODO
             }
@@ -292,6 +293,13 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
                 {
                     ((FunctionType)funType)->isDefined=true;
                 }
+                
+                valueEnv.pushEnv();
+                typeEnv.pushEnv();
+                translateStmt(valueEnv, typeEnv, ((FunctionDecl)decl)->stmt);
+                valueEnv.popEnv();
+                typeEnv.popEnv();
+                
                 valueEnv.addSymbol(decl->name,funType);
             }
             else if(c->id!=CONST_TYPE_FUNC)
