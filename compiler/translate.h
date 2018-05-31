@@ -176,14 +176,14 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
     {
         case NODE_DECL_VAR:
         {
-            Type c=typeEnv.lookUp(decl->name);
+            Type c=valueEnv.lookUp(decl->name);
             if(c!=NULL)
             {
                 std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
                 assert(0);
             }
             else{
-                typeEnv.addSymbol(decl->name,((VarDecl)decl)->type);
+                valueEnv.addSymbol(decl->name,((VarDecl)decl)->type);
                 //TODO
             }
             break;
@@ -198,14 +198,14 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
             }
             FunctionType funType=new FunctionType_(ret,args);
 
-            Type c=typeEnv.lookUp(decl->name);
+            Type c=valueEnv.lookUp(decl->name);
             if(c==NULL)
             {
                 if(((FunctionDecl)decl)->stmt!=NULL)
                 {
                     ((FunctionType)funType)->isDefined=true;
                 }
-                typeEnv.addSymbol(decl->name,funType);
+                valueEnv.addSymbol(decl->name,funType);
             }
             else if(c->id!=CONST_TYPE_FUNC)
             {
