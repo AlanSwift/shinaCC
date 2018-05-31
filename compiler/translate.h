@@ -5,6 +5,7 @@
 #ifndef CP_TRANSLATE_H
 #define CP_TRANSLATE_H
 
+#include <cassert>
 #include "constant.h"
 #include "expression.h"
 #include "type.h"
@@ -31,6 +32,36 @@ IRTreeNode translate(TranslationUnitDecl start)
     typeEnv=new SymbolTable();
     for(auto &decl: start->declarations){
         translateDecl(*valueEnv, *typeEnv, decl);
+    }
+}
+
+Expr transformImplicitExp(Expr expr, int type)
+{
+    switch(type){
+        case CONST_TYPE_BUILTIN_LONG_DOUBLE:
+            return new ImplicitCastExpr_(BuiltinType_::longDoubleType, expr);
+        case CONST_TYPE_BUILTIN_DOUBLE:
+            return new ImplicitCastExpr_(BuiltinType_::doubleType, expr);
+        case CONST_TYPE_BUILTIN_FLOAT:
+            return new ImplicitCastExpr_(BuiltinType_::floatType, expr);
+        case CONST_TYPE_BUILTIN_LONG:
+            return new ImplicitCastExpr_(BuiltinType_::longType, expr);
+        case CONST_TYPE_BUILTIN_INT:
+            return new ImplicitCastExpr_(BuiltinType_::intType, expr);
+        case CONST_TYPE_BUILTIN_UNSIGNED_LONG:
+            return new ImplicitCastExpr_(BuiltinType_::unsignedLongType, expr);
+        case CONST_TYPE_BUILTIN_UNSIGNED_INT:
+            return new ImplicitCastExpr_(BuiltinType_::unsignedIntType, expr);
+        case CONST_TYPE_POINTER:
+            if(expr->type->id == CONST_TYPE_POINTER)
+                return expr;
+            if(expr->type->id == CONST_TYPE_FUNC)
+                return new ImplicitCastExpr_(new PointerType(expr->type), expr);
+            if(expr->type->id == CONST_TYPE_ARRAY)
+                return new ImplicitCastExpr_(new PointerType(((ArrayType)expr->type)->basicType), expr);
+        default:
+            assert(0);
+            break;
     }
 }
 
