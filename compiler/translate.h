@@ -86,8 +86,8 @@ Expr castFromTo(Expr expr, Type type)
             if(expr->type->id == CONST_TYPE_ARRAY){
                 //printf("impossible2!!!!!");
                 //exit(0);
-                printf("%s %s\n", ((ArrayType)expr->type)->basicType->getType().c_str(),
-                       ((PointerType)type)->pointTo->getType().c_str());
+                //printf("%s %s\n", ((ArrayType)expr->type)->basicType->getType().c_str(),
+                //       ((PointerType)type)->pointTo->getType().c_str());
                 if(isMatchType(((ArrayType)expr->type)->basicType, ((PointerType)type)->pointTo))
                     return transformImplicitExp(expr, CONST_TYPE_POINTER);
                 return NULL;
@@ -258,7 +258,7 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 exit(0);
             }
             expr1->type = expr1->var->type;
-            expr1->expr->show();
+            //expr1->expr->show();
             Expr tmp = castFromTo(expr1->expr, expr1->var->type);
             if(!tmp){
                 fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
@@ -270,7 +270,44 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             break;
         case NODE_EXP_CALL:{
             CallExpr expr1 = (CallExpr)expr;
-            //TODO:
+            translateExpr(valueEnv, typeEnv, expr1->func);
+            for(auto &e: expr1->args){
+                translateExpr(valueEnv, typeEnv, e);
+            }
+            Type func = expr1->func->type;
+            if(func->id != CONST_TYPE_FUNC && !(func->id == CONST_TYPE_POINTER
+            && ((PointerType)func)->pointTo->id == CONST_TYPE_FUNC)){
+                fprintf(stderr, "%d:%d: error: called object is not a function or function pointer\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            //exit(0)
+            if(func->id != CONST_TYPE_FUNC)
+                func = ((PointerType)func)->pointTo;
+            list<Type> *paras;
+            paras = &((FunctionType)func)->argsType;
+            list<Expr>::iterator it1;
+            list<Type>::iterator it2;
+            for(it1 = expr1->args.begin(), it2 = paras->begin();
+                    it1 != expr1->args.end() && it2 != paras->end(); it1++, it2++){
+                Expr tmp = castFromTo(*it1, *it2);
+                if(!tmp){
+                    fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
+                *it1 = tmp;
+            }
+            if(it1 != expr1->args.end()){
+                fprintf(stderr, "%d:%d: error:  too many arguments to function\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            else if(it2 != paras->end()){
+                fprintf(stderr, "%d:%d: error:  too few arguments to function\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            expr1->type = ((FunctionType)func)->returnType;
         }
             break;
         case NODE_EXP_ARRAYSUBSCRIPT:{

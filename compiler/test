@@ -1,16 +1,9 @@
-void f()
-{
 
-}
-
+void g(int a);
 
 int main()
 {
-	int a, *pa;
-	long b, *pb;
-	float c, *pc;
-	double d, *pd;
-	int e[10], *pe;
-    pe = e;
+	double a;
+    a(2, 3);
 	return 0;
 }
