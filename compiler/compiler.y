@@ -1106,6 +1106,7 @@ int main(int argc, char *argv[]) {
     translate((TranslationUnitDecl)rootNode);
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;
     rootNode->show();
+	std::cout<<"finish"<<std::endl;
     return 0;
 }
 

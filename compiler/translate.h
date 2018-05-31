@@ -12,6 +12,7 @@
 #include "declaration.h"
 #include "statement.h"
 #include "SymbolTable.h"
+#include "utils.h"
 #include <cassert>
 #include <iostream>
 
@@ -262,6 +263,7 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
 IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
 {
     //type is all valid
+    
     switch(decl->id)
     {
         case NODE_DECL_VAR:
@@ -281,6 +283,7 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
         }
         case NODE_DECL_FUNCTION:
         {
+
             Type ret=((FunctionDecl)decl)->returnType;
             std::list<Type> args;
             for(auto &e:((FunctionDecl)decl)->parameters)
@@ -288,29 +291,31 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
                 args.push_back(((ParmVarDecl)e)->type);
             }
             FunctionType funType=new FunctionType_(ret,args);
-
+                        
             Type c=valueEnv.lookUp(decl->name);
+            
             if(c==NULL)
             {
+                
                 if(((FunctionDecl)decl)->stmt!=NULL)
                 {
+                    
                     ((FunctionType)funType)->isDefined=true;
+                    valueEnv.pushEnv();
+                    typeEnv.pushEnv();
+                    translateStmt(valueEnv, typeEnv, ((FunctionDecl)decl)->stmt);
+                    valueEnv.popEnv();
+                    typeEnv.popEnv();
                 }
-                
-                valueEnv.pushEnv();
-                typeEnv.pushEnv();
-                translateStmt(valueEnv, typeEnv, ((FunctionDecl)decl)->stmt);
-                valueEnv.popEnv();
-                typeEnv.popEnv();
-                
                 valueEnv.addSymbol(decl->name,funType);
+                
             }
             else if(c->id!=CONST_TYPE_FUNC)
             {
                 std::cerr<<"error: redefinition of '"<<decl->name<<"' as different kind of symbol"<<std::endl;
                 assert(0);
             }
-            if(c!=NULL && ((FunctionType)c)->isDefined && ((FunctionDecl)decl)->stmt!=NULL)
+            else if(isMatchFunctionType((FunctionType)c,funType)&& ((FunctionType)c)->isDefined && ((FunctionDecl)decl)->stmt!=NULL)
             {
                 std::cerr<<"error: redefinition of '"<<decl->name<<"'"<<std::endl;
                 assert(0);
@@ -322,6 +327,7 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
             break;
         }
     }
+    
 }
 
 #endif //CP_TRANSLATE_H

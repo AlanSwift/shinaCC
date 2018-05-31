@@ -1,2 +1,2 @@
-int f;
-int f(){};
+double f(double){}
+int f(double){}

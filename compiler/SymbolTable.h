@@ -37,6 +37,7 @@ public:
 
     bool addSymbol(std::string id, Type type)
     {
+        
         unsigned int index = hashValue(id);
         std::pair<std::string, Type> p = std::make_pair(id, type);
         hashTale[index].insert(hashTale[index].begin(), p);
@@ -45,6 +46,7 @@ public:
         {
             buffer[bufferSize-1].push_back(id);
         }
+        
         return true;
     }
 
