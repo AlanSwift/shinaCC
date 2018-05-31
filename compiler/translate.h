@@ -99,6 +99,54 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
             translateExpr(valueEnv, typeEnv, expr1->left);
             translateExpr(valueEnv, typeEnv, expr1->right);
             //TODO:
+            if(expr1->left->type->id == CONST_TYPE_FUNC || expr1->left->type->id == CONST_TYPE_ARRAY){
+                Expr tmp = transformImplicitExp(expr1->left, CONST_TYPE_POINTER);
+                expr1->left = tmp; //to Pointer
+            }
+            if(expr1->right->type->id == CONST_TYPE_FUNC || expr1->right->type->id == CONST_TYPE_ARRAY){
+                Expr tmp = transformImplicitExp(expr1->right, CONST_TYPE_POINTER);
+                expr1->right = tmp; //to Pointer
+            }
+            if(expr1->left->type->id == CONST_TYPE_POINTER || expr1->right->type->id == CONST_TYPE_POINTER){
+                fprintf(stderr, "%d:%d: error: invalid operands to binary\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            if(expr1->left->type->id == CONST_TYPE_BUILTIN && expr1->right->type->id == CONST_TYPE_BUILTIN){
+                int types[7] = {CONST_TYPE_BUILTIN_INT, CONST_TYPE_BUILTIN_UNSIGNED_INT, CONST_TYPE_BUILTIN_LONG,
+                              CONST_TYPE_BUILTIN_UNSIGNED_LONG, CONST_TYPE_BUILTIN_FLOAT, CONST_TYPE_BUILTIN_DOUBLE,
+                              CONST_TYPE_BUILTIN_LONG_DOUBLE};
+                for(int i = 6; i >= 0; i--){
+                    if(i == 0 || ((BuiltinType)(expr1->left->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->left->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->left, types[i]);
+                            expr1->left = tmp;
+                            break;
+                        }
+                        if(((BuiltinType)(expr1->right->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->right, types[i]);
+                            expr1->right = tmp;
+                            break;
+                        }
+                    }
+                    else if(((BuiltinType)(expr1->right->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->left->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->left, types[i]);
+                            expr1->left = tmp;
+                            break;
+                        }
+                    }
+                }
+                expr1->type = expr1->left->type;
+            }
+            else {
+                Expr p = (expr1->left->type->id == CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
+                if(!p->isIntConstant() && !(p->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)p->type)->isInteger())){
+                    fprintf(stderr, "%d:%d: error: invalid operands to binary\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
+                p = (expr1->left->type->id != CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
+                expr1->type = p->type;
+            }
         }
             break;
         case NODE_EXP_UNARY:{

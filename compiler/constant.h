@@ -87,6 +87,24 @@ struct Stmt_:public Node_
     }
 };
 
+
+const int NODE_EXP_PAREN=100;
+const int NODE_EXP_BINARY=101;
+const int NODE_EXP_UNARY=102;
+const int NODE_EXP_CONDITIONAL=103;
+const int NODE_EXP_ASSIGN=104;
+const int NODE_EXP_CALL=105;
+const int NODE_EXP_MEMBER=106;
+const int NODE_EXP_ARRAYSUBSCRIPT=107;
+const int NODE_EXP_DECLREF=108;
+const int NODE_EXP_IMPLICITCAST=109;
+const int NODE_EXP_CSTYLECAST=110;
+const int NODE_EXP_INTLITERAL=111;
+const int NODE_EXP_CHARLITERAL=112;
+const int NODE_EXP_FLOATLITERAL=113;
+const int NODE_EXP_STRLITERAL=114;
+
+
 struct Expr_:public Node_
 {
     Type type;
@@ -107,6 +125,29 @@ struct Expr_:public Node_
             return "NULL";
         else
             return this->type->getType();
+    }
+
+    bool isConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
+                || this->id == NODE_EXP_FLOATLITERAL || this->id == NODE_EXP_STRLITERAL;
+    }
+
+    bool isNumberConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
+               || this->id == NODE_EXP_FLOATLITERAL;
+    }
+
+    bool isIntConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL;
     }
 };
 
@@ -166,22 +207,6 @@ const int CONST_TYPE_BUILTIN_FLOAT=19;
 const int CONST_TYPE_BUILTIN_DOUBLE=20;
 const int CONST_TYPE_BUILTIN_LONG_DOUBLE=21;
 const int CONST_TYPE_BUILTIN_INVALID=22;
-
-const int NODE_EXP_PAREN=100;
-const int NODE_EXP_BINARY=101;
-const int NODE_EXP_UNARY=102;
-const int NODE_EXP_CONDITIONAL=103;
-const int NODE_EXP_ASSIGN=104;
-const int NODE_EXP_CALL=105;
-const int NODE_EXP_MEMBER=106;
-const int NODE_EXP_ARRAYSUBSCRIPT=107;
-const int NODE_EXP_DECLREF=108;
-const int NODE_EXP_IMPLICITCAST=109;
-const int NODE_EXP_CSTYLECAST=110;
-const int NODE_EXP_INTLITERAL=111;
-const int NODE_EXP_CHARLITERAL=112;
-const int NODE_EXP_FLOATLITERAL=113;
-const int NODE_EXP_STRLITERAL=114;
 
 
 const int NODE_DECL_VAR=200;

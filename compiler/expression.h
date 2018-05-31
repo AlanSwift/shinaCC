@@ -265,7 +265,7 @@ struct IntLiteral_:public Expr_
     long value;
     IntLiteral_(long value):value(value){
         this->id = NODE_EXP_INTLITERAL;
-        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL);
+        this->type = BuiltinType_::intType;
     }
 
     void show(int space = 0)
@@ -278,10 +278,10 @@ struct IntLiteral_:public Expr_
 
 struct CharLiteral_:public Expr_
 {
-    char value;
+    int value;
     CharLiteral_(char value):value(value){
         this->id = NODE_EXP_CHARLITERAL;
-        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL);
+        this->type = BuiltinType_::charType;
     }
 
     void show(int space = 0)
@@ -295,7 +295,7 @@ struct CharLiteral_:public Expr_
 
 struct FloatLiteral_:public Expr_
 {
-    double value;
+    long double value;
     FloatLiteral_(double value):value(value){
         this->id = NODE_EXP_FLOATLITERAL;
     }
@@ -305,7 +305,7 @@ struct FloatLiteral_:public Expr_
         for(int i = 0; i < space; i++)
             printf("-");
         printf("FloatLiteral_: %.3f %s\n", value, getType().c_str());
-        this->type = new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL);
+        this->type = BuiltinType_::doubleType;
     }
 };
 
@@ -319,7 +319,7 @@ struct StrLiteral_:public Expr_
     StrLiteral_(char *value){
         this->value = string(value);
         this->id = NODE_EXP_STRLITERAL;
-        this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
+        this->type = new PointerType_(BuiltinType_::charType);
     }
 
     void show(int space = 0)
