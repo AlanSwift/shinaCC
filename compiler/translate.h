@@ -239,7 +239,21 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
 
 IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
 {
-
+    switch (stmt->id){
+        case NODE_STM_COMPOUND:
+            for(auto &s: ((CompoundStmt)stmt)->stmtList)
+                translateStmt(valueEnv, typeEnv, s);
+            break;
+        case NODE_STM_EXPR:
+            translateExpr(valueEnv, typeEnv, ((ExprStmt)stmt)->expr);
+            break;
+        case NODE_STM_DECL:
+            for(auto &d: ((DeclStmt)stmt)->declarations)
+                translateDecl(valueEnv, typeEnv, d);
+            break;
+        default:
+            break;
+    }
 }
 
 IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
