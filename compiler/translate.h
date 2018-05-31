@@ -11,6 +11,8 @@
 #include "declaration.h"
 #include "statement.h"
 #include "SymbolTable.h"
+#include <cassert>
+#include <iostream>
 
 typedef void IRTreeNode;
 
@@ -24,9 +26,11 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
 
 IRTreeNode translate(TranslationUnitDecl start)
 {
-    SymbolTable valueEnv, typeEnv;
+    SymbolTable* valueEnv= nullptr, *typeEnv= nullptr;
+    valueEnv=new SymbolTable();
+    typeEnv=new SymbolTable();
     for(auto &decl: start->declarations){
-        translateDecl(valueEnv, typeEnv, decl);
+        translateDecl(*valueEnv, *typeEnv, decl);
     }
 }
 
@@ -167,7 +171,59 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
 
 IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
 {
+    //type is all valid
+    switch(decl->id)
+    {
+        case NODE_DECL_VAR:
+        {
+            Type c=typeEnv.lookUp(decl->name);
+            if(c!=NULL)
+            {
+                std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
+                assert(0);
+            }
+            else{
+                typeEnv.addSymbol(decl->name,((VarDecl)decl)->type);
+                //TODO
+            }
+            break;
+        }
+        case NODE_DECL_FUNCTION:
+        {
+            Type ret=((FunctionDecl)decl)->returnType;
+            std::list<Type> args;
+            for(auto &e:((FunctionDecl)decl)->parameters)
+            {
+                args.push_back(((ParmVarDecl)e)->type);
+            }
+            FunctionType funType=new FunctionType_(ret,args);
 
+            Type c=typeEnv.lookUp(decl->name);
+            if(c==NULL)
+            {
+                if(((FunctionDecl)decl)->stmt!=NULL)
+                {
+                    ((FunctionType)funType)->isDefined=true;
+                }
+                typeEnv.addSymbol(decl->name,funType);
+            }
+            else if(c->id!=CONST_TYPE_FUNC)
+            {
+                std::cerr<<"error: redefinition of '"<<decl->name<<"' as different kind of symbol"<<std::endl;
+                assert(0);
+            }
+            if(c!=NULL && ((FunctionType)c)->isDefined && ((FunctionDecl)decl)->stmt!=NULL)
+            {
+                std::cerr<<"error: redefinition of '"<<decl->name<<"'"<<std::endl;
+                assert(0);
+            }
+            else{
+
+
+            }
+            break;
+        }
+    }
 }
 
 #endif //CP_TRANSLATE_H

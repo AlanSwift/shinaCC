@@ -9,6 +9,9 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <stack>
+#include <vector>
+#include <cassert>
 #define HASH_TABLE_SZIE 149
 
 class SymbolTable
@@ -16,6 +19,8 @@ class SymbolTable
 private:
     int size;
     std::list<std::pair<std::string, Type>> hashTale[HASH_TABLE_SZIE];
+    std::vector<std::vector<std::string>> buffer;
+    int bufferSize=0;
 
     unsigned int hashValue(std::string &str)
     {
@@ -26,7 +31,9 @@ private:
         return value;
     }
 public:
-    SymbolTable():size(0){}
+    SymbolTable():size(0),bufferSize(0){
+
+    }
 
     bool addSymbol(std::string id, Type type)
     {
@@ -34,16 +41,19 @@ public:
         std::pair<std::string, Type> p = std::make_pair(id, type);
         hashTale[index].insert(hashTale[index].begin(), p);
         size++;
+        if(bufferSize)
+        {
+            buffer[bufferSize-1].push_back(id);
+        }
         return true;
     }
 
-    Type popSymbol(std::string id)
-    {
+    Type popSymbol(std::string id) {
         unsigned int index = hashValue(id);
-        std::list<std::pair<std::string, Type>> &hashItem = hashTale[index];
+        std::list <std::pair<std::string, Type>> &hashItem = hashTale[index];
         auto it = hashItem.begin();
-        while(it != hashItem.end()){
-            if(it->first == id){
+        while (it != hashItem.end()) {
+            if (it->first == id) {
                 Type type = it->second;
                 it = hashItem.erase(it);
                 size--;
@@ -63,6 +73,23 @@ public:
         }
         return NULL;
     }
+    void startEnv()
+    {
+        buffer.push_back(std::vector<string>());
+        bufferSize=buffer.size();
+    }
+    void popEnv()
+    {
+        assert(bufferSize);
+        for(auto &e:buffer[bufferSize-1])
+        {
+            popSymbol(e);
+        }
+        buffer.pop_back();
+        bufferSize=buffer.size();
+    }
+
+
 };
 
 #endif //CP_SYMBOLTABLE_H

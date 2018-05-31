@@ -172,8 +172,9 @@ struct FunctionType_:public Type_
 {
     Type returnType;
     list<Type> argsType;
+    bool isDefined= false;
 
-    FunctionType_(Type reType):returnType(reType){
+    FunctionType_(Type reType):returnType(reType),isDefined(false){
         this->id = CONST_TYPE_FUNC;
     }
 
