@@ -103,6 +103,7 @@ const int NODE_EXP_INTLITERAL=111;
 const int NODE_EXP_CHARLITERAL=112;
 const int NODE_EXP_FLOATLITERAL=113;
 const int NODE_EXP_STRLITERAL=114;
+const int NODE_EXP_INITLIST=115;
 
 
 struct Expr_:public Node_

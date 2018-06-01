@@ -526,6 +526,50 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
     }
 }
 
+bool isTypeValid(std::string name,Type c,Expr init)
+{
+    assert(0);
+    switch(c->id)
+    {
+        case CONST_TYPE_ARRAY:
+        {
+            ArrayType content=(ArrayType)c;
+            //check size
+            if(content->size==NULL)
+            {
+                if(init==NULL)
+                {
+                    std::cerr<<"error: definition of variable with array type needs an explicit size or an initializer"<<std::endl;
+                    assert(0);
+                }
+                else{
+                    if(init->id!=NODE_EXP_INITLIST)
+                    {
+                        std::cerr<<"error: array initializer must be an initializer list"<<std::endl;
+                        assert(0);
+                    }
+                    else{
+                        
+                    }
+                    std::cout<<id2name(init->id)<<std::endl;
+                }
+            }
+            else if(content->size->id!=NODE_EXP_INTLITERAL)
+            {
+                std::cerr<<"error: size of array has non-integer type"<<std::endl;
+                assert(0);
+            }
+            else{
+                if(((IntLiteral)(content->size))->value<0)
+                {
+                    std::cerr<<"error: '"<<name<<"' declared as an array with a negative size"<<std::endl;
+                    assert(0);
+                }
+            }
+        }
+    }
+}
+
 IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
 {
     //type is all valid
@@ -541,7 +585,20 @@ IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)
                 assert(0);
             }
             else{
-                
+                Type c=((VarDecl)decl)->type;
+                switch(c->id)
+                {
+                    case CONST_TYPE_ARRAY:
+                    {
+                        ArrayType content=(ArrayType)c;
+                        //check size
+                        isTypeValid(((VarDecl)decl)->name,c,((VarDecl)decl)->init);
+
+
+                        break;
+                    }
+                }
+
                 valueEnv.addSymbol(decl->name,((VarDecl)decl)->type);
                 //TODO
             }

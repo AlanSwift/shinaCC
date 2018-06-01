@@ -25,6 +25,7 @@ struct CharLiteral_;
 struct FloatLiteral_;
 struct StrLiteral_;
 struct ParenExpr_;
+struct InitListExpr_;
 
 
 typedef struct BinaryOpExpr_ *BinaryOpExpr;
@@ -42,6 +43,28 @@ typedef struct CharLiteral_ *CharLiteral;
 typedef struct FloatLiteral_ *FloatLiteral;
 typedef struct StrLiteral_ *StrLiteral;
 typedef struct ParenExpr_ *ParenExpr;
+typedef struct InitListExpr_* InitListExpr;
+
+struct InitListExpr_:public Expr_
+{
+    std::list<Expr>values;
+    InitListExpr_(std::list<Expr>& e):values(e){
+        this->id=NODE_EXP_INITLIST;
+    }
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("-");
+        printf("InitListExpr_ %s\n", getType().c_str());
+
+        for(auto &e :values)
+        {
+            e->show(space+1);
+        }
+    }
+
+
+};
 
 struct ParenExpr_:public Expr_
 {

@@ -84,6 +84,7 @@ struct VarDecl_:public Decl_
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
         printf("VarDecl_: %s, %s\n", this->name.c_str(), type->getType().c_str());
+
         if(init)
             init->show(space + 1);
         /*if(type)
@@ -168,6 +169,7 @@ struct ParmVarDecl_:public Decl_
 
     void show(int space=0)
     {
+        
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
         if(type){

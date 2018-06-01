@@ -46,9 +46,9 @@ multiplicative_expression additive_expression shift_expression
 relational_expression equality_expression and_expression
 exclusive_or_expression inclusive_or_expression
 logical_and_expression logical_or_expression conditional_expression
-constant_expression initializer
+constant_expression initializer initializer_list
 
-%type <exprList> initializer_list argument_expression_list
+%type <exprList> argument_expression_list
 
 %type <stmt> statement labeled_statement compound_statement
 expression_statement selection_statement iteration_statement
@@ -418,6 +418,10 @@ init_declarator
 	    if($1->id==NODE_DECL_VAR)
 	    {
 	        ((VarDecl)$1)->init=$3;
+			if(($3->id==NODE_EXP_INITLIST))
+			{
+				((InitListExpr)$3)->type=((VarDecl)$1)->type;
+			}
 	    }
 	}
 	;
@@ -822,15 +826,26 @@ initializer
         $$=$1;
 	}
 	| '{' initializer_list '}'
+	{
+		$$=$2;
+	}
 	| '{' initializer_list ',' '}'
+	{
+		$$=$2;
+	}
 	;
 
 initializer_list
 	: initializer
 	{
+		std::list<Expr> values= std::list<Expr>();
+		values.push_back($1);
+		$$=new InitListExpr_(values);
 	}
 	| initializer_list ',' initializer
 	{
+		((InitListExpr)$1)->values.push_back($3);
+		$$=$1;
 	}
 	;
 
@@ -1126,6 +1141,7 @@ int main(int argc, char *argv[]) {
     yyparse();
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;
     rootNode->show();
+	std::cout<<"=================="<<std::endl;
     assert(rootNode->id == NODE_DECL_TRANSLATION);
     translate((TranslationUnitDecl)rootNode);
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;

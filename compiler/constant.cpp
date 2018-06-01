@@ -40,6 +40,7 @@ map<int,string>map_id2name={
 {112,"CharLiteral_"},
 {113,"FloatLiteral_"},
 {114,"StrLiteral_"},
+{115,"InitListExpr_"},
 {200,"VarDecl_"},
 {201,"FunctionDecl_"},
 {202,"ParmVarDecl_"},
