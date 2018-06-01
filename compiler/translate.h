@@ -526,14 +526,45 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
     }
 }
 
+bool isTypeComplete(Type c)
+{
+    switch(c->id)
+    {
+        case CONST_TYPE_ARRAY:
+        {
+            if(((ArrayType)c)->size==NULL||((ArrayType)c)->basicType==NULL)
+            {
+                return false;
+            }
+            return isTypeComplete(((ArrayType)c)->basicType);
+            break;
+        }
+        case CONST_TYPE_POINTER:
+        {
+            return isTypeComplete(((PointerType)c)->pointTo);
+            break;
+        }
+        default:
+        {
+            return true;
+        }
+
+    }
+}
+
 bool isTypeValid(std::string name,Type c,Expr init)
 {
-    assert(0);
     switch(c->id)
     {
         case CONST_TYPE_ARRAY:
         {
             ArrayType content=(ArrayType)c;
+            //check complement
+            if(!isTypeComplete(((ArrayType)c)->basicType))
+            {
+                std::cerr<<"error: array has incomplete element type '"<<((ArrayType)c)->basicType->getType()<<"'"<<std::endl;
+                assert(0);
+            }
             //check size
             if(content->size==NULL)
             {
@@ -549,9 +580,30 @@ bool isTypeValid(std::string name,Type c,Expr init)
                         assert(0);
                     }
                     else{
-                        
+                        //caculate size
+                        content->size=new IntLiteral_(((InitListExpr)init)->values.size());
+                        //check each element's type
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(auto it=((InitListExpr)init)->values.begin();it!=((InitListExpr)init)->values.end();it++)
+                            {
+                                if((*it)->id!=NODE_EXP_INITLIST)
+                                {
+                                    auto &expr=*it;
+                                    std::list<Expr> vals=std::list<Expr>();
+                                    vals.push_back(expr);
+                                    *it=new InitListExpr_(vals);
+                                }
+                            }
+                        }
+
+                        //TODO
+                        for(auto & e:((InitListExpr)init)->values)
+                        {
+                            isTypeValid(name,content->basicType,e);
+                        }
                     }
-                    std::cout<<id2name(init->id)<<std::endl;
+                    
                 }
             }
             else if(content->size->id!=NODE_EXP_INTLITERAL)
@@ -565,9 +617,107 @@ bool isTypeValid(std::string name,Type c,Expr init)
                     std::cerr<<"error: '"<<name<<"' declared as an array with a negative size"<<std::endl;
                     assert(0);
                 }
+                else{
+                    if( ((IntLiteral)(content->size))->value <((InitListExpr)init)->values.size())
+                    {
+                        std::cerr<<"error: excess elements in array initializer"<<std::endl;
+                        assert(0);
+                    }
+                    else{
+                        //refill
+                        int number2Fill=((IntLiteral)(content->size))->value -((InitListExpr)init)->values.size();
+                        std::cout<<number2Fill<<"&&&&"<<std::endl;
+
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(int i=0;i<number2Fill;i++)
+                            {
+                                std::list<Expr> vals=std::list<Expr>();
+        
+                                ((InitListExpr)init)->values.push_back(new InitListExpr_(vals));
+                                
+                            }
+                        }
+                        else{
+                            for(int i=0;i<number2Fill;i++)
+                            {
+                                ((InitListExpr)init)->values.push_back(new IntLiteral_(0));
+                            }
+                        }
+
+                        
+                        //change to initialist
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(auto it=((InitListExpr)init)->values.begin();it!=((InitListExpr)init)->values.end();it++)
+                            {
+                                if((*it)->id!=NODE_EXP_INITLIST)
+                                {
+                                    auto &expr=*it;
+                                    std::list<Expr> vals=std::list<Expr>();
+                                    vals.push_back(expr);
+                                    *it=new InitListExpr_(vals);
+                                }
+                            }
+                        }
+
+
+                    }
+                    //check each element
+                    //TODO
+                    for(auto &e:((InitListExpr)init)->values)
+                    {
+                        isTypeValid(name,content->basicType,e);
+                    }
+                }
             }
+            break;
+        }
+        case CONST_TYPE_POINTER:
+        {
+            //TODO
+            break;
+        }
+        case CONST_TYPE_BUILTIN:
+        {
+            std::cout<<id2name( ((BuiltinType)c)->builtinType)<<"****"<<std::endl;
+            std::cout<<id2name(init->id)<<"****"<<std::endl;
+            switch(((BuiltinType)c)->builtinType)
+            {
+                case CONST_TYPE_BUILTIN_INT:
+                {
+                    if(init->id==NODE_EXP_INTLITERAL)
+                    {
+                        return true;
+                    }
+                    else if(init->id==NODE_EXP_CHARLITERAL)
+                    {
+                        //TODO char->int implicate cast
+                        return true;
+                    }
+                    else if(init->id==NODE_EXP_FLOATLITERAL)
+                    {
+                        //TODO char->int implicate cast
+                        return true;
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+                }
+                
+            }
+
+            break;
+        }
+        default:
+        {
+            std::cout<<id2name(c->id)<<"fuckyou"<<std::endl;
+            
         }
     }
+    return true;
 }
 
 IRTreeNode translateDecl(SymbolTable &valueEnv, SymbolTable &typeEnv, Decl decl)

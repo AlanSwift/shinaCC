@@ -79,7 +79,7 @@ struct VarDecl_:public Decl_
             type->add2Tail(c);
         }
     }
-    void show(int space=0)
+    void show(int space=0) override
     {
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
@@ -87,13 +87,13 @@ struct VarDecl_:public Decl_
 
         if(init)
             init->show(space + 1);
-        /*if(type)
+        if(type)
         {
             type->show(space+1);
         }
         else{
             printf("*******************null_ptr************************\n");
-        }*/
+        }
     }
 };
 

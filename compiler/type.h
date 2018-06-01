@@ -157,11 +157,16 @@ struct ArrayType_:public Type_
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
         printf("ArrayType_: %s\n", this->getType().c_str());
-        //size->show(space + 1);
+        if(size)
+        {
+            size->show(space + 1);
+        }
+        
     }
 
     std::string getType()
     {
+        
         return basicType->getType() + " []";
     }
 };
