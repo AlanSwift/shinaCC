@@ -143,6 +143,38 @@ Expr doUnaryOp(Expr expr1, int op)
     }
 }
 
+bool isRelationalOp(int op)
+{
+    if(op == OP_BINARY_BE || op == OP_BINARY_GT || op == OP_BINARY_ST
+            ||op == OP_BINARY_SE || op == OP_BINARY_EQ || op == OP_BINARY_NEQ)
+        return true;
+    return false;
+}
+
+bool isLogicalOp(int op)
+{
+    if(op == OP_BINARY_LOGICAL_OR || op == OP_BINARY_LOGICAL_AND
+            || op == OP_UNARY_LOGICAL_NOT)
+        return true;
+    return false;
+}
+
+bool isBitWiseOp(int op)
+{
+    if(op == OP_UNARY_NOT || op == OP_BINARY_AND || op == OP_BINARY_XOR
+    || op == OP_BINARY_OR)
+            return true;
+    return false;
+}
+
+bool canFloatIn(int op)
+{
+    if(isBitWiseOp(op) || op == OP_BINARY_MOD || op == OP_BINARY_SHIFTLEFT ||
+            op == OP_BINARY_SHIFTRIGHT)
+        return false;
+    return true;
+}
+
 bool isMatchType(Type a,Type b)
 {
     if(a->id!=b->id)

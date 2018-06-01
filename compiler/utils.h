@@ -16,6 +16,8 @@ bool isMatchArrayType(ArrayType a,ArrayType b);
 
 bool isRelationalOp(int op);
 bool isBitWiseOp(int op);
+bool isLogicalOp(int op);
+bool canFloatIn(int op);
 
 Expr doBinaryOp(Expr expr1, int op, Expr expr2);
 Expr doUnaryOp(Expr expr1, int op);

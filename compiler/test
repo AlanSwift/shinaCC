@@ -2,9 +2,9 @@
 
 int main()
 {
-	int a, *ap;
-	int d[5];
-	double b, *bp;
-	a = 1 + 3 * 5;
-	return 0;
+	double a, b;
+	char c, d;
+	!a;
+	a > b;
+	c > d;
 }

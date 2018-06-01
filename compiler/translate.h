@@ -147,24 +147,29 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                                 CONST_TYPE_BUILTIN_UNSIGNED_LONG, CONST_TYPE_BUILTIN_FLOAT, CONST_TYPE_BUILTIN_DOUBLE,
                                 CONST_TYPE_BUILTIN_LONG_DOUBLE};
                 for(int i = 6; i >= 0; i--){
-                    if(i == 0 || ((BuiltinType)(expr1->true_->type))->builtinType == types[i]){
+                    if(i == 0){
                         if(((BuiltinType)(expr1->true_->type))->builtinType != types[i]){
                             Expr tmp = transformImplicitExp(expr1->true_, types[i]);
                             expr1->true_ = tmp;
-                            break;
                         }
                         if(((BuiltinType)(expr1->false_->type))->builtinType != types[i]){
                             Expr tmp = transformImplicitExp(expr1->false_, types[i]);
                             expr1->false_ = tmp;
-                            break;
                         }
+                    }
+                    else if(((BuiltinType)(expr1->true_->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->false_->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->false_, types[i]);
+                            expr1->false_ = tmp;
+                        }
+                        break;
                     }
                     else if(((BuiltinType)(expr1->false_->type))->builtinType == types[i]){
                         if(((BuiltinType)(expr1->true_->type))->builtinType != types[i]){
                             Expr tmp = transformImplicitExp(expr1->true_, types[i]);
                             expr1->true_ = tmp;
-                            break;
                         }
+                        break;
                     }
                 }
                 expr1->type = expr1->true_->type;
@@ -200,27 +205,36 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                               CONST_TYPE_BUILTIN_UNSIGNED_LONG, CONST_TYPE_BUILTIN_FLOAT, CONST_TYPE_BUILTIN_DOUBLE,
                               CONST_TYPE_BUILTIN_LONG_DOUBLE};
                 for(int i = 6; i >= 0; i--){
-                    if(i == 0 || ((BuiltinType)(expr1->left->type))->builtinType == types[i]){
-                        if(((BuiltinType)(expr1->left->type))->builtinType != types[i]){
-                            Expr tmp = transformImplicitExp(expr1->left, types[i]);
-                            expr1->left = tmp;
-                            break;
-                        }
+                    //printf("%d\n", ((BuiltinType)(expr1->left->type))->builtinType);
+                    if(i == 0){
                         if(((BuiltinType)(expr1->right->type))->builtinType != types[i]){
                             Expr tmp = transformImplicitExp(expr1->right, types[i]);
                             expr1->right = tmp;
-                            break;
                         }
+                        if(((BuiltinType)(expr1->left->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->left, types[i]);
+                            expr1->left = tmp;
+                        }
+                    }
+                    else if(((BuiltinType)(expr1->left->type))->builtinType == types[i]){
+                        if(((BuiltinType)(expr1->right->type))->builtinType != types[i]){
+                            Expr tmp = transformImplicitExp(expr1->right, types[i]);
+                            expr1->right = tmp;
+                        }
+                        break;
                     }
                     else if(((BuiltinType)(expr1->right->type))->builtinType == types[i]){
                         if(((BuiltinType)(expr1->left->type))->builtinType != types[i]){
                             Expr tmp = transformImplicitExp(expr1->left, types[i]);
                             expr1->left = tmp;
-                            break;
                         }
+                        break;
                     }
                 }
-                expr1->type = expr1->left->type;
+                if(isLogicalOp(expr1->operator_) || isRelationalOp(expr1->operator_))
+                    expr1->type = BuiltinType_::intType;
+                else
+                    expr1->type = expr1->left->type;
             }
             else {
                 if(expr1->operator_ != OP_BINARY_ADD && expr1->operator_ != OP_BINARY_MINUS){
@@ -233,7 +247,11 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                     exit(0);
                 }
                 p = (expr1->left->type->id != CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
-                expr1->type = p->type;
+
+                if(isLogicalOp(expr1->operator_) || isRelationalOp(expr1->operator_))
+                    expr1->type = BuiltinType_::intType;
+                else
+                    expr1->type = p->type;
             }
         }
             break;
@@ -266,6 +284,13 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                 expr1->type = new PointerType_(expr1->expr->type);
             }
             else{ //+, -, ++, --, ~, !
+                if((expr1->expr->type == BuiltinType_::floatType
+                    || expr1->expr->type == BuiltinType_::doubleType || expr1->expr->type == BuiltinType_::longDoubleType)
+                        && isBitWiseOp(expr1->operator_)){
+                    fprintf(stderr, "%d:%d: error: wrong type argument to bit-complement\n",
+                            expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    exit(0);
+                }
                 if(expr1->expr->type->id == CONST_TYPE_ARRAY || expr1->expr->type->id == CONST_TYPE_FUNC){
                     fprintf(stderr, "%d:%d: error: invalid unary operation\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
@@ -275,7 +300,10 @@ IRTreeNode translateExpr(SymbolTable &valueEnv, SymbolTable &typeEnv, Expr expr)
                         fprintf(stderr, "%d:%d: error: invalid unary operation\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                         exit(0);
                     }
-                expr1->type = expr1->expr->type;
+                if(isLogicalOp(expr1->operator_))
+                    expr1->type = BuiltinType_::intType;
+                else
+                    expr1->type = expr1->expr->type;
             }
 
         }
