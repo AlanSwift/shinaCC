@@ -442,8 +442,12 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
 {
     switch (stmt->id){
         case NODE_STM_COMPOUND:
+            valueEnv.pushEnv();
+            typeEnv.pushEnv();
             for(auto &s: ((CompoundStmt)stmt)->stmtList)
                 translateStmt(valueEnv, typeEnv, s);
+            valueEnv.popEnv();
+            typeEnv.popEnv();
             break;
         case NODE_STM_EXPR:
             translateExpr(valueEnv, typeEnv, ((ExprStmt)stmt)->expr);
@@ -451,6 +455,71 @@ IRTreeNode translateStmt(SymbolTable &valueEnv, SymbolTable &typeEnv, Stmt stmt)
         case NODE_STM_DECL:
             for(auto &d: ((DeclStmt)stmt)->declarations)
                 translateDecl(valueEnv, typeEnv, d);
+            break;
+        case NODE_STM_SWITCH:{
+            Expr expr = ((SwitchStmt)stmt)->expr;
+            translateExpr(valueEnv, typeEnv, expr);
+            if(!expr->isIntConstant() &&
+               !(expr->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)expr->type)->isInteger())){
+                fprintf(stderr, "%d:%d: error: switch quantity not an integer\n",
+                        expr->sourceLoc.line, expr->sourceLoc.col);
+                exit(0);
+            }
+            translateStmt(valueEnv, typeEnv,  ((SwitchStmt)stmt)->stmt);
+        }
+            break;
+        case NODE_STM_CASE:{
+            Expr expr = ((CaseStmt)stmt)->const_;
+            translateExpr(valueEnv, typeEnv, expr);
+            if(!expr->isIntConstant()){
+                fprintf(stderr, "%d:%d: error: case label can't be reduced to an Integer constant\n",
+                        expr->sourceLoc.line, expr->sourceLoc.col);
+                exit(0);
+            }
+            translateStmt(valueEnv, typeEnv,  ((CaseStmt)stmt)->stmt);
+        }
+            break;
+        case NODE_STM_DEFAULT:
+            translateStmt(valueEnv, typeEnv,  ((DefaultStmt)stmt)->stmt);
+            break;
+        case NODE_STM_RETURN:
+            translateExpr(valueEnv, typeEnv, ((ReturnStmt)stmt)->result);
+            break;
+        case NODE_STM_IF:
+            translateExpr(valueEnv, typeEnv, ((IfStmt)stmt)->condition);
+            translateStmt(valueEnv, typeEnv,  ((IfStmt)stmt)->if_);
+            if(((IfStmt)stmt)->else_)
+                translateStmt(valueEnv, typeEnv,  ((IfStmt)stmt)->else_);
+            break;
+        case NODE_STM_WHILE:
+            translateExpr(valueEnv, typeEnv, ((WhileStmt)stmt)->expr);
+            translateStmt(valueEnv, typeEnv, ((WhileStmt)stmt)->stmt);
+            break;
+        case NODE_STM_DO:
+            translateExpr(valueEnv, typeEnv, ((DoStmt)stmt)->expr);
+            translateStmt(valueEnv, typeEnv, ((DoStmt)stmt)->stmt);
+            break;
+        case NODE_STM_FOR:{
+            ForStmt stmt1 = (ForStmt)stmt;
+            if(stmt1->init)
+                translateExpr(valueEnv, typeEnv, stmt1->init);
+            if(stmt1->condition)
+                translateExpr(valueEnv, typeEnv, stmt1->condition);
+            if(stmt1->next)
+                translateExpr(valueEnv, typeEnv, stmt1->next);
+            translateStmt(valueEnv, typeEnv,  stmt1->stmt);
+        }
+            break;
+        case NODE_STM_LABEL:
+            translateStmt(valueEnv, typeEnv,  ((LabelStmt)stmt)->stmt);
+            break;
+        case NODE_STM_CONTINUE:
+            break;
+        case NODE_STM_BREAK:
+            break;
+        case NODE_STM_NULL:
+            break;
+        case NODE_STM_GOTO:
             break;
         default:
             break;
