@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -rf a.out y.tab.c y.tab.h
 echo "lex"
 flex compiler.l
 echo "yacc"

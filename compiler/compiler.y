@@ -494,8 +494,10 @@ direct_declarator
 	}
 	| direct_declarator '(' parameter_type_list ')'
 	{
+		
 	    if($1->id==NODE_DECL_VAR && $1->name!="")
 	    {
+			
 	        if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
 	        {
 	            $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
@@ -568,6 +570,7 @@ direct_declarator
 	}
 	| direct_declarator '(' ')'
 	{
+		
 	    if($1->id==NODE_DECL_VAR && $1->name!="")
         {
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
@@ -588,6 +591,7 @@ direct_declarator
             $1->add2Tail(new FunctionType_(NULL));
             $$=$1;
         }
+		
 	}
 	;
 
@@ -615,6 +619,7 @@ type_qualifier_list
 parameter_type_list
 	: parameter_list
 	{
+		
 	    $$=$1;
 	}
 	| parameter_list ',' ELLIPSIS
@@ -639,33 +644,99 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator
 	{
+		
 	    checkType($1);
+		
         if($2->id==NODE_DECL_VAR)
         {
-            $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
-            delete $2;
-            $$->add2Tail($1);
+			if( ((VarDecl)$2)->type!=NULL && ((VarDecl)$2)->type->id==CONST_TYPE_ARRAY)
+			{
+				$$=new ParmVarDecl_($2->name,
+					new PointerType_(
+						((ArrayType)((VarDecl)$2)->type)->basicType
+					)
+				);
+				delete $2;
+				$$->add2Tail($1);
+			}
+			else{
+				
+				$$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+				delete $2;
+				$$->add2Tail($1);
+			}
+            
         }
-        else{
-            printf("%s=======\n",id2name($2->id).c_str());
-            $2->show();
-            assert(0);//error
+        else if($2->id==NODE_DECL_FUNCTION)
+		{
+			list<Type> args;
+			for(auto & e:((FunctionDecl)$2)->parameters)
+			{
+				args.push_back(((ParmVarDecl)e)->type);
+				delete e;
+			}
+
+			$$=new ParmVarDecl_($2->name,
+				new PointerType_(
+					new FunctionType_(	((FunctionDecl)$2)->returnType,
+						args
+					)
+				)
+			);
+			delete $2;
+			$$->add2Tail($1);
+
         }
+		else{
+			assert(0);
+		}
+
 	}
 	| declaration_specifiers abstract_declarator
 	{
 	    checkType($1);
 	    if($2->id==NODE_DECL_VAR)
         {
-            $$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
-            delete $2;
-            $$->add2Tail($1);
+			if( ((VarDecl)$2)->type!=NULL && ((VarDecl)$2)->type->id==CONST_TYPE_ARRAY)
+			{
+				$$=new ParmVarDecl_($2->name,
+					new PointerType_(
+						((ArrayType)((VarDecl)$2)->type)->basicType
+					)
+				);
+				delete $2;
+				$$->add2Tail($1);
+			}
+			else{
+				$$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+				delete $2;
+				$$->add2Tail($1);
+			}
+            
         }
-        else{
-            printf("%s=======\n",id2name($2->id).c_str());
-            $2->show();
-            assert(0);//error
+        else if($2->id==NODE_DECL_FUNCTION)
+		{
+			list<Type> args;
+			for(auto & e:((FunctionDecl)$2)->parameters)
+			{
+				args.push_back(((ParmVarDecl)e)->type);
+				delete e;
+			}
+
+			$$=new ParmVarDecl_($2->name,
+				new PointerType_(
+					new FunctionType_(	((FunctionDecl)$2)->returnType,
+						args
+					)
+				)
+			);
+			delete $2;
+			$$->add2Tail($1);
+
         }
+		else{
+			assert(0);
+		}
 	}
 	| declaration_specifiers
 	{
@@ -783,6 +854,7 @@ direct_abstract_declarator
 	}
 	| direct_abstract_declarator '(' parameter_type_list ')'
 	{
+		
 	    if($1->id==NODE_DECL_VAR && $1->name=="")
         {
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)

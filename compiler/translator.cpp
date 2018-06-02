@@ -514,6 +514,19 @@ IRTreeNode Translator::translateDecl(Decl decl)
                     ((FunctionType)funType)->isDefined=true;
                     valueEnv.pushEnv();
                     typeEnv.pushEnv();
+                    for(auto & e:((FunctionDecl)decl)->parameters)
+                    {
+                        if(e->name=="")
+                        {
+                            std::cerr<<"error: parameter name omitted"<<std::endl;
+                            assert(0);
+                        }
+                        else{
+                            translateDecl(e);
+
+                        }
+                        
+                    }
                     translateStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
                     typeEnv.popEnv();
@@ -534,6 +547,24 @@ IRTreeNode Translator::translateDecl(Decl decl)
             else{
 
 
+            }
+            break;
+        }
+        case NODE_DECL_PARMVAR:
+        {
+            if(((ParmVarDecl)decl)->type->id==CONST_TYPE_ARRAY||
+                ((ParmVarDecl)decl)->type->id==CONST_TYPE_FUNC  )
+            {
+                std::cerr<<"error: parameter type error"<<std::endl;
+                assert(0);
+            }
+            else{
+                if(!isTypeValid(decl->name,((ParmVarDecl)decl)->type,NULL))
+                {
+                    std::cerr<<"error: parameter type error"<<std::endl;
+                    assert(0);
+                }
+                
             }
             break;
         }
@@ -708,6 +739,10 @@ bool Translator::isTypeValid(std::string name,Type c,Expr init)
                     std::cerr<<"error: '"<<name<<"' declared as an array with a negative size"<<std::endl;
                     assert(0);
                 }
+                else if(init==NULL)
+                {
+                    isTypeValid(name,content->basicType,NULL);
+                }
                 else if(content->basicType->id==CONST_TYPE_BUILTIN && ((BuiltinType)(content->basicType))->builtinType==CONST_TYPE_BUILTIN_CHAR && init->id==NODE_EXP_STRLITERAL)
                 {
                     if(((IntLiteral)(content->size))->value < ((StrLiteral)init)->value.size()+1)
@@ -717,12 +752,10 @@ bool Translator::isTypeValid(std::string name,Type c,Expr init)
                         assert(0);
                     }
 
-
-
                 }
                 else
                 {
-
+                    
                     if( ((IntLiteral)(content->size))->value <((InitListExpr)init)->values.size())
                     {
                         std::cerr<<"error: excess elements in array initializer"<<std::endl;
@@ -785,8 +818,12 @@ bool Translator::isTypeValid(std::string name,Type c,Expr init)
         }
         case CONST_TYPE_BUILTIN:
         {
-            std::cout<<id2name( ((BuiltinType)c)->builtinType)<<"****"<<std::endl;
-            std::cout<<id2name(init->id)<<"****"<<std::endl;
+            //std::cout<<id2name( ((BuiltinType)c)->builtinType)<<"****"<<std::endl;
+            //std::cout<<id2name(init->id)<<"****"<<std::endl;
+            if(init==NULL)
+            {
+                return true;
+            }
             switch(((BuiltinType)c)->builtinType)
             {
                 case CONST_TYPE_BUILTIN_INT:

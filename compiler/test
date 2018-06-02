@@ -1,5 +1,12 @@
 
+int quickpow(int a)
+{
+
+}
+
+
 int main()
 {
-	char ff[][5]={"123","234","345"};
+	char* a;
+	quickpow(a);
 }
