@@ -3,10 +3,9 @@ int factorial(int n);
 
 int main()
 {
-    int a = 10;
-    int *p = &a;
-    *p = 11;
-    factorial(a);
+
+    int a[2][3]={1,2,3};
+
     return 0;
 }
 
