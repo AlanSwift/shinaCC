@@ -36,7 +36,7 @@ public:
 
     }
 
-    bool addSymbol(std::string id, Type type)
+    bool addSymbol(std::string id, T type)
     {
         
         unsigned int index = hashValue(id);
@@ -57,7 +57,7 @@ public:
         auto it = hashItem.begin();
         while (it != hashItem.end()) {
             if (it->first == id) {
-                Type type = it->second;
+                T type = it->second;
                 it = hashItem.erase(it);
                 size--;
                 return type;
@@ -67,7 +67,7 @@ public:
         return NULL;
     }
 
-    Type lookUp(std::string id)
+    T lookUp(std::string id)
     {
         unsigned int index = hashValue(id);
         for(auto &p: hashTale[index]){
