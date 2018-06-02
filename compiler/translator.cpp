@@ -525,6 +525,12 @@ IRTreeNode Translator::translateDecl(Decl decl)
                         }
                         
                     }
+                    for(auto & e:((FunctionDecl)decl)->parameters)
+                    {
+                        valueEnv.addSymbol(decl->name,((ParmVarDecl)e)->type);
+                        
+                    }
+
                     valueEnv.addSymbol(decl->name,funType);
                     translateStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
