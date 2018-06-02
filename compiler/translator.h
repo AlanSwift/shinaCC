@@ -5,7 +5,7 @@
 #ifndef CP_SEMANT_H
 #define CP_SEMANT_H
 
-#include "SymbolTable.h"
+#include "symbol.h"
 #include "constant.h"
 #include "declaration.h"
 #include "expression.h"
@@ -20,7 +20,7 @@ class Translator
 public:
     IRTreeNode translate(TranslationUnitDecl start);
 private:
-    SymbolTable valueEnv, typeEnv;
+    SymbolTable<Type> valueEnv, typeEnv;
 
     IRTreeNode translateExpr(Expr expr);
 
