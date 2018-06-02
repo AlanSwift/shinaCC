@@ -574,7 +574,14 @@ bool isTypeValid(std::string name,Type c,Expr init)
                     assert(0);
                 }
                 else{
-                    if(init->id!=NODE_EXP_INITLIST)
+                    
+                    if(content->basicType->id==CONST_TYPE_BUILTIN && ((BuiltinType)(content->basicType))->builtinType==CONST_TYPE_BUILTIN_CHAR && init->id==NODE_EXP_STRLITERAL)
+                    {
+                        content->size=new IntLiteral_(((StrLiteral)init)->value.size()+1);
+                        
+
+                    }
+                    else if(init->id!=NODE_EXP_INITLIST)
                     {
                         std::cerr<<"error: array initializer must be an initializer list"<<std::endl;
                         assert(0);
@@ -612,12 +619,27 @@ bool isTypeValid(std::string name,Type c,Expr init)
                 assert(0);
             }
             else{
+                
                 if(((IntLiteral)(content->size))->value<0)
                 {
                     std::cerr<<"error: '"<<name<<"' declared as an array with a negative size"<<std::endl;
                     assert(0);
                 }
-                else{
+                else if(content->basicType->id==CONST_TYPE_BUILTIN && ((BuiltinType)(content->basicType))->builtinType==CONST_TYPE_BUILTIN_CHAR && init->id==NODE_EXP_STRLITERAL)
+                {
+                    if(((IntLiteral)(content->size))->value < ((StrLiteral)init)->value.size()+1)
+                    {
+                        
+                        std::cerr<<"error: initializer-string for char array is too long"<<std::endl;
+                        assert(0);
+                    }
+                    
+                    
+
+                }
+                else
+                {
+                    
                     if( ((IntLiteral)(content->size))->value <((InitListExpr)init)->values.size())
                     {
                         std::cerr<<"error: excess elements in array initializer"<<std::endl;
