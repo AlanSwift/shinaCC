@@ -353,10 +353,13 @@ IRTreeNode Translator::translateExpr(Expr expr)
             std::list<Expr>::iterator it;
             for(it = expr1->values.begin(); it != expr1->values.end(); it++){
                 translateExpr(*it);
-                if(!isMatchType((*it)->type, ((ArrayType)expr1->type)->basicType)){
-                    if(!(*it = castFromTo(*it, ((ArrayType)expr1->type)->basicType))){
-                        fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
-                        exit(0);
+                if((*it)->type->id != CONST_TYPE_ARRAY){
+                    if(!isMatchType((*it)->type, ((ArrayType)expr1->type)->basicType)){
+                        if(!(*it = castFromTo(*it, ((ArrayType)expr1->type)->basicType))){
+                            fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line,
+                                    expr1->sourceLoc.col);
+                            exit(0);
+                        }
                     }
                 }
             }
