@@ -9,7 +9,7 @@
 #include "type.h"
 
 
-class Frame
+class Allocator
 {
 public:
     bool allocate(std::string id, Type type, bool escape = false);
