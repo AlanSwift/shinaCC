@@ -179,7 +179,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
                     expr1->expr = tmp;//to Pointer
                 }
                 if(expr1->expr->type->id != CONST_TYPE_POINTER){
-                    printf("%d:%d: error: invalid unary operation '*'\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                    fprintf(stderr, "%d:%d: error: invalid unary operation '*'\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
                 }
                 else
@@ -219,11 +219,11 @@ IRTreeNode Translator::translateExpr(Expr expr)
             translateExpr(expr1->expr);
             if(!expr1->var || !(expr1->var->id == NODE_EXP_DECLREF || expr1->var->id == NODE_EXP_ARRAYSUBSCRIPT
             || expr1->var->id == NODE_EXP_MEMBER)){
-                printf("%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(expr1->var->type->id == CONST_TYPE_ARRAY){
-                printf("%d:%d: error: array type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: array type is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(expr1->var->type->id == CONST_TYPE_FUNC){
@@ -291,16 +291,16 @@ IRTreeNode Translator::translateExpr(Expr expr)
             translateExpr(expr1->array);
             translateExpr(expr1->offset);
             if(!expr1->array || (expr1->array->type->id != CONST_TYPE_ARRAY && expr1->array->type->id != CONST_TYPE_POINTER)){
-                printf("%d:%d: error: subscripted value is not an array, pointer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: subscripted value is not an array, pointer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(!expr1->offset){
-                printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(!expr1->offset->isIntConstant()
                && (expr1->offset->type->id != CONST_TYPE_BUILTIN || !((BuiltinType)(expr1->offset->type))->isInteger())){
-                printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                fprintf(stderr, "%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             if(expr1->array->type->id == CONST_TYPE_ARRAY){
@@ -315,7 +315,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
             DeclRefExpr expr1 = (DeclRefExpr)expr;
             Type type = valueEnv.lookUp(expr1->name);
             if(!type){
-                printf("%d:%d: error: use of undeclared identifier \'%s\'\n",
+                fprintf(stderr, "%d:%d: error: use of undeclared identifier \'%s\'\n",
                        expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
             }
