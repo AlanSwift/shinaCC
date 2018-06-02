@@ -89,6 +89,7 @@ direct_abstract_declarator abstract_declarator
 primary_expression
 	: IDENTIFIER {
 	    $$ = (Expr)new DeclRefExpr_(std::string($1));
+		$$->setSourceLoc(yylineno, column);
 	    free($1);
 	    rootNode = (Node)$$;
 	}
@@ -102,6 +103,7 @@ primary_expression
     }
 	| '(' expression ')' {
 	    ParenExpr p = new ParenExpr_($2);
+		p->setSourceLoc(yylineno, column); 
 	    $$ = (Expr)p;
 	    rootNode = (Node)$$;
 	}
@@ -111,31 +113,38 @@ postfix_expression
 	: primary_expression { $$ = $1; rootNode = (Node)$$; }
 	| postfix_expression '[' expression ']' {
         $$ = (Expr)new ArraySubscriptExpr_($1, $3);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| postfix_expression '(' ')' {
         $$ = (Expr)new CallExpr_($1);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| postfix_expression '(' argument_expression_list ')' {
 	    $$ = (Expr)new CallExpr_($1, *$3);
+		$$->setSourceLoc(yylineno, column); 
 	    delete $3;
         rootNode = (Node)$$;
 	}
 	| postfix_expression '.' IDENTIFIER {
         $$ = (Expr)new MemberExpr_($1, $3, false);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| postfix_expression PTR_OP IDENTIFIER {
         $$ = (Expr)new MemberExpr_($1, $3, true);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| postfix_expression INC_OP {
         $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEADD, true);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| postfix_expression DEC_OP {
         $$ = (Expr)new UnaryOpExpr_($1, OP_UNARY_DOUBLEMINUS, true);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -156,18 +165,22 @@ unary_expression
 	: postfix_expression { $$ = $1; }
 	| INC_OP unary_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEADD, false);
+		$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	| DEC_OP unary_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_DOUBLEMINUS, false);
+		$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	| unary_operator cast_expression {
 	    $$ = (Expr)new UnaryOpExpr_($2, $1, false);
+		$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	| SIZEOF unary_expression {
         $$ = (Expr)new UnaryOpExpr_($2, OP_UNARY_SIZEOF, false);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| SIZEOF '(' type_name ')'{
@@ -196,16 +209,19 @@ multiplicative_expression
 	| multiplicative_expression '*' cast_expression {
         if(!($$ = doBinaryOp($1, OP_BINARY_MULTIPLY, $3)))
             $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MULTIPLY, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| multiplicative_expression '/' cast_expression {
 	    if(!($$ = doBinaryOp($1, OP_BINARY_DIV, $3)))
 	        $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_DIV, $3);
+			$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	| multiplicative_expression '%' cast_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_MOD, $3)))
 	    	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MOD, $3);
+			$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	;
@@ -215,11 +231,13 @@ additive_expression
 	| additive_expression '+' multiplicative_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_ADD, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ADD, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| additive_expression '-' multiplicative_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_MINUS, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_MINUS, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -229,11 +247,13 @@ shift_expression
 	| shift_expression LEFT_OP additive_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_SHIFTLEFT, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTLEFT, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| shift_expression RIGHT_OP additive_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_SHIFTRIGHT, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SHIFTRIGHT, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -243,21 +263,25 @@ relational_expression
 	| relational_expression '<' shift_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_ST, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_ST, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| relational_expression '>' shift_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_GT, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_GT, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| relational_expression LE_OP shift_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_SE, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_SE, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| relational_expression GE_OP shift_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_BE, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_BE, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -267,11 +291,13 @@ equality_expression
 	| equality_expression EQ_OP relational_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_EQ, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_EQ, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	| equality_expression NE_OP relational_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_NEQ, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_NEQ, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -281,6 +307,7 @@ and_expression
 	| and_expression '&' equality_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_AND, $3)))
          	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_AND, $3);
+			$$->setSourceLoc(yylineno, column); 
          rootNode = (Node)$$;
 	}
 	;
@@ -290,6 +317,7 @@ exclusive_or_expression
 	| exclusive_or_expression '^' and_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_XOR, $3)))
          	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_XOR, $3);
+			$$->setSourceLoc(yylineno, column); 
          rootNode = (Node)$$;
 	}
 	;
@@ -299,6 +327,7 @@ inclusive_or_expression
 	| inclusive_or_expression '|' exclusive_or_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_OR, $3)))
          $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_OR, $3);
+		 $$->setSourceLoc(yylineno, column); 
          rootNode = (Node)$$;
 	}
 	;
@@ -308,6 +337,7 @@ logical_and_expression
 	| logical_and_expression AND_OP inclusive_or_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_LOGICAL_AND, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_AND, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -317,6 +347,7 @@ logical_or_expression
 	| logical_or_expression OR_OP logical_and_expression {
 		if(!($$ = doBinaryOp($1, OP_BINARY_LOGICAL_OR, $3)))
         	$$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_LOGICAL_OR, $3);
+			$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -325,6 +356,7 @@ conditional_expression
 	: logical_or_expression { $$ = $1;rootNode = (Node)$$; }
 	| logical_or_expression '?' expression ':' conditional_expression {
         $$ = (Expr)new ConditionalExpr_($1, $3, $5);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -333,6 +365,7 @@ assignment_expression
 	: conditional_expression { $$ = $1;rootNode = (Node)$$; }
 	| unary_expression assignment_operator assignment_expression {
         $$ = (Expr)new AssignExpr_($1, $2, $3);
+		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}
 	;
@@ -355,6 +388,7 @@ expression
 	: assignment_expression { $$ = $1;rootNode = (Node)$$; }
 	| expression ',' assignment_expression {
 	    $$ = (Expr)new BinaryOpExpr_($1, OP_BINARY_COMMA, $3);
+		$$->setSourceLoc(yylineno, column); 
 	    rootNode = (Node)$$;
 	}
 	;
@@ -435,15 +469,15 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_VOID, NULL); }
-	| CHAR { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL); }
-	| SHORT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SHORT, NULL); }
-	| INT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL); }
-	| LONG { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_LONG, NULL); }
-	| FLOAT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_FLOAT, NULL); }
-	| DOUBLE { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL); }
-	| SIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SIGNED, NULL); }
-	| UNSIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED, NULL); }
+	: VOID { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_VOID, NULL); $$->setSourceLoc(yylineno, column); }
+	| CHAR { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL); $$->setSourceLoc(yylineno, column); }
+	| SHORT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SHORT, NULL); $$->setSourceLoc(yylineno, column); }
+	| INT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_INT, NULL); $$->setSourceLoc(yylineno, column); }
+	| LONG { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_LONG, NULL); $$->setSourceLoc(yylineno, column); }
+	| FLOAT { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_FLOAT, NULL); $$->setSourceLoc(yylineno, column); }
+	| DOUBLE { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_DOUBLE, NULL); $$->setSourceLoc(yylineno, column); }
+	| SIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_SIGNED, NULL); $$->setSourceLoc(yylineno, column); }
+	| UNSIGNED { $$ = (Type)new BuiltinType_(CONST_TYPE_BUILTIN_UNSIGNED, NULL); $$->setSourceLoc(yylineno, column); }
 	| struct_or_union_specifier {}
 	| enum_specifier {}
 	| TYPE_NAME {}
@@ -470,6 +504,7 @@ direct_declarator
 	: IDENTIFIER
 	{
         $$=new VarDecl_(NULL,NULL);
+		$$->setSourceLoc(yylineno, column); 
         $$->name=std::string($1);
         free($1);
 	}
@@ -484,13 +519,16 @@ direct_declarator
 	    //printf("-----%d\n",((VarDecl)$$)->type->id);
 
 	    $$=$1;
-        $$->add2Tail(new ArrayType_(NULL,$3));
-
+        ArrayType a = new ArrayType_(NULL,$3);
+	    a->setSourceLoc(yylineno, column);
+		$$->add2Tail(a);
 	}
 	| direct_declarator '[' ']'
 	{
 	    $$=$1;
-        $$->add2Tail(new ArrayType_(NULL,NULL));
+        ArrayType a = new ArrayType_(NULL,NULL);
+	    a->setSourceLoc(yylineno, column);
+		$$->add2Tail(a);
 	}
 	| direct_declarator '(' parameter_type_list ')'
 	{
@@ -501,6 +539,7 @@ direct_declarator
 	        if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
 	        {
 	            $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+				$$->setSourceLoc(yylineno, column); 
 	            delete $1;
 	        }
 	        else if(((VarDecl)$1)->type!=NULL)
@@ -513,7 +552,9 @@ direct_declarator
                     delete e;
                 }
                 delete $3;
-	            $1->add2Tail(new FunctionType_(NULL,args));
+	            FunctionType f = new FunctionType_(NULL,args);
+				f->setSourceLoc(yylineno, column);  
+	            $1->add2Tail(f);
 	            $$=$1;
 	        }
 	        else{
@@ -528,7 +569,9 @@ direct_declarator
                 delete e;
             }
             delete $3;
-	        $1->add2Tail(new FunctionType_(NULL,args));
+	        FunctionType f = new FunctionType_(NULL,args);
+			f->setSourceLoc(yylineno, column);  
+	        $1->add2Tail(f);
 	        $$=$1;
 	    }
 
@@ -540,6 +583,7 @@ direct_declarator
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
             {
                 $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+				$$->setSourceLoc(yylineno, column); 
                 delete $1;
             }
             else if(((VarDecl)$1)->type!=NULL)
@@ -550,7 +594,9 @@ direct_declarator
                     args.push_back(((ParmVarDecl)e)->type);
                 }
                 delete $3;
-                $1->add2Tail(new FunctionType_(NULL,args));
+                FunctionType f = new FunctionType_(NULL,args);
+				f->setSourceLoc(yylineno, column);  
+                $1->add2Tail(f);
                 $$=$1;
             }
             else{
@@ -564,7 +610,9 @@ direct_declarator
                 args.push_back(((ParmVarDecl)e)->type);
             }
             delete $3;
-            $1->add2Tail(new FunctionType_(NULL,args));
+            FunctionType f = new FunctionType_(NULL,args);
+			f->setSourceLoc(yylineno, column);  
+            $1->add2Tail(f);
             $$=$1;
         }
 	}
@@ -576,11 +624,14 @@ direct_declarator
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
             {
                 $$=new FunctionDecl_($1->name,NULL,NULL);
+				$$->setSourceLoc(yylineno, column);
                 delete $1;
             }
             else if(((VarDecl)$1)->type!=NULL)
             {
-                $1->add2Tail(new FunctionType_(NULL));
+                FunctionType f = new FunctionType_(NULL);
+				f->setSourceLoc(yylineno, column);  
+                $1->add2Tail(f);
                 $$=$1;
             }
             else{
@@ -588,7 +639,9 @@ direct_declarator
             }
         }
         else{
-            $1->add2Tail(new FunctionType_(NULL));
+            FunctionType f = new FunctionType_(NULL);
+			f->setSourceLoc(yylineno, column);  
+            $1->add2Tail(f);
             $$=$1;
         }
 		
@@ -598,15 +651,19 @@ direct_declarator
 pointer
 	: '*' {
 	    $$ = new PointerType_(NULL);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	| '*' type_qualifier_list {
 	    $$ = new PointerType_(NULL);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	| '*' pointer {
 	    $$ = new PointerType_($2);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	| '*' type_qualifier_list pointer {
 	    $$ = new PointerType_($3);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	;
 
@@ -651,17 +708,17 @@ parameter_declaration
         {
 			if( ((VarDecl)$2)->type!=NULL && ((VarDecl)$2)->type->id==CONST_TYPE_ARRAY)
 			{
-				$$=new ParmVarDecl_($2->name,
-					new PointerType_(
-						((ArrayType)((VarDecl)$2)->type)->basicType
-					)
-				);
+				PointerType p = new PointerType_(((ArrayType)((VarDecl)$2)->type)->basicType);
+				p->setSourceLoc(yylineno, column);
+				$$=new ParmVarDecl_($2->name, p);
+				$$->setSourceLoc(yylineno, column);
 				delete $2;
 				$$->add2Tail($1);
 			}
 			else{
 				
 				$$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+				$$->setSourceLoc(yylineno, column);
 				delete $2;
 				$$->add2Tail($1);
 			}
@@ -675,14 +732,12 @@ parameter_declaration
 				args.push_back(((ParmVarDecl)e)->type);
 				delete e;
 			}
-
-			$$=new ParmVarDecl_($2->name,
-				new PointerType_(
-					new FunctionType_(	((FunctionDecl)$2)->returnType,
-						args
-					)
-				)
-			);
+			FunctionType f = new FunctionType_(	((FunctionDecl)$2)->returnType, args);
+			f->setSourceLoc(yylineno, column);
+			PointerType p = new PointerType_(f);
+			p->setSourceLoc(yylineno, column);
+			$$=new ParmVarDecl_($2->name, p);
+			$$->setSourceLoc(yylineno, column); 
 			delete $2;
 			$$->add2Tail($1);
 
@@ -699,16 +754,16 @@ parameter_declaration
         {
 			if( ((VarDecl)$2)->type!=NULL && ((VarDecl)$2)->type->id==CONST_TYPE_ARRAY)
 			{
-				$$=new ParmVarDecl_($2->name,
-					new PointerType_(
-						((ArrayType)((VarDecl)$2)->type)->basicType
-					)
-				);
+				PointerType p = new PointerType_(((ArrayType)((VarDecl)$2)->type)->basicType);
+				p->setSourceLoc(yylineno, column);
+				$$=new ParmVarDecl_($2->name, p);
+				$$->setSourceLoc(yylineno, column); 
 				delete $2;
 				$$->add2Tail($1);
 			}
 			else{
 				$$=new ParmVarDecl_($2->name,((VarDecl)$2)->type);
+				$$->setSourceLoc(yylineno, column); 
 				delete $2;
 				$$->add2Tail($1);
 			}
@@ -723,13 +778,12 @@ parameter_declaration
 				delete e;
 			}
 
-			$$=new ParmVarDecl_($2->name,
-				new PointerType_(
-					new FunctionType_(	((FunctionDecl)$2)->returnType,
-						args
-					)
-				)
-			);
+			FunctionType f = new FunctionType_(	((FunctionDecl)$2)->returnType, args);
+			f->setSourceLoc(yylineno, column);
+			PointerType p = new PointerType_(f);
+			p->setSourceLoc(yylineno, column);
+			$$=new ParmVarDecl_($2->name, p);
+			$$->setSourceLoc(yylineno, column);
 			delete $2;
 			$$->add2Tail($1);
 
@@ -742,6 +796,7 @@ parameter_declaration
 	{
 	    checkType($1);
 	    $$=new ParmVarDecl_($1);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	;
 
@@ -771,7 +826,10 @@ type_name
 abstract_declarator
 	: pointer
 	{
-	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+		PointerType p = new PointerType_(NULL);
+		p->setSourceLoc(yylineno, column);
+	    $$=new VarDecl_(p, NULL);
+		$$->setSourceLoc(yylineno, column); 
 	}
 	| direct_abstract_declarator
 	{
@@ -788,10 +846,17 @@ abstract_declarator
                 args.push_back(((ParmVarDecl)e)->type);
                 delete e;
             }
-            $$=new VarDecl_(new PointerType_(new FunctionType_(((FunctionDecl)$2)->returnType,args)),NULL);
+            FunctionType f = new FunctionType_(((FunctionDecl)$2)->returnType,args);
+			f->setSourceLoc(yylineno, column);  
+			PointerType p = new PointerType_(f);
+			p->setSourceLoc(yylineno, column);  
+            $$=new VarDecl_(p, NULL);
+			$$->setSourceLoc(yylineno, column);
             delete $2;
         }
         else{
+			PointerType p = new PointerType_(NULL);
+			p->setSourceLoc(yylineno, column);
             $2->add2Tail(new PointerType_(NULL));
             $$=$2;
         }
@@ -805,29 +870,41 @@ direct_abstract_declarator
 	}
 	| '[' ']'
 	{
-	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+		PointerType p = new PointerType_(NULL);
+		p->setSourceLoc(yylineno, column);
+	    $$=new VarDecl_(p, NULL);
+	    $$->setSourceLoc(yylineno, column);
 	}
 	| '[' constant_expression ']'
 	{
-	    $$=new VarDecl_(new PointerType_(NULL),NULL);
+	    PointerType p = new PointerType_(NULL);
+		p->setSourceLoc(yylineno, column);
+	    $$=new VarDecl_(p, NULL);
+	    $$->setSourceLoc(yylineno, column);
 	}
 	| direct_abstract_declarator '[' ']'
 	{
 	    $$=$1;
-        $$->add2Tail(new ArrayType_(NULL,NULL));
+		ArrayType a = new ArrayType_(NULL,NULL);
+	    a->setSourceLoc(yylineno, column);  
+        $$->add2Tail(a);
 	}
 	| direct_abstract_declarator '[' constant_expression ']'
 	{
 	    $$=$1;
-        $$->add2Tail(new ArrayType_(NULL,$3));
+		ArrayType a = new ArrayType_(NULL,$3);
+	    a->setSourceLoc(yylineno, column);  
+        $$->add2Tail(a);
 	}
 	| '(' ')'
 	{
 	    $$=new FunctionDecl_("",NULL,NULL);
+		$$->setSourceLoc(yylineno, column);
 	}
 	| '(' parameter_type_list ')'
 	{
 	    $$=new FunctionDecl_("",NULL,*$2,NULL);
+		$$->setSourceLoc(yylineno, column);
 	}
 	| direct_abstract_declarator '(' ')'
 	{
@@ -836,11 +913,14 @@ direct_abstract_declarator
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
             {
                 $$=new FunctionDecl_($1->name,NULL,NULL);
+				$$->setSourceLoc(yylineno, column);
                 delete $1;
             }
             else if(((VarDecl)$1)->type!=NULL)
             {
-                $1->add2Tail(new FunctionType_(NULL));
+				FunctionType f = new FunctionType_(NULL);
+				f->setSourceLoc(yylineno, column);
+                $1->add2Tail(f);
                 $$=$1;
             }
             else{
@@ -848,7 +928,9 @@ direct_abstract_declarator
             }
         }
         else{
-            $1->add2Tail(new FunctionType_(NULL));
+            FunctionType f = new FunctionType_(NULL);
+			f->setSourceLoc(yylineno, column);  
+			$1->add2Tail(f);
             $$=$1;
         }
 	}
@@ -860,6 +942,7 @@ direct_abstract_declarator
             if(((VarDecl)$1)->type==NULL && ((VarDecl)$1)->init==NULL)
             {
                 $$=new FunctionDecl_($1->name,NULL,*$3,NULL);
+				$$->setSourceLoc(yylineno, column);
                 delete $1;
             }
             else if(((VarDecl)$1)->type!=NULL)
@@ -871,7 +954,9 @@ direct_abstract_declarator
                     delete e;
                 }
                 delete $3;
-                $1->add2Tail(new FunctionType_(NULL,args));
+                FunctionType f = new FunctionType_(NULL,args);
+				f->setSourceLoc(yylineno, column);  
+                $1->add2Tail(f);$1->add2Tail(new FunctionType_(NULL,args));
                 $$=$1;
             }
             else{
@@ -886,7 +971,9 @@ direct_abstract_declarator
                 delete e;
             }
             delete $3;
-            $1->add2Tail(new FunctionType_(NULL,args));
+            FunctionType f = new FunctionType_(NULL,args);
+			f->setSourceLoc(yylineno, column);  
+            $1->add2Tail(f);
             $$=$1;
         }
 	}
@@ -913,6 +1000,7 @@ initializer_list
 		std::list<Expr> values= std::list<Expr>();
 		values.push_back($1);
 		$$=new InitListExpr_(values);
+		$$->setSourceLoc(yylineno, column);
 	}
 	| initializer_list ',' initializer
 	{
@@ -987,15 +1075,18 @@ statement
 labeled_statement
 	: IDENTIFIER ':' statement {
 	    $$ = (Stmt)new LabelStmt_(std::string($1), $3);
+		$$->setSourceLoc(yylineno, column);
 	    free($1);
 	    rootNode = (Node)$$;
 	}
 	| CASE constant_expression ':' statement {
         $$ = (Stmt)new CaseStmt_($2, $4);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| DEFAULT ':' statement {
 	    $$ = (Stmt)new DefaultStmt_($3);
+		$$->setSourceLoc(yylineno, column);
 	    rootNode = (Node)$$;
 	}
 	;
@@ -1003,18 +1094,22 @@ labeled_statement
 compound_statement
 	: '{' '}' {
 	    $$ = (Stmt)new CompoundStmt_();
+		$$->setSourceLoc(yylineno, column);
 	    rootNode = (Node)$$;
 	}
 	| '{' statement_list '}' {
         $$ = (Stmt)new CompoundStmt_(*$2);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
         delete $2;
 	}
 	| '{' declaration_list '}' {
         $$ = (Stmt)new CompoundStmt_();
+		$$->setSourceLoc(yylineno, column);
         std::list<std::list<struct Decl_ *> *>::iterator it;
         for(it = $2->begin(); it != $2->end(); it++){
             Stmt varDecl = (Stmt)new DeclStmt_(*(*it));
+			varDecl->setSourceLoc(yylineno, column);
             ((CompoundStmt)$$)->addStatement(varDecl);
         }
         delete $2;
@@ -1022,9 +1117,11 @@ compound_statement
 	}
 	| '{' declaration_list statement_list '}' {
 	    $$ = (Stmt)new CompoundStmt_();
+		$$->setSourceLoc(yylineno, column);
         std::list<std::list<struct Decl_ *> *>::iterator it;
         for(it = $2->begin(); it != $2->end(); it++){
             Stmt varDecl = (Stmt)new DeclStmt_(*(*it));
+			varDecl->setSourceLoc(yylineno, column);
             ((CompoundStmt)$$)->addStatement(varDecl);
         }
         delete $2;
@@ -1061,10 +1158,12 @@ statement_list
 expression_statement
 	: ';' {
 	    $$ = (Stmt)new NullStmt_();
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| expression ';' {
 	    $$ = (Stmt)new ExprStmt_($1);
+		$$->setSourceLoc(yylineno, column);
 	    rootNode = (Node)$$;
 	}
 	;
@@ -1072,14 +1171,17 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' statement {
 	    $$ = (Stmt)new IfStmt_($3, $5, NULL);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| IF '(' expression ')' statement ELSE statement {
         $$ = (Stmt)new IfStmt_($3, $5, $7);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| SWITCH '(' expression ')' statement {
         $$ = (Stmt)new SwitchStmt_($3, $5);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	;
@@ -1087,10 +1189,12 @@ selection_statement
 iteration_statement
 	: WHILE '(' expression ')' statement {
         $$ = (Stmt)new WhileStmt_($5, $3);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| DO statement WHILE '(' expression ')' ';' {
 	    $$ = (Stmt)new DoStmt_($2, $5);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| FOR '(' expression_statement expression_statement ')' statement {
@@ -1104,6 +1208,7 @@ iteration_statement
         else
             expr2 = ((ExprStmt)$4)->expr;
         $$ = (Stmt)new ForStmt_(expr1, expr2, NULL, $6);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| FOR '(' expression_statement expression_statement expression ')' statement {
@@ -1117,6 +1222,7 @@ iteration_statement
         else
             expr2 = ((ExprStmt)$4)->expr;
         $$ = (Stmt)new ForStmt_(expr1, expr2, $5, $7);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	;
@@ -1124,23 +1230,28 @@ iteration_statement
 jump_statement
 	: GOTO IDENTIFIER ';' {
         $$ = (Stmt)new GoToStmt_(std::string($2));
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
         free($2);
 	}
 	| CONTINUE ';' {
         $$ = (Stmt)new ContinueStmt_();
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| BREAK ';'{
         $$ = (Stmt)new BreakStmt_();
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| RETURN ';'{
         $$ = (Stmt)new ReturnStmt_(NULL);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	| RETURN expression ';'{
         $$ = (Stmt)new ReturnStmt_($2);
+		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
 	}
 	;
@@ -1148,6 +1259,7 @@ jump_statement
 translation_unit
 	: external_declaration {
 	    $$ = (Decl)new TranslationUnitDecl_();
+		$$->setSourceLoc(yylineno, column);
 	    std::list<Decl>::iterator it;
         for(it = $1->begin(); it != $1->end(); it++){
             ((TranslationUnitDecl)$$)->addDeclaration(*it);
