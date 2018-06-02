@@ -77,7 +77,7 @@ L?'(\\.|[^\\'])+'	{ count(); char a = yytext[1]; yylval.expr = (Expr)new CharLit
 {D}*"."{D}+({E})?{FS}?	{ count(); double a; sscanf(yytext, "%lf", &a); yylval.expr = (Expr)new FloatLiteral_(a);return(CONSTANT); }
 {D}+"."{D}*({E})?{FS}?	{ count(); double a; sscanf(yytext, "%lf", &a); yylval.expr = (Expr)new FloatLiteral_(a);return(CONSTANT); }
 
-L?\"(\\.|[^\\"])*\"	{ count(); yylval.expr = (Expr)new StrLiteral_(yytext); return(STRING_LITERAL);}
+L?\"(\\.|[^\\"])*\"	{ count(); yytext[strlen(yytext) - 1] = 0; yylval.expr = (Expr)new StrLiteral_(yytext + 1); return(STRING_LITERAL);}
 
 "..."			{ count(); return(ELLIPSIS); }
 ">>="			{ count(); return(RIGHT_ASSIGN); }
