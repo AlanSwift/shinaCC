@@ -1,5 +1,5 @@
 
-int ff(int n)
+int ff(int a)
 {
 	int n;
 	if(n<=1)
