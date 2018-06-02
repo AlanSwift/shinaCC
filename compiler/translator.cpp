@@ -217,7 +217,8 @@ IRTreeNode Translator::translateExpr(Expr expr)
             AssignExpr expr1 = (AssignExpr)expr;
             translateExpr(expr1->var);
             translateExpr(expr1->expr);
-            if(!expr1->var || expr1->var->id != NODE_EXP_DECLREF){
+            if(!expr1->var || !(expr1->var->id == NODE_EXP_DECLREF || expr1->var->id == NODE_EXP_ARRAYSUBSCRIPT
+            || expr1->var->id == NODE_EXP_MEMBER)){
                 printf("%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
@@ -230,7 +231,6 @@ IRTreeNode Translator::translateExpr(Expr expr)
                 exit(0);
             }
             expr1->type = expr1->var->type;
-            //expr1->expr->show();
             Expr tmp = castFromTo(expr1->expr, expr1->var->type);
             if(!tmp){
                 fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
@@ -254,8 +254,12 @@ IRTreeNode Translator::translateExpr(Expr expr)
                 exit(0);
             }
             //exit(0)
-            if(func->id != CONST_TYPE_FUNC)
-                func = ((PointerType)func)->pointTo;
+            if(func->id == CONST_TYPE_FUNC){
+                expr1->func = transformImplicitExp(expr1->func, CONST_TYPE_POINTER);
+                //expr1->func->show();
+                func = expr1->func->type;
+            }
+            func = ((PointerType)func)->pointTo;
             list<Type> *paras;
             paras = &((FunctionType)func)->argsType;
             list<Expr>::iterator it1;
@@ -299,8 +303,10 @@ IRTreeNode Translator::translateExpr(Expr expr)
                 printf("%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
-            if(expr1->array->type->id != CONST_TYPE_ARRAY)
+            if(expr1->array->type->id == CONST_TYPE_ARRAY){
                 expr1->type = ((ArrayType)expr1->array->type)->basicType;
+                expr1->array = transformImplicitExp(expr1->array, CONST_TYPE_POINTER);
+            }
             else
                 expr1->type = ((PointerType)expr1->array->type)->pointTo;
         }

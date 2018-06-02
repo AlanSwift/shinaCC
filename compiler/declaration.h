@@ -89,7 +89,7 @@ struct VarDecl_:public Decl_
             init->show(space + 1);
         if(type)
         {
-            type->show(space+1);
+            //type->show(space+1);
         }
         else{
             printf("*******************null_ptr************************\n");
