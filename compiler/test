@@ -1,5 +1,8 @@
 
 int main()
 {
-	char ff[3]="123";
+    int a, b, c, e;
+    short f;
+    double d;
+	int *array[] = {&a, &b, &c};
 }

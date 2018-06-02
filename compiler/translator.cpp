@@ -338,6 +338,25 @@ IRTreeNode Translator::translateExpr(Expr expr)
             //TODO:
         }
             break;
+        case NODE_EXP_INITLIST:{
+            InitListExpr expr1 = (InitListExpr)expr;
+            if(expr1->type->id != CONST_TYPE_ARRAY){
+                fprintf(stderr, "%d:%d: error: lvalue should be array\n",
+                       expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
+            std::list<Expr>::iterator it;
+            for(it = expr1->values.begin(); it != expr1->values.end(); it++){
+                translateExpr(*it);
+                if(!isMatchType((*it)->type, ((ArrayType)expr1->type)->basicType)){
+                    if(!(*it = castFromTo(*it, ((ArrayType)expr1->type)->basicType))){
+                        fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
+                        exit(0);
+                    }
+                }
+            }
+        }
+            break;
         default:
             break;
     }
@@ -440,6 +459,8 @@ IRTreeNode Translator::translateDecl(Decl decl)
         case NODE_DECL_VAR:
         {
             Type c=valueEnv.lookUp(decl->name);
+            if(((VarDecl)decl)->init)
+                translateExpr(((VarDecl)decl)->init);
             if(c!=NULL)
             {
                 std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
