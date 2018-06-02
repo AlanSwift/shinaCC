@@ -7,7 +7,7 @@
 #include "declaration.h"
 #include "statement.h"
 #include "expression.h"
-#include "translate.h"
+#include "translator.h"
 #include "utils.h"
 #include <iostream>
 #include <list>
@@ -1143,7 +1143,8 @@ int main(int argc, char *argv[]) {
     rootNode->show();
 	std::cout<<"=================="<<std::endl;
     assert(rootNode->id == NODE_DECL_TRANSLATION);
-    translate((TranslationUnitDecl)rootNode);
+    Translator *translator = new Translator();
+    translator->translate((TranslationUnitDecl)rootNode);
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;
     rootNode->show();
 	std::cout<<"finish"<<std::endl;

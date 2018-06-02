@@ -446,6 +446,19 @@ IRTreeNode Translator::translateDecl(Decl decl)
                 assert(0);
             }
             else{
+                Type c=((VarDecl)decl)->type;
+                switch(c->id)
+                {
+                    case CONST_TYPE_ARRAY:
+                    {
+                        ArrayType content=(ArrayType)c;
+                        //check size
+                        isTypeValid(((VarDecl)decl)->name,c,((VarDecl)decl)->init);
+
+
+                        break;
+                    }
+                }
 
                 valueEnv.addSymbol(decl->name,((VarDecl)decl)->type);
                 //TODO
@@ -568,3 +581,220 @@ Expr Translator::castFromTo(Expr expr, Type type)
     }
     return expr;
 }
+
+bool Translator::isTypeComplete(Type c)
+{
+    switch(c->id)
+    {
+        case CONST_TYPE_ARRAY:
+        {
+            if(((ArrayType)c)->size==NULL||((ArrayType)c)->basicType==NULL)
+            {
+                return false;
+            }
+            return isTypeComplete(((ArrayType)c)->basicType);
+            break;
+        }
+        case CONST_TYPE_POINTER:
+        {
+            return isTypeComplete(((PointerType)c)->pointTo);
+            break;
+        }
+        default:
+        {
+            return true;
+        }
+
+    }
+}
+
+bool Translator::isTypeValid(std::string name,Type c,Expr init)
+{
+    switch(c->id)
+    {
+        case CONST_TYPE_ARRAY:
+        {
+            ArrayType content=(ArrayType)c;
+            //check complement
+            if(!isTypeComplete(((ArrayType)c)->basicType))
+            {
+                std::cerr<<"error: array has incomplete element type '"<<((ArrayType)c)->basicType->getType()<<"'"<<std::endl;
+                assert(0);
+            }
+            //check size
+            if(content->size==NULL)
+            {
+                if(init==NULL)
+                {
+                    std::cerr<<"error: definition of variable with array type needs an explicit size or an initializer"<<std::endl;
+                    assert(0);
+                }
+                else{
+
+                    if(content->basicType->id==CONST_TYPE_BUILTIN && ((BuiltinType)(content->basicType))->builtinType==CONST_TYPE_BUILTIN_CHAR && init->id==NODE_EXP_STRLITERAL)
+                    {
+                        content->size=new IntLiteral_(((StrLiteral)init)->value.size()+1);
+
+
+                    }
+                    else if(init->id!=NODE_EXP_INITLIST)
+                    {
+                        std::cerr<<"error: array initializer must be an initializer list"<<std::endl;
+                        assert(0);
+                    }
+                    else{
+                        //caculate size
+                        content->size=new IntLiteral_(((InitListExpr)init)->values.size());
+                        //check each element's type
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(auto it=((InitListExpr)init)->values.begin();it!=((InitListExpr)init)->values.end();it++)
+                            {
+                                if((*it)->id!=NODE_EXP_INITLIST)
+                                {
+                                    auto &expr=*it;
+                                    std::list<Expr> vals=std::list<Expr>();
+                                    vals.push_back(expr);
+                                    *it=new InitListExpr_(vals);
+                                }
+                            }
+                        }
+
+                        //TODO
+                        for(auto & e:((InitListExpr)init)->values)
+                        {
+                            isTypeValid(name,content->basicType,e);
+                        }
+                    }
+
+                }
+            }
+            else if(content->size->id!=NODE_EXP_INTLITERAL)
+            {
+                std::cerr<<"error: size of array has non-integer type"<<std::endl;
+                assert(0);
+            }
+            else{
+
+                if(((IntLiteral)(content->size))->value<0)
+                {
+                    std::cerr<<"error: '"<<name<<"' declared as an array with a negative size"<<std::endl;
+                    assert(0);
+                }
+                else if(content->basicType->id==CONST_TYPE_BUILTIN && ((BuiltinType)(content->basicType))->builtinType==CONST_TYPE_BUILTIN_CHAR && init->id==NODE_EXP_STRLITERAL)
+                {
+                    if(((IntLiteral)(content->size))->value < ((StrLiteral)init)->value.size()+1)
+                    {
+
+                        std::cerr<<"error: initializer-string for char array is too long"<<std::endl;
+                        assert(0);
+                    }
+
+
+
+                }
+                else
+                {
+
+                    if( ((IntLiteral)(content->size))->value <((InitListExpr)init)->values.size())
+                    {
+                        std::cerr<<"error: excess elements in array initializer"<<std::endl;
+                        assert(0);
+                    }
+                    else{
+                        //refill
+                        int number2Fill=((IntLiteral)(content->size))->value -((InitListExpr)init)->values.size();
+                        std::cout<<number2Fill<<"&&&&"<<std::endl;
+
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(int i=0;i<number2Fill;i++)
+                            {
+                                std::list<Expr> vals=std::list<Expr>();
+
+                                ((InitListExpr)init)->values.push_back(new InitListExpr_(vals));
+
+                            }
+                        }
+                        else{
+                            for(int i=0;i<number2Fill;i++)
+                            {
+                                ((InitListExpr)init)->values.push_back(new IntLiteral_(0));
+                            }
+                        }
+
+
+                        //change to initialist
+                        if(((ArrayType)c)->basicType->id==CONST_TYPE_ARRAY)
+                        {
+                            for(auto it=((InitListExpr)init)->values.begin();it!=((InitListExpr)init)->values.end();it++)
+                            {
+                                if((*it)->id!=NODE_EXP_INITLIST)
+                                {
+                                    auto &expr=*it;
+                                    std::list<Expr> vals=std::list<Expr>();
+                                    vals.push_back(expr);
+                                    *it=new InitListExpr_(vals);
+                                }
+                            }
+                        }
+
+
+                    }
+                    //check each element
+                    //TODO
+                    for(auto &e:((InitListExpr)init)->values)
+                    {
+                        isTypeValid(name,content->basicType,e);
+                    }
+                }
+            }
+            break;
+        }
+        case CONST_TYPE_POINTER:
+        {
+            //TODO
+            break;
+        }
+        case CONST_TYPE_BUILTIN:
+        {
+            std::cout<<id2name( ((BuiltinType)c)->builtinType)<<"****"<<std::endl;
+            std::cout<<id2name(init->id)<<"****"<<std::endl;
+            switch(((BuiltinType)c)->builtinType)
+            {
+                case CONST_TYPE_BUILTIN_INT:
+                {
+                    if(init->id==NODE_EXP_INTLITERAL)
+                    {
+                        return true;
+                    }
+                    else if(init->id==NODE_EXP_CHARLITERAL)
+                    {
+                        //TODO char->int implicate cast
+                        return true;
+                    }
+                    else if(init->id==NODE_EXP_FLOATLITERAL)
+                    {
+                        //TODO char->int implicate cast
+                        return true;
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+                }
+
+            }
+
+            break;
+        }
+        default:
+        {
+            std::cout<<id2name(c->id)<<"fuckyou"<<std::endl;
+
+        }
+    }
+    return true;
+}
+

@@ -31,6 +31,10 @@ private:
     Expr transformImplicitExp(Expr expr, int type);
 
     Expr castFromTo(Expr expr, Type type);
+
+    bool isTypeComplete(Type c);
+
+    bool isTypeValid(std::string name,Type c,Expr init);
 };
 
 #endif //CP_SEMANT_H

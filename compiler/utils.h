@@ -5,6 +5,11 @@
 #include "expression.h"
 #include <cassert>
 
+void freeSpace(Type type);
+
+void changeType(Type &type, int t);
+bool checkType(Type &type);
+
 
 bool isMatchType(Type a,Type b);
 
