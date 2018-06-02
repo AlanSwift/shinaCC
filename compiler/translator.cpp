@@ -507,10 +507,8 @@ IRTreeNode Translator::translateDecl(Decl decl)
 
             if(c==NULL)
             {
-
                 if(((FunctionDecl)decl)->stmt!=NULL)
                 {
-
                     ((FunctionType)funType)->isDefined=true;
                     valueEnv.pushEnv();
                     typeEnv.pushEnv();
@@ -527,6 +525,7 @@ IRTreeNode Translator::translateDecl(Decl decl)
                         }
                         
                     }
+                    valueEnv.addSymbol(decl->name,funType);
                     translateStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
                     typeEnv.popEnv();

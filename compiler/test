@@ -1,12 +1,18 @@
 
-int quickpow(int a)
+int ff(int n)
 {
-
+	int n;
+	if(n<=1)
+	{
+		return 1;
+	}
+	return n*ff(n-1);
 }
 
 
 int main()
 {
-	char* a;
-	quickpow(a);
+	int a=10;
+	ff(a);
+	return 0;
 }
