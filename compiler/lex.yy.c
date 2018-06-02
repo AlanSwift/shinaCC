@@ -1155,7 +1155,7 @@ case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
 #line 80 "compiler.l"
-{ count(); yylval.expr = (Expr)new StrLiteral_(yytext); return(STRING_LITERAL);}
+{ count(); yytext[strlen(yytext) - 1] = 0; yylval.expr = (Expr)new StrLiteral_(yytext + 1); return(STRING_LITERAL);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
