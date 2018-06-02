@@ -1,3 +1,4 @@
+int factorial(int n);
 
 int ff(int a)
 {

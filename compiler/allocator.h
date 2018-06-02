@@ -12,7 +12,8 @@
 class Allocator
 {
 public:
-    bool allocate(std::string id, Type type, bool escape = false);
+    bool allocateLocal(std::string id, Type type, bool escape = false); /*local variables*/
+    bool allocateGlobal(std::string id, Type type); /*global variables, function*/
 };
 
 #endif //CP_FRAME_H
