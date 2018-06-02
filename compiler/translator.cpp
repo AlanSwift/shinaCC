@@ -530,11 +530,24 @@ IRTreeNode Translator::translateDecl(Decl decl)
                         valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
                         
                     }
-
                     valueEnv.addSymbol(decl->name,funType);
                     translateStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
                     typeEnv.popEnv();
+                }
+                else{
+                    for(auto & e:((FunctionDecl)decl)->parameters)
+                    {
+                        if(e->name=="")
+                        {
+                            std::cerr<<"error: parameter name omitted"<<std::endl;
+                            assert(0);
+                        }
+                        else{
+                            translateDecl(e);
+                        }
+                        
+                    }
                 }
                 valueEnv.addSymbol(decl->name,funType);
 
@@ -550,7 +563,34 @@ IRTreeNode Translator::translateDecl(Decl decl)
                 assert(0);
             }
             else{
+                ((FunctionType)funType)->isDefined=true;
+                ((FunctionType)c)->isDefined=true;
 
+                valueEnv.pushEnv();
+                typeEnv.pushEnv();
+                for(auto & e:((FunctionDecl)decl)->parameters)
+                {
+                    if(e->name=="")
+                    {
+                        std::cerr<<"error: parameter name omitted"<<std::endl;
+                        assert(0);
+                    }
+                    else{
+                        translateDecl(e);
+
+                    }
+                    
+                }
+                for(auto & e:((FunctionDecl)decl)->parameters)
+                {
+                    valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
+                    
+                }
+
+                valueEnv.addSymbol(decl->name,funType);
+                translateStmt(((FunctionDecl)decl)->stmt);
+                valueEnv.popEnv();
+                typeEnv.popEnv();
 
             }
             break;
