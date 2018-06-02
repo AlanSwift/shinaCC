@@ -1,19 +1,17 @@
 int factorial(int n);
 
-int ff(int a)
-{
-	int n;
-	if(n<=1)
-	{
-		return 1;
-	}
-	return n*ff(n-1);
-}
-
-
 int main()
 {
-	int a=10;
-	ff(a);
-	return 0;
+    int a = 10;
+    int *p = &a;
+    *p = 11;
+    factorial(a);
+    return 0;
+}
+
+int factorial(int n)
+{
+    if(n <= 1)
+        return 1;
+    return n * factorial(n - 1);
 }

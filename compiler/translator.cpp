@@ -217,8 +217,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
             AssignExpr expr1 = (AssignExpr)expr;
             translateExpr(expr1->var);
             translateExpr(expr1->expr);
-            if(!expr1->var || !(expr1->var->id == NODE_EXP_DECLREF || expr1->var->id == NODE_EXP_ARRAYSUBSCRIPT
-            || expr1->var->id == NODE_EXP_MEMBER)){
+            if(!expr1->var || expr1->isConstant()){
                 fprintf(stderr, "%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
