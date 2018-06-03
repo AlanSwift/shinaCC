@@ -9,13 +9,31 @@
 #include <vector>
 #include "allocator.h"
 
+typedef class Tr_node_ *Tr_node;
 typedef class T_stm_ *T_stm;
 typedef class T_exp_ *T_exp;
+typedef class T_condition_ *T_cond;
 typedef int T_relOp;
 typedef int T_binOp;
 typedef int T_unaOp;
 
+class Tr_node_
+{
+public:
+    enum {
+        Tr_stm, Tr_exp, Tr_cond
+    } kind;
+    union {
+       T_stm stm; T_exp exp; T_cond cond;
+    } u;
+
+    void buildStm(T_stm stm);
+    void buildExp(T_exp exp);
+    void buildCond(T_cond cond);
+};
+
 class T_stm_ {
+public:
     enum {
         T_SEQ, T_LABEL, T_JUMP, T_CJUMP, T_MOVE, T_EXP,
     } kind;
@@ -38,6 +56,7 @@ class T_stm_ {
 };
 
 class T_exp_ {
+public:
     enum {T_BINOP, T_UNAOP, T_MEM, T_TEMP, T_ESEQ, T_NAME,
         T_CONST, T_CALL} kind;
     union {
@@ -57,7 +76,6 @@ class T_exp_ {
         } CONST;
         struct {T_exp fun; std::vector<T_exp> *args;} CALL;
     } u;
-
     void buildBINOP(T_binOp op, T_exp left, T_exp right);
     void buildUNAOP(T_unaOp op, T_exp operand);
     void buildMEM(T_exp exp);
@@ -68,6 +86,20 @@ class T_exp_ {
     void buildFloatConst(double fval);
     void buildStrConst(Temp_label str);
     void buildCALL(T_exp fun, std::vector<T_exp> *args);
+};
+
+class T_condition_
+{
+public:
+    std::vector<Temp_label> *trues;
+    std::vector<Temp_label> *falses;
+    T_stm stm;
+
+public:
+    T_condition_(std::vector<Temp_label> *trues, std::vector<Temp_label> *falses, T_stm stm):trues(trues), falses(falses),
+                                                                                             stm(stm){
+
+    }
 };
 
 #endif //CP_TREE_H

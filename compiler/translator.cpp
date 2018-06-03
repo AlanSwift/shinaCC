@@ -3,6 +3,7 @@
 //
 
 #include "translator.h"
+#include "tree.h"
 
 IRTreeNode Translator::translate(TranslationUnitDecl start)
 {

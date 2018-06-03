@@ -3,6 +3,24 @@
 //
 #include "tree.h"
 
+void Tr_node_::buildStm(T_stm stm)
+{
+    u.stm = stm;
+    kind = Tr_stm;
+}
+
+void Tr_node_::buildExp(T_exp exp)
+{
+    kind = Tr_exp;
+    u.exp = exp;
+}
+
+void Tr_node_::buildCond(T_cond cond)
+{
+    kind = Tr_cond;
+    u.cond = cond;
+}
+
 void T_stm_::buildSEQ(T_stm left, T_stm right)
 {
     kind = T_SEQ;

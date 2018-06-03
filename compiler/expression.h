@@ -8,6 +8,8 @@
 #include <list>
 #include "type.h"
 #include "constant.h"
+#include "tree.h"
+#include "utils.h"
 using namespace std;
 
 //can be modified
@@ -77,6 +79,11 @@ struct ParenExpr_:public Expr_
             printf("-");
         printf("ParenExpr_ %s\n", getType().c_str());
         expr->show(space + 1);
+    }
+
+    Tr_node generateCode()
+    {
+        return expr->generateCode();
     }
 };
 
