@@ -18,7 +18,8 @@ bool isMatchBuiltinType(BuiltinType a,BuiltinType b);
 bool isMatchPointerType(PointerType a,PointerType b);
 bool isMatchArrayType(ArrayType a,ArrayType b);
 
-
+bool isUnaryOp(int op);
+bool isBinaryOp(int op);
 bool isRelationalOp(int op);
 bool isBitWiseOp(int op);
 bool isLogicalOp(int op);

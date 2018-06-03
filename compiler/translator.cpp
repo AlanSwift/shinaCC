@@ -253,12 +253,12 @@ IRTreeNode Translator::translateExpr(Expr expr)
                 exit(0);
             }
             //exit(0)
-            if(func->id == CONST_TYPE_FUNC){
-                expr1->func = transformImplicitExp(expr1->func, CONST_TYPE_POINTER);
+            if(func->id != CONST_TYPE_FUNC){
+                //expr1->func = transformImplicitExp(expr1->func, CONST_TYPE_POINTER);
                 //expr1->func->show();
-                func = expr1->func->type;
+                //func = expr1->func->type;
+                func = ((PointerType)func)->pointTo;
             }
-            func = ((PointerType)func)->pointTo;
             list<Type> *paras;
             paras = &((FunctionType)func)->argsType;
             list<Expr>::iterator it1;

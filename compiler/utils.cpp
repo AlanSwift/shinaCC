@@ -143,6 +143,16 @@ Expr doUnaryOp(Expr expr1, int op)
     }
 }
 
+bool isUnaryOp(int op)
+{
+    return false;
+}
+
+bool isBinaryOp(int op)
+{
+    return false;
+}
+
 bool isRelationalOp(int op)
 {
     if(op == OP_BINARY_BE || op == OP_BINARY_GT || op == OP_BINARY_ST
