@@ -456,6 +456,10 @@ init_declarator
 			if(($3->id==NODE_EXP_INITLIST))
 			{
 				((InitListExpr)$3)->type=((VarDecl)$1)->type;
+				for(auto &e:((InitListExpr)$3)->values)
+				{
+					
+				}
 			}
 	    }
 	}
@@ -548,7 +552,6 @@ direct_declarator
 	            list<Type> args;
                 for(auto & e:*$3)
                 {
-                    printf("******%s******\n",id2name(e->id).c_str());
                     args.push_back(((ParmVarDecl)e)->type);
                     delete e;
                 }
