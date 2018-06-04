@@ -97,17 +97,19 @@ Symbol Translator_::translateArrayIndex(ArraySubscriptExpr expr)
 
 void Translator_::translateExprStmt(ExprStmt stmt)
 {
-
+    assert(stmt->expr);
+    translateExpression(stmt->expr);
 }
 
 void Translator_::translateLabelStmt(LabelStmt stmt)
 {
-
+    //TODO: create basic block for label
+    translateStatement(stmt->stmt);
 }
 
 void Translator_::translateCaseStmt(CaseStmt stmt)
 {
-
+    translateStatement(stmt->stmt);
 }
 
 void Translator_::translateDefaultStmt(DefaultStmt stmt)

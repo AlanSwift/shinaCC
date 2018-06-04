@@ -13,38 +13,10 @@
 #include <vector>
 #include <string>
 #include <cstring>
-typedef class Symbol_ *Symbol;
-typedef class IrInst_ *IrInst;
-typedef class BasicBlock_ *BasicBlock;
+#include <cassert>
 typedef class Translator_ *Translator;
 typedef class Program_ *Program;
 
-
-class Symbol_
-{
-    Type type;
-    std::string name;
-    union {
-        int i[2];
-        float f;
-        double d;
-        void *p;
-    } valueUnion;
-};
-
-class IrInst_
-{
-public:
-    Type type;
-    int opcode;
-    Symbol opds[3];// dst src src
-};
-
-class BasicBlock_
-{
-public:
-    std::vector<IrInst>insts;
-};
 
 class Program_
 {

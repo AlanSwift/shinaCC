@@ -8,6 +8,7 @@
 #include <string>
 #include <cstdio>
 #include <iostream>
+#include <vector>
 
 #define SPACE '-'
 
@@ -226,6 +227,36 @@ struct Decl_:public Node_
             printf("%c", SPACE);
         printf("Decl_\n");
     }
+};
+
+typedef class Symbol_ *Symbol;
+typedef class IrInst_ *IrInst;
+typedef class BasicBlock_ *BasicBlock;
+
+class Symbol_
+{
+    Type type;
+    std::string name;
+    union {
+        int i[2];
+        float f;
+        double d;
+        void *p;
+    } valueUnion;
+};
+
+class IrInst_
+{
+public:
+    Type type;
+    int opcode;
+    Symbol opds[3];// dst src src
+};
+
+class BasicBlock_
+{
+public:
+    std::vector<IrInst>insts;
 };
 
 

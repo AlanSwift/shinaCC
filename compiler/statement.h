@@ -45,30 +45,40 @@ typedef struct CaseStmt_ *CaseStmt;
 typedef struct DefaultStmt_ *DefaultStmt;
 typedef struct ExprStmt_ *ExprStmt;
 typedef struct DeclStmt_ *DeclStmt;
+typedef struct Label_ *Label;
 
+
+struct Label_
+{
+    std::string label;
+    BasicBlock respBB;
+    Label_(std::string label):respBB(NULL), label(label){}
+};
 
 
 struct BreakStmt_:public Stmt_
 {
+    Stmt target;
     BreakStmt_(){this->id = NODE_STM_BREAK;}
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("BreakStmt_\n");
+        printf("BreakStmt_: %x\n", target);
     }
 };
 
 struct ContinueStmt_:public Stmt_
 {
+    Stmt target;
     ContinueStmt_(){this->id = NODE_STM_CONTINUE;}
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("ContinueStmt_\n");
+        printf("ContinueStmt_: %x\n", target);
     }
 };
 
@@ -98,7 +108,15 @@ struct DoStmt_:public Stmt_
 {
     Stmt stmt;
     Expr expr;
-    DoStmt_(Stmt stmt, Expr expr):stmt(stmt), expr(expr){this->id = NODE_STM_DO;}
+    BasicBlock loopBB;
+    BasicBlock contBB;
+    BasicBlock nextBB;
+    DoStmt_(Stmt stmt, Expr expr):stmt(stmt), expr(expr){
+        this->id = NODE_STM_DO;
+        loopBB = NULL;
+        contBB = NULL;
+        nextBB = NULL;
+    }
 
     void show(int space = 0)
     {
@@ -114,7 +132,15 @@ struct WhileStmt_:public Stmt_
 {
     Expr expr;
     Stmt stmt;
-    WhileStmt_(Stmt stmt, Expr expr):stmt(stmt), expr(expr){this->id = NODE_STM_WHILE;}
+    BasicBlock loopBB;
+    BasicBlock contBB;
+    BasicBlock nextBB;
+    WhileStmt_(Stmt stmt, Expr expr):stmt(stmt), expr(expr){
+        this->id = NODE_STM_WHILE;
+        loopBB = NULL;
+        contBB = NULL;
+        nextBB = NULL;
+    }
 
     void show(int space = 0)
     {
@@ -130,8 +156,17 @@ struct ForStmt_:public Stmt_
 {
     Expr init, condition, next;
     Stmt stmt;
+    BasicBlock loopBB;
+    BasicBlock contBB;
+    BasicBlock nextBB;
+    BasicBlock testBB;
     ForStmt_(Expr init, Expr condition, Expr next, Stmt stmt):init(init), condition(condition),
-                                                              next(next), stmt(stmt){this->id = NODE_STM_FOR;}
+                                                              next(next), stmt(stmt){
+        this->id = NODE_STM_FOR;
+        loopBB = NULL;
+        contBB = NULL;
+        testBB = nextBB = NULL;
+    }
 
     void show(int space = 0)
     {
@@ -165,14 +200,14 @@ struct ForStmt_:public Stmt_
 
 struct GoToStmt_:public Stmt_
 {
-    string label;
-    GoToStmt_(string label):label(label){this->id = NODE_STM_GOTO;}
+    Label label;
+    GoToStmt_(Label label):label(label){this->id = NODE_STM_GOTO;}
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("GoToStmt_: %s\n", label.c_str());
+        printf("GoToStmt_: %s\n", label->label.c_str());
     }
 };
 
@@ -196,15 +231,15 @@ struct IfStmt_:public Stmt_
 
 struct LabelStmt_:public Stmt_
 {
-    string label;
+    Label label;
     Stmt stmt;
-    LabelStmt_(string label, Stmt stmt):label(label), stmt(stmt){this->id = NODE_STM_LABEL;}
+    LabelStmt_(Label label, Stmt stmt):label(label), stmt(stmt){this->id = NODE_STM_LABEL;}
 
     void show(int space = 0)
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("LabelStmt_: %s\n", label.c_str());
+        printf("LabelStmt_: %s\n", label->label.c_str());
         stmt->show(space + 1);
     }
 };
@@ -228,7 +263,13 @@ struct SwitchStmt_:public Stmt_
 {
     Expr expr;
     Stmt stmt;
-    SwitchStmt_(Expr expr, Stmt stmt):expr(expr), stmt(stmt){this->id = NODE_STM_SWITCH;}
+    BasicBlock nextBB;
+    BasicBlock defBB;
+    SwitchStmt_(Expr expr, Stmt stmt):expr(expr), stmt(stmt){
+        this->id = NODE_STM_SWITCH;
+        nextBB = NULL;
+        defBB = NULL;
+    }
 
     void show(int space = 0)
     {
@@ -244,7 +285,9 @@ struct CaseStmt_:public Stmt_
 {
     Expr const_;
     Stmt stmt;
-    CaseStmt_(Expr const_, Stmt stmt):const_(const_), stmt(stmt){this->id = NODE_STM_CASE;}
+    BasicBlock respBB;
+    //CaseStmt nextCase;
+    CaseStmt_(Expr const_, Stmt stmt):const_(const_), stmt(stmt), respBB(NULL){this->id = NODE_STM_CASE;}
 
     void show(int space = 0)
     {
@@ -259,7 +302,8 @@ struct CaseStmt_:public Stmt_
 struct DefaultStmt_:public Stmt_
 {
     Stmt stmt;
-    DefaultStmt_(Stmt stmt):stmt(stmt){this->id = NODE_STM_DEFAULT;}
+    BasicBlock respBB;
+    DefaultStmt_(Stmt stmt):stmt(stmt), respBB(NULL){this->id = NODE_STM_DEFAULT;}
 
     void show(int space = 0)
     {

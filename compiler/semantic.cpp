@@ -403,6 +403,8 @@ void Semantic::semanticExpr(Expr expr)
     }
 }
 
+Stmt targetStmt = NULL;
+
 void Semantic::semanticStmt(Stmt stmt)
 {
     switch (stmt->id){
@@ -422,6 +424,7 @@ void Semantic::semanticStmt(Stmt stmt)
                 semanticDecl(d);
             break;
         case NODE_STM_SWITCH:{
+            targetStmt = stmt;
             Expr expr = ((SwitchStmt)stmt)->expr;
             semanticExpr(expr);
             if(!expr->isIntConstant() &&
@@ -431,9 +434,15 @@ void Semantic::semanticStmt(Stmt stmt)
                 exit(0);
             }
             semanticStmt( ((SwitchStmt)stmt)->stmt);
+            targetStmt = NULL;
         }
             break;
         case NODE_STM_CASE:{
+            if(!targetStmt){
+                fprintf(stderr, "%d:%d: error: case label not within a switch statement\n",
+                        stmt->sourceLoc.line, stmt->sourceLoc.col);
+                exit(0);
+            }
             Expr expr = ((CaseStmt)stmt)->const_;
             semanticExpr(expr);
             if(!expr->isIntConstant()){
@@ -445,6 +454,11 @@ void Semantic::semanticStmt(Stmt stmt)
         }
             break;
         case NODE_STM_DEFAULT:
+            if(!targetStmt){
+                fprintf(stderr, "%d:%d: error: default label not within a switch statement\n",
+                        stmt->sourceLoc.line, stmt->sourceLoc.col);
+                exit(0);
+            }
             semanticStmt( ((DefaultStmt)stmt)->stmt);
             break;
         case NODE_STM_RETURN:
@@ -458,13 +472,18 @@ void Semantic::semanticStmt(Stmt stmt)
             break;
         case NODE_STM_WHILE:
             semanticExpr(((WhileStmt)stmt)->expr);
+            targetStmt = stmt;
             semanticStmt(((WhileStmt)stmt)->stmt);
+            targetStmt = NULL;
             break;
         case NODE_STM_DO:
             semanticExpr(((DoStmt)stmt)->expr);
+            targetStmt = stmt;
             semanticStmt(((DoStmt)stmt)->stmt);
+            targetStmt = NULL;
             break;
         case NODE_STM_FOR:{
+
             ForStmt stmt1 = (ForStmt)stmt;
             if(stmt1->init)
                 semanticExpr(stmt1->init);
@@ -472,15 +491,29 @@ void Semantic::semanticStmt(Stmt stmt)
                 semanticExpr(stmt1->condition);
             if(stmt1->next)
                 semanticExpr(stmt1->next);
+            targetStmt = stmt;
             semanticStmt( stmt1->stmt);
+            targetStmt = NULL;
         }
             break;
         case NODE_STM_LABEL:
             semanticStmt( ((LabelStmt)stmt)->stmt);
             break;
         case NODE_STM_CONTINUE:
+            if(!targetStmt || targetStmt->id == NODE_STM_SWITCH){
+                fprintf(stderr, "%d:%d: error: continue label not within a loop statement\n",
+                        stmt->sourceLoc.line, stmt->sourceLoc.col);
+                exit(0);
+            }
+            ((ContinueStmt)stmt)->target = targetStmt;
             break;
         case NODE_STM_BREAK:
+            if(!targetStmt){
+                fprintf(stderr, "%d:%d: error: continue label not within a right statement\n",
+                        stmt->sourceLoc.line, stmt->sourceLoc.col);
+                exit(0);
+            }
+            ((BreakStmt)stmt)->target = targetStmt;
             break;
         case NODE_STM_NULL:
             break;

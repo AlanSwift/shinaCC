@@ -1078,7 +1078,8 @@ statement
 
 labeled_statement
 	: IDENTIFIER ':' statement {
-	    $$ = (Stmt)new LabelStmt_(std::string($1), $3);
+	    Label label = new Label_(std::string($1));
+	    $$ = (Stmt)new LabelStmt_(label, $3);
 		$$->setSourceLoc(yylineno, column);
 	    free($1);
 	    rootNode = (Node)$$;
@@ -1233,7 +1234,8 @@ iteration_statement
 
 jump_statement
 	: GOTO IDENTIFIER ';' {
-        $$ = (Stmt)new GoToStmt_(std::string($2));
+	    Label label = new Label_(std::string($2));
+        $$ = (Stmt)new GoToStmt_(label);
 		$$->setSourceLoc(yylineno, column);
         rootNode = (Node)$$;
         free($2);
