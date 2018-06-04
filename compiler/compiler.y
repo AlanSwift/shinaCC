@@ -365,6 +365,7 @@ assignment_expression
 	: conditional_expression { $$ = $1;rootNode = (Node)$$; }
 	| unary_expression assignment_operator assignment_expression {
         $$ = (Expr)new AssignExpr_($1, $2, $3);
+        $$->lvalue = true;
 		$$->setSourceLoc(yylineno, column); 
         rootNode = (Node)$$;
 	}

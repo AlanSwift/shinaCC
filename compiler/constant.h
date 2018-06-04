@@ -109,8 +109,15 @@ const int NODE_EXP_INITLIST=115;
 struct Expr_:public Node_
 {
     Type type;
+    bool lvalue;
+    union {
+        int i[2];
+        float f;
+        double d;
+        void *p;
+    } valueUnion;
 
-    Expr_():type(NULL){}
+    Expr_():type(NULL), lvalue(false){}
 
     virtual void show(int space = 0)
     {
