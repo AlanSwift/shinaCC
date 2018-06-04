@@ -104,22 +104,38 @@ void Translator_::translateExprStmt(ExprStmt stmt)
 void Translator_::translateLabelStmt(LabelStmt stmt)
 {
     //TODO: create basic block for label
+    if(stmt->label){
+        if(stmt->label->respBB)
+            stmt->label->respBB = program->createBasicBlock();
+        program->startBasicBlock(stmt->label->respBB);
+    }
     translateStatement(stmt->stmt);
 }
 
 void Translator_::translateCaseStmt(CaseStmt stmt)
 {
+    //TODO:
     translateStatement(stmt->stmt);
 }
 
 void Translator_::translateDefaultStmt(DefaultStmt stmt)
 {
-
+    //TODO:
 }
 
 void Translator_::translateIfStmt(IfStmt stmt)
 {
-
+    BasicBlock nextBB, trueBB, falseBB;
+    nextBB = program->createBasicBlock();
+    trueBB = program->createBasicBlock();
+    if(stmt->else_ == NULL){
+        translateBranch(notExpr(stmt->condition), nextBB, trueBB);
+        program->startBasicBlock(trueBB);
+        translateStatement(stmt->if_);
+    }
+    else{
+        falseBB = program->createBasicBlock();
+    }
 }
 
 void Translator_::translateWhileStmt(WhileStmt stmt)
@@ -166,6 +182,57 @@ void Translator_::translateSwitchStmt(SwitchStmt stmt)
 {
 
 }
+
+void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock)
+{
+
+}
+
+Expr Translator_::notExpr(Expr expr)
+{
+    if(expr->id == NODE_EXP_BINARY){
+        BinaryOpExpr expr1 = (BinaryOpExpr)expr;
+        switch (expr1->operator_){
+            case OP_BINARY_LOGICAL_AND:
+                expr1->operator_ = OP_BINARY_LOGICAL_OR;
+                expr1->left = notExpr(expr1->left);
+                expr1->right = notExpr(expr1->right);
+                return expr;
+            case OP_BINARY_LOGICAL_OR:
+                expr1->operator_ = OP_BINARY_LOGICAL_AND;
+                expr1->left = notExpr(expr1->left);
+                expr1->right = notExpr(expr1->right);
+                return expr;
+            case OP_BINARY_BE: // >=
+                expr1->operator_ = OP_BINARY_ST;
+                return expr;
+            case OP_BINARY_ST: // <
+                expr1->operator_ = OP_BINARY_BE;
+                return expr;
+            case OP_BINARY_GT: // >
+                expr1->operator_ = OP_BINARY_SE;
+                return expr;
+            case OP_BINARY_SE: // <=
+                expr1->operator_ = OP_BINARY_GT;
+                return expr;
+            case OP_BINARY_EQ:
+                expr1->operator_ = OP_BINARY_NEQ;
+                return expr;
+            case OP_BINARY_NEQ:
+                expr1->operator_ = OP_BINARY_EQ;
+                return expr;
+            default: break;
+        }
+    }
+    else if(expr->id == NODE_EXP_UNARY){
+        UnaryOpExpr expr1 = (UnaryOpExpr)expr;
+        if(expr1->operator_ == OP_UNARY_LOGICAL_NOT)
+            return expr1->expr;
+    }
+    UnaryOpExpr expr2 = new UnaryOpExpr_(expr, OP_UNARY_LOGICAL_NOT, false);
+    return expr2;
+}
+
 
 void Translator_::translateStatement(Stmt stmt)
 {
