@@ -4,11 +4,12 @@ void g();
 
 int main()
 {
+    int array[3][3];
     int a, b;
     int (*fp)(int);
     fp = factorial;
+    array[0][0] = 10;
     a = 10;
-    (a, b, g());
     fp(a);
     return 0;
 }

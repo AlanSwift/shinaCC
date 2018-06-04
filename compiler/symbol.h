@@ -22,7 +22,6 @@ private:
     std::list<std::pair<std::string, T>> hashTale[HASH_TABLE_SZIE];
     std::vector<std::vector<std::string>> buffer;
     int bufferSize=0;
-
     unsigned int hashValue(std::string &str)
     {
         const char *s = str.c_str();
@@ -49,6 +48,14 @@ public:
         }
         
         return true;
+    }
+
+    void clear()
+    {
+        buffer.clear();
+        for(int i = 0; i < HASH_TABLE_SZIE; i++){
+            hashTale[i].clear();
+        }
     }
 
     T popSymbol(std::string id) {

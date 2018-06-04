@@ -2,17 +2,47 @@
 // Created by Administrator on 2018/6/1/001.
 //
 
-#include "translator.h"
+#include "semantic.h"
 #include "tree.h"
 
-IRTreeNode Translator::translate(TranslationUnitDecl start)
+void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
     for(auto &decl: start->declarations){
-        translateDecl(decl);
+        semanticDecl(decl);
     }
+    valueEnv.clear();
+    typeEnv.clear();
+    /*for(auto &decl: start->declarations){
+        if(decl->id == NODE_DECL_VAR){
+            VarDecl decl1 = (VarDecl)decl;
+            //TODO: varDecl
+        }
+        else if(decl->id == NODE_DECL_FUNCTION){
+            FunctionDecl decl1 = (FunctionDecl)decl;
+            if(!decl1->stmt)
+                translateFunction(decl1);
+        }
+    }*/
 }
 
-IRTreeNode Translator::translateExpr(Expr expr)
+/*IRTree Translator::translateFunction(FunctionDecl decl)
+{
+    //TODO: parameters
+    CompoundStmt definition = (CompoundStmt)decl->stmt;
+    for(auto &stmt: definition->stmtList){
+        if(stmt->id == NODE_STM_DECL){
+            DeclStmt stmt1 = (DeclStmt)stmt;
+            for(auto &decl: stmt1->declarations){
+                VarDecl decl1 = (VarDecl)decl;
+            }
+        }
+        else{
+
+        }
+    }
+}*/
+
+void Semantic::semanticExpr(Expr expr)
 {/*type: Func, Pointer, Array, Basic*/
     switch (expr->id){
         case NODE_EXP_STRLITERAL:{
@@ -37,9 +67,9 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_CONDITIONAL:{
             ConditionalExpr expr1 = (ConditionalExpr)expr;
-            translateExpr(expr1->condition);
-            translateExpr(expr1->true_);
-            translateExpr(expr1->false_);
+            semanticExpr(expr1->condition);
+            semanticExpr(expr1->true_);
+            semanticExpr(expr1->false_);
             if(expr1->true_->type->id == CONST_TYPE_FUNC || expr1->true_->type->id == CONST_TYPE_ARRAY){
                 Expr tmp = transformImplicitExp(expr1->true_, CONST_TYPE_POINTER);
                 expr1->true_ = tmp; //to Pointer
@@ -92,8 +122,8 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_BINARY:{
             BinaryOpExpr expr1 = (BinaryOpExpr)expr;
-            translateExpr(expr1->left);
-            translateExpr(expr1->right);
+            semanticExpr(expr1->left);
+            semanticExpr(expr1->right);
             if(expr1->operator_ == OP_BINARY_COMMA){
                 expr1->type = expr1->right->type;
                 return;
@@ -167,7 +197,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_UNARY:{
             UnaryOpExpr expr1 = (UnaryOpExpr)expr;
-            translateExpr(expr1->expr);
+            semanticExpr(expr1->expr);
             if(expr1->operator_ == OP_UNARY_SIZEOF){
                 //TODO:
             }
@@ -220,8 +250,8 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_ASSIGN:{
             AssignExpr expr1 = (AssignExpr)expr;
-            translateExpr(expr1->var);
-            translateExpr(expr1->expr);
+            semanticExpr(expr1->var);
+            semanticExpr(expr1->expr);
             if(expr1->expr->type == BuiltinType_::voidType){
                 fprintf(stderr, "%d:%d: error: void value is not assignable\n",
                         expr1->sourceLoc.line, expr1->sourceLoc.col);
@@ -251,9 +281,9 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_CALL:{
             CallExpr expr1 = (CallExpr)expr;
-            translateExpr(expr1->func);
+            semanticExpr(expr1->func);
             for(auto &e: expr1->args){
-                translateExpr(e);
+                semanticExpr(e);
             }
             Type func = expr1->func->type;
             if(func->id != CONST_TYPE_FUNC && !(func->id == CONST_TYPE_POINTER
@@ -297,8 +327,8 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_ARRAYSUBSCRIPT:{
             ArraySubscriptExpr expr1 = (ArraySubscriptExpr)expr;
-            translateExpr(expr1->array);
-            translateExpr(expr1->offset);
+            semanticExpr(expr1->array);
+            semanticExpr(expr1->offset);
             if(!expr1->array || (expr1->array->type->id != CONST_TYPE_ARRAY && expr1->array->type->id != CONST_TYPE_POINTER)){
                 fprintf(stderr, "%d:%d: error: subscripted value is not an array, pointer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
@@ -325,7 +355,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
             Type type = valueEnv.lookUp(expr1->name);
             if(!type){
                 fprintf(stderr, "%d:%d: error: use of undeclared identifier \'%s\'\n",
-                       expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
+                        expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
             }
             /*if(type->id == CONST_TYPE_FUNC && !((FunctionType)type)->isDefined){
@@ -339,7 +369,7 @@ IRTreeNode Translator::translateExpr(Expr expr)
             break;
         case NODE_EXP_PAREN:{
             ParenExpr expr1 = (ParenExpr)expr;
-            translateExpr(expr1->expr);
+            semanticExpr(expr1->expr);
             expr1->type = expr1->expr->type;
         }
             break;
@@ -362,12 +392,12 @@ IRTreeNode Translator::translateExpr(Expr expr)
             InitListExpr expr1 = (InitListExpr)expr;
             if(expr1->type->id != CONST_TYPE_ARRAY){
                 fprintf(stderr, "%d:%d: error: lvalue should be array\n",
-                       expr1->sourceLoc.line, expr1->sourceLoc.col);
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
             std::list<Expr>::iterator it;
             for(it = expr1->values.begin(); it != expr1->values.end(); it++){
-                translateExpr(*it);
+                semanticExpr(*it);
                 if((*it)->type->id != CONST_TYPE_ARRAY){
                     if(!isMatchType((*it)->type, ((ArrayType)expr1->type)->basicType)){
                         if(!(*it = castFromTo(*it, ((ArrayType)expr1->type)->basicType))){
@@ -385,80 +415,80 @@ IRTreeNode Translator::translateExpr(Expr expr)
     }
 }
 
-IRTreeNode Translator::translateStmt(Stmt stmt)
+void Semantic::semanticStmt(Stmt stmt)
 {
     switch (stmt->id){
         case NODE_STM_COMPOUND:
             valueEnv.pushEnv();
             typeEnv.pushEnv();
             for(auto &s: ((CompoundStmt)stmt)->stmtList)
-                translateStmt(s);
+                semanticStmt(s);
             valueEnv.popEnv();
             typeEnv.popEnv();
             break;
         case NODE_STM_EXPR:
-            translateExpr(((ExprStmt)stmt)->expr);
+            semanticExpr(((ExprStmt)stmt)->expr);
             break;
         case NODE_STM_DECL:
             for(auto &d: ((DeclStmt)stmt)->declarations)
-                translateDecl(d);
+                semanticDecl(d);
             break;
         case NODE_STM_SWITCH:{
             Expr expr = ((SwitchStmt)stmt)->expr;
-            translateExpr(expr);
+            semanticExpr(expr);
             if(!expr->isIntConstant() &&
                !(expr->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)expr->type)->isInteger())){
                 fprintf(stderr, "%d:%d: error: switch quantity not an integer\n",
                         expr->sourceLoc.line, expr->sourceLoc.col);
                 exit(0);
             }
-            translateStmt( ((SwitchStmt)stmt)->stmt);
+            semanticStmt( ((SwitchStmt)stmt)->stmt);
         }
             break;
         case NODE_STM_CASE:{
             Expr expr = ((CaseStmt)stmt)->const_;
-            translateExpr(expr);
+            semanticExpr(expr);
             if(!expr->isIntConstant()){
                 fprintf(stderr, "%d:%d: error: case label can't be reduced to an Integer constant\n",
                         expr->sourceLoc.line, expr->sourceLoc.col);
                 exit(0);
             }
-            translateStmt( ((CaseStmt)stmt)->stmt);
+            semanticStmt( ((CaseStmt)stmt)->stmt);
         }
             break;
         case NODE_STM_DEFAULT:
-            translateStmt( ((DefaultStmt)stmt)->stmt);
+            semanticStmt( ((DefaultStmt)stmt)->stmt);
             break;
         case NODE_STM_RETURN:
-            translateExpr(((ReturnStmt)stmt)->result);
+            semanticExpr(((ReturnStmt)stmt)->result);
             break;
         case NODE_STM_IF:
-            translateExpr(((IfStmt)stmt)->condition);
-            translateStmt( ((IfStmt)stmt)->if_);
+            semanticExpr(((IfStmt)stmt)->condition);
+            semanticStmt( ((IfStmt)stmt)->if_);
             if(((IfStmt)stmt)->else_)
-                translateStmt( ((IfStmt)stmt)->else_);
+                semanticStmt( ((IfStmt)stmt)->else_);
             break;
         case NODE_STM_WHILE:
-            translateExpr(((WhileStmt)stmt)->expr);
-            translateStmt(((WhileStmt)stmt)->stmt);
+            semanticExpr(((WhileStmt)stmt)->expr);
+            semanticStmt(((WhileStmt)stmt)->stmt);
             break;
         case NODE_STM_DO:
-            translateExpr(((DoStmt)stmt)->expr);
-            translateStmt(((DoStmt)stmt)->stmt);
+            semanticExpr(((DoStmt)stmt)->expr);
+            semanticStmt(((DoStmt)stmt)->stmt);
             break;
         case NODE_STM_FOR:{
             ForStmt stmt1 = (ForStmt)stmt;
             if(stmt1->init)
-                translateExpr(stmt1->init);
+                semanticExpr(stmt1->init);
             if(stmt1->condition)
-                translateExpr(stmt1->condition);
+                semanticExpr(stmt1->condition);
             if(stmt1->next)
-                translateExpr(stmt1->next);
-            translateStmt( stmt1->stmt);
+                semanticExpr(stmt1->next);
+            semanticStmt( stmt1->stmt);
         }
             break;
         case NODE_STM_LABEL:
-            translateStmt( ((LabelStmt)stmt)->stmt);
+            semanticStmt( ((LabelStmt)stmt)->stmt);
             break;
         case NODE_STM_CONTINUE:
             break;
@@ -473,7 +503,7 @@ IRTreeNode Translator::translateStmt(Stmt stmt)
     }
 }
 
-IRTreeNode Translator::translateDecl(Decl decl)
+void Semantic::semanticDecl(Decl decl)
 {
     //type is all valid
 
@@ -483,7 +513,7 @@ IRTreeNode Translator::translateDecl(Decl decl)
         {
             Type c=valueEnv.lookUp(decl->name);
             if(((VarDecl)decl)->init)
-                translateExpr(((VarDecl)decl)->init);
+                semanticExpr(((VarDecl)decl)->init);
             if(c!=NULL)
             {
                 std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
@@ -537,18 +567,18 @@ IRTreeNode Translator::translateDecl(Decl decl)
                             assert(0);
                         }
                         else{
-                            translateDecl(e);
+                            semanticDecl(e);
 
                         }
-                        
+
                     }
                     for(auto & e:((FunctionDecl)decl)->parameters)
                     {
                         valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
-                        
+
                     }
                     valueEnv.addSymbol(decl->name,funType);
-                    translateStmt(((FunctionDecl)decl)->stmt);
+                    semanticStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
                     typeEnv.popEnv();
                 }
@@ -561,9 +591,9 @@ IRTreeNode Translator::translateDecl(Decl decl)
                             assert(0);
                         }
                         else{
-                            translateDecl(e);
+                            semanticDecl(e);
                         }
-                        
+
                     }
                 }
                 valueEnv.addSymbol(decl->name,funType);
@@ -593,19 +623,19 @@ IRTreeNode Translator::translateDecl(Decl decl)
                         assert(0);
                     }
                     else{
-                        translateDecl(e);
+                        semanticDecl(e);
 
                     }
-                    
+
                 }
                 for(auto & e:((FunctionDecl)decl)->parameters)
                 {
                     valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
-                    
+
                 }
 
                 valueEnv.addSymbol(decl->name,funType);
-                translateStmt(((FunctionDecl)decl)->stmt);
+                semanticStmt(((FunctionDecl)decl)->stmt);
                 valueEnv.popEnv();
                 typeEnv.popEnv();
 
@@ -615,7 +645,7 @@ IRTreeNode Translator::translateDecl(Decl decl)
         case NODE_DECL_PARMVAR:
         {
             if(((ParmVarDecl)decl)->type->id==CONST_TYPE_ARRAY||
-                ((ParmVarDecl)decl)->type->id==CONST_TYPE_FUNC  )
+               ((ParmVarDecl)decl)->type->id==CONST_TYPE_FUNC  )
             {
                 std::cerr<<"error: parameter type error"<<std::endl;
                 assert(0);
@@ -626,7 +656,7 @@ IRTreeNode Translator::translateDecl(Decl decl)
                     std::cerr<<"error: parameter type error"<<std::endl;
                     assert(0);
                 }
-                
+
             }
             break;
         }
@@ -634,7 +664,7 @@ IRTreeNode Translator::translateDecl(Decl decl)
 
 }
 
-Expr Translator::transformImplicitExp(Expr expr, int type)
+Expr Semantic::transformImplicitExp(Expr expr, int type)
 {
     switch(type){
         case CONST_TYPE_BUILTIN_LONG_DOUBLE:
@@ -669,7 +699,7 @@ Expr Translator::transformImplicitExp(Expr expr, int type)
     }
 }
 
-Expr Translator::castFromTo(Expr expr, Type type)
+Expr Semantic::castFromTo(Expr expr, Type type)
 {
     if(!isMatchType(expr->type, type)){
         if(type->id == CONST_TYPE_POINTER){
@@ -702,7 +732,7 @@ Expr Translator::castFromTo(Expr expr, Type type)
     return expr;
 }
 
-bool Translator::isTypeComplete(Type c)
+bool Semantic::isTypeComplete(Type c)
 {
     switch(c->id)
     {
@@ -728,7 +758,7 @@ bool Translator::isTypeComplete(Type c)
     }
 }
 
-bool Translator::isTypeValid(std::string name,Type c,Expr init)
+bool Semantic::isTypeValid(std::string name,Type c,Expr init)
 {
     switch(c->id)
     {
@@ -817,7 +847,7 @@ bool Translator::isTypeValid(std::string name,Type c,Expr init)
                 }
                 else
                 {
-                    
+
                     if( ((IntLiteral)(content->size))->value <((InitListExpr)init)->values.size())
                     {
                         std::cerr<<"error: excess elements in array initializer"<<std::endl;

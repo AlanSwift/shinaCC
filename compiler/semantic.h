@@ -13,20 +13,18 @@
 #include "expression.h"
 #include "utils.h"
 
-typedef void IRTreeNode;
-
-class Translator
+class Semantic
 {
 public:
-    IRTreeNode translate(TranslationUnitDecl start);
+    void semanticAnalysis(TranslationUnitDecl start);
 private:
     SymbolTable<Type> valueEnv, typeEnv;
 
-    IRTreeNode translateExpr(Expr expr);
+    void semanticExpr(Expr expr);
 
-    IRTreeNode translateStmt(Stmt stmt);
+    void semanticStmt(Stmt stmt);
 
-    IRTreeNode translateDecl(Decl decl);
+    void semanticDecl(Decl decl);
 
     Expr transformImplicitExp(Expr expr, int type);
 
@@ -35,6 +33,7 @@ private:
     bool isTypeComplete(Type c);
 
     bool isTypeValid(std::string name,Type c,Expr init);
+
 };
 
 #endif //CP_SEMANT_H
