@@ -10,6 +10,7 @@
 #include "declaration.h"
 #include "type.h"
 #include "statement.h"
+#include <vector>
 
 typedef class Symbol_ *Symbol;
 typedef class IrInst_ *IrInst;
@@ -19,21 +20,33 @@ typedef class Program_ *Program;
 
 class Symbol_
 {
+    Type type;
 
 };
 
 class IrInst_
 {
-
+public:
+    Type type;
+    int opcode;
+    Symbol opds[3];// dst src src
 };
 
 class BasicBlock_
 {
+public:
+    std::vector<IrInst>insts;
+
 
 };
 
 class Program_
 {
+public:
+    std::vector<BasicBlock>bblocks;
+    int index;
+    void appendInst(IrInst e);
+    
 
 };
 
@@ -64,6 +77,7 @@ private:
     void translateIfStmt(IfStmt stmt);
     void translateWhileStmt(WhileStmt stmt);
     void translateDoStmt(DoStmt stmt);
+    
     void translateForStmt(ForStmt stmt);
     void translateGotoStmt(GoToStmt stmt);
     void translateBreakStmt(BreakStmt stmt);
