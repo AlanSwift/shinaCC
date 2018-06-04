@@ -4,6 +4,26 @@
 
 #include "translator.h"
 
+void Program_::appendInst(IrInst e)
+{
+    if(currentBlock)
+        currentBlock->insts.push_back(e);
+}
+
+BasicBlock Program_::createBasicBlock()
+{
+    BasicBlock bb = new BasicBlock_();
+    memset(bb, 0, sizeof(BasicBlock_));
+    return bb;
+}
+
+void Program_::startBasicBlock(BasicBlock bb)
+{
+    if(currentBlock)
+        bblocks.push_back(currentBlock);
+    currentBlock = bb;
+}
+
 Program Translator_::translate(TranslationUnitDecl start)
 {
     for(auto &decl: start->declarations){

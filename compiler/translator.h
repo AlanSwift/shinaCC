@@ -11,17 +11,25 @@
 #include "type.h"
 #include "statement.h"
 #include <vector>
-
+#include <string>
+#include <cstring>
 typedef class Symbol_ *Symbol;
 typedef class IrInst_ *IrInst;
 typedef class BasicBlock_ *BasicBlock;
 typedef class Translator_ *Translator;
 typedef class Program_ *Program;
 
+
 class Symbol_
 {
     Type type;
-
+    std::string name;
+    union {
+        int i[2];
+        float f;
+        double d;
+        void *p;
+    } valueUnion;
 };
 
 class IrInst_
@@ -36,27 +44,30 @@ class BasicBlock_
 {
 public:
     std::vector<IrInst>insts;
-
-
 };
 
 class Program_
 {
 public:
-    std::vector<BasicBlock>bblocks;
-    int index;
+    Program_():currentBlock(NULL){}
+    std::vector<BasicBlock> bblocks;
+    BasicBlock currentBlock;
     void appendInst(IrInst e);
-    
-
+    BasicBlock createBasicBlock();
+    void startBasicBlock(BasicBlock bb);
 };
 
 class Translator_
 {
 public:
+    Translator_(){
+        program = new Program_();
+    }
     Program translate(TranslationUnitDecl start);
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
 private:
+    Program program;
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);
     Symbol translateBinaryExpr(BinaryOpExpr expr);

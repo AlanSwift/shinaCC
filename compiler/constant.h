@@ -105,6 +105,56 @@ const int NODE_EXP_FLOATLITERAL=113;
 const int NODE_EXP_STRLITERAL=114;
 const int NODE_EXP_INITLIST=115;
 
+enum {
+    BOR,//     "|",                    Assign
+    BXOR,//    "^",                    Assign
+    BAND, //   "&",                    Assign
+    LSH,//     "<<",                   Assign
+    RSH,//     ">>",                   Assign
+    ADD, //    "+",                    Assign
+    SUB,//     "-",                    Assign
+    MUL, //    "*",                    Assign
+    DIV, //    "/",                    Assign
+    MOD, //    "%",                    Assign
+    NEG, //    "-",                    Assign
+    BCOM, //   "~",                    Assign
+    JZ, //     "",                     Branch
+    JNZ,//     "!",                    Branch
+    JE,  //    "==",                   Branch
+    JNE,//     "!=",                   Branch
+    JG, //     ">",                    Branch
+    JL, //     "<",                    Branch
+    JGE, //    ">=",                   Branch
+    JLE, //    "<=",                   Branch
+    JMP, //    "jmp",                  Jump
+    IJMP, //   "ijmp",                 IndirectJump
+    INC,  //   "++",                   Inc
+    DEC, //    "--",                   Dec
+    ADDR,//    "&",                    Address
+    DEREF,//   "*",                    Deref
+    EXTI1,//   "(int)(char)",          Cast
+    EXTU1,//   "(int)(unsigned char)", Cast
+    EXTI2,//   "(int)(short)",         Cast
+    EXTU2,//   "(int)(unsigned short)",Cast
+    TRUI1,//   "(char)(int)",          Cast
+    TRUI2, //  "(short)(int)",         Cast
+    CVTI4F4,// "(float)(int)",         Cast
+    CVTI4F8, //"(double)(int)",        Cast
+    CVTU4F4,// "(float)(unsigned)",    Cast
+    CVTU4F8,// "(double)(unsigned)",   Cast
+    CVTF4, //  "(double)(float)",      Cast
+    CVTF4I4,// "(int)(float)",         Cast
+    CVTF4U4,// "(unsigned)(float)",    Cast
+    CVTF8,//   "(float)(double)",      Cast
+    CVTF8I4,// "(int)(double)",        Cast
+    CVTF8U4, //"(unsigned)(double)",   Cast
+    MOV,//     "=",                    Move
+    IMOV,//    "*=",                   IndirectMove
+    CALL,//    "call",                 Call
+    RET, //    "ret",                  Return
+    CLR, //    "",                     Clear
+    NOP, //    "NOP",                  NOP
+};
 
 struct Expr_:public Node_
 {
