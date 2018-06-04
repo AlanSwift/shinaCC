@@ -286,10 +286,11 @@ struct CStyleCastExpr_:public Expr_
 
 struct IntLiteral_:public Expr_
 {
-    long value;
-    IntLiteral_(long value):value(value){
+    int value;
+    IntLiteral_(int value):value(value){
         this->id = NODE_EXP_INTLITERAL;
         this->type = BuiltinType_::intType;
+        valueUnion.i[0] = value;
     }
 
     void show(int space = 0)
@@ -306,6 +307,7 @@ struct CharLiteral_:public Expr_
     CharLiteral_(char value):value(value){
         this->id = NODE_EXP_CHARLITERAL;
         this->type = BuiltinType_::charType;
+        valueUnion.i[0] = value;
     }
 
     void show(int space = 0)
@@ -322,6 +324,7 @@ struct FloatLiteral_:public Expr_
     double value;
     FloatLiteral_(double value):value(value){
         this->id = NODE_EXP_FLOATLITERAL;
+        valueUnion.d = value;
     }
 
     void show(int space = 0)
@@ -338,6 +341,7 @@ struct StrLiteral_:public Expr_
     string value;
     StrLiteral_(string &value):value(value){
         this->id = NODE_EXP_STRLITERAL;
+        valueUnion.p = (void *)value.c_str();
         this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
     }
     StrLiteral_(char *value){
