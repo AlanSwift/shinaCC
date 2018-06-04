@@ -135,12 +135,33 @@ void Translator_::translateIfStmt(IfStmt stmt)
     }
     else{
         falseBB = program->createBasicBlock();
+        translateBranch(notExpr(stmt->condition), falseBB, trueBB);
+
+        program->startBasicBlock(trueBB);
+        translateStatement(stmt->if_);
+        //TODO:
+
+        program->startBasicBlock(falseBB);
+        translateStatement(stmt->else_);
+        //TODO:
     }
+    program->startBasicBlock(nextBB);
 }
 
 void Translator_::translateWhileStmt(WhileStmt stmt)
 {
+    stmt->loopBB = program->createBasicBlock();
+    stmt->contBB = program->createBasicBlock();
+    stmt->nextBB = program->createBasicBlock();
 
+    //TODO:
+    program->startBasicBlock(stmt->loopBB);
+    translateStatement(stmt->stmt);
+
+    program->startBasicBlock(stmt->contBB);
+    translateBranch(stmt->expr, stmt->loopBB, stmt->nextBB);
+
+    program->startBasicBlock(stmt->nextBB);
 }
 
 void Translator_::translateDoStmt(DoStmt stmt)
