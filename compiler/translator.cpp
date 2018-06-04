@@ -132,7 +132,7 @@ void Translator_::translateDoStmt(DoStmt stmt)
 
 void Translator_::translateForStmt(ForStmt stmt)
 {
-
+    
 }
 
 void Translator_::translateGotoStmt(GoToStmt stmt)
