@@ -3,7 +3,6 @@
 //
 
 #include "semantic.h"
-#include "tree.h"
 
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
@@ -12,17 +11,6 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
     }
     valueEnv.clear();
     typeEnv.clear();
-    /*for(auto &decl: start->declarations){
-        if(decl->id == NODE_DECL_VAR){
-            VarDecl decl1 = (VarDecl)decl;
-            //TODO: varDecl
-        }
-        else if(decl->id == NODE_DECL_FUNCTION){
-            FunctionDecl decl1 = (FunctionDecl)decl;
-            if(!decl1->stmt)
-                translateFunction(decl1);
-        }
-    }*/
 }
 
 /*IRTree Translator::translateFunction(FunctionDecl decl)
