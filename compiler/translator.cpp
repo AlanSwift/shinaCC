@@ -94,6 +94,10 @@ IRTreeNode Translator::translateExpr(Expr expr)
             BinaryOpExpr expr1 = (BinaryOpExpr)expr;
             translateExpr(expr1->left);
             translateExpr(expr1->right);
+            if(expr1->operator_ == OP_BINARY_COMMA){
+                expr1->type = expr1->right->type;
+                return;
+            }
             if(expr1->left->type->id == CONST_TYPE_FUNC || expr1->left->type->id == CONST_TYPE_ARRAY){
                 Expr tmp = transformImplicitExp(expr1->left, CONST_TYPE_POINTER);
                 expr1->left = tmp; //to Pointer
@@ -218,6 +222,11 @@ IRTreeNode Translator::translateExpr(Expr expr)
             AssignExpr expr1 = (AssignExpr)expr;
             translateExpr(expr1->var);
             translateExpr(expr1->expr);
+            if(expr1->expr->type == BuiltinType_::voidType){
+                fprintf(stderr, "%d:%d: error: void value is not assignable\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col);
+                exit(0);
+            }
             if(!expr1->var || expr1->isConstant()){
                 fprintf(stderr, "%d:%d: error: expression is not assignable\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
@@ -319,6 +328,11 @@ IRTreeNode Translator::translateExpr(Expr expr)
                        expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
             }
+            /*if(type->id == CONST_TYPE_FUNC && !((FunctionType)type)->isDefined){
+                fprintf(stderr, "%d:%d: error: function \'%s\' is not defined\n",
+                        expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
+                exit(0);
+            }*/
             //printf("DEBUG> %s %s\n", expr1->name.c_str(), type->getType().c_str());
             expr1->type = type;
         }

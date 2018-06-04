@@ -1,11 +1,14 @@
 int factorial(int n);
 
+void g();
+
 int main()
 {
-    int a;
+    int a, b;
     int (*fp)(int);
     fp = factorial;
     a = 10;
+    (a, b, g());
     fp(a);
     return 0;
 }
