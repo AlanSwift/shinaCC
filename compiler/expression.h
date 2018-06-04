@@ -8,7 +8,6 @@
 #include <list>
 #include "type.h"
 #include "constant.h"
-#include "tree.h"
 #include "utils.h"
 using namespace std;
 
@@ -80,11 +79,6 @@ struct ParenExpr_:public Expr_
         printf("ParenExpr_ %s\n", getType().c_str());
         expr->show(space + 1);
     }
-
-    Tr_node generateCode()
-    {
-        return expr->generateCode();
-    }
 };
 
 struct BinaryOpExpr_:public Expr_
@@ -101,7 +95,7 @@ struct BinaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("BinaryOpExpr_: %s, %s\n", id2name(operator_).c_str(), getType().c_str());
+        printf("BinaryOpExpr_: \'%s\', %s\n", id2name(operator_).c_str(), getType().c_str());
         left->show(space + 1);
         right->show(space + 1);
     }
@@ -122,7 +116,7 @@ struct UnaryOpExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("UnaryOpExpr_: %s %s\n", id2name(operator_).c_str(), getType().c_str());
+        printf("UnaryOpExpr_: \'%s\' %s\n", id2name(operator_).c_str(), getType().c_str());
         expr->show(space + 1);
     }
 };
@@ -162,7 +156,7 @@ struct AssignExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("AssignExpr_: %s, %s\n", id2name(operator_).c_str(), getType().c_str());
+        printf("AssignExpr_: \'%s\', %s\n", id2name(operator_).c_str(), getType().c_str());
         var->show(space + 1);
         expr->show(space + 1);
     }

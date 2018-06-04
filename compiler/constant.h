@@ -8,7 +8,6 @@
 #include <string>
 #include <cstdio>
 #include <iostream>
-#include "tree.h"
 
 #define SPACE '-'
 
@@ -53,10 +52,6 @@ struct Node_
         sourceLoc.col = col;
     }
 
-    virtual Tr_node generateCode()
-    {
-        return NULL;
-    }
 };
 
 typedef struct Type_ *Type;

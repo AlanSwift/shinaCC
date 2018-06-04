@@ -7,6 +7,7 @@
 
 #include <string>
 #include "type.h"
+#include "constant.h"
 
 typedef unsigned int Register_;
 typedef Register_ *Register;
@@ -44,13 +45,13 @@ struct Temp_temp_
 typedef struct Temp_label_ *Temp_label;
 typedef struct Temp_temp_ *Temp_temp;
 
-class Allocator
+/* Allocator
 {
 public:
-    bool allocateLocal(std::string id, Type type, bool escape = false); /*local variables, in stack, registers*/
-    bool allocateGlobal(std::string id, Type type); /*global variables, function, in data, text segment*/
+    bool allocateLocal(std::string id, Type type, bool escape = false); //local variables, in stack, registers
+    bool allocateGlobal(std::string id, Type type); //global variables, function, in data, text segment
     bool allocateLabel(std::string label);
     bool allocateTemp(std::string id);
-};
+};*/
 
 #endif //CP_FRAME_H
