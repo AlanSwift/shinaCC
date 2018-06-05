@@ -18,7 +18,7 @@ class Semantic
 public:
     void semanticAnalysis(TranslationUnitDecl start);
 private:
-    SymbolTable<Type> valueEnv, typeEnv;
+    SymbolTable<Symbol> valueEnv, typeEnv;
 
     void semanticExpr(Expr expr);
 

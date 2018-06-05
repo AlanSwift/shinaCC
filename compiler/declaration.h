@@ -102,11 +102,12 @@ struct FunctionDecl_:public Decl_
     Type returnType;
     list<Decl> parameters;
     Stmt stmt; /*function body, can be null*/
-
+    FunctionSymbol functionSymbol;
     FunctionDecl_(string name, Type returnType, Stmt stmt):stmt(stmt),
                                                            returnType(returnType){
         this->id = NODE_DECL_FUNCTION;
         this->name=name;
+        functionSymbol = NULL;
     }
 
     FunctionDecl_(string name, Type returnType, list<Decl> parameters, Stmt stmt):
@@ -129,7 +130,7 @@ struct FunctionDecl_:public Decl_
         for(int i = 0; i < space; i++)
             printf("%c", SPACE);
         //exit(0);
-        printf("FunctionDecl_: %s, %s\n", this->name.c_str(), returnType->getType().c_str());
+        printf("FunctionDecl_: %s, %s, %08x\n", this->name.c_str(), returnType->getType().c_str(), functionSymbol);
         /*if(returnType)
         {
             returnType->show(space+1);

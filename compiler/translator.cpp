@@ -193,7 +193,8 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
             return IntConstant(expr->valueUnion.i[0]);
         return DoubleConst(expr->valueUnion.d);
     }
-    if(expr->id == NODE_EXP_STRLITERAL || expr->type->id == CONST_TYPE_FUNC || expr->type->id == CONST_TYPE_ARRAY){
+    assert(expr->id != NODE_EXP_STRLITERAL);//TODO:
+    if(expr->type->id == CONST_TYPE_FUNC || expr->type->id == CONST_TYPE_ARRAY){
         return addressOf((Symbol)(expr->valueUnion.p));
     }
     return (Symbol)expr->valueUnion.p;

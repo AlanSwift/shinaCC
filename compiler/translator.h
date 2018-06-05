@@ -251,7 +251,7 @@ private:
     Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2)
     {
         Symbol t = createTemp(ty);
-        generateAssign(ty, t, op, src1, src2);
+        generateAssign(ty, t, opcode, src1, src2);
         return t;
     }
 

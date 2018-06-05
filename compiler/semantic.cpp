@@ -10,25 +10,7 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
         semanticDecl(decl);
     }
     valueEnv.clear();
-    typeEnv.clear();
 }
-
-/*IRTree Translator::translateFunction(FunctionDecl decl)
-{
-    //TODO: parameters
-    CompoundStmt definition = (CompoundStmt)decl->stmt;
-    for(auto &stmt: definition->stmtList){
-        if(stmt->id == NODE_STM_DECL){
-            DeclStmt stmt1 = (DeclStmt)stmt;
-            for(auto &decl: stmt1->declarations){
-                VarDecl decl1 = (VarDecl)decl;
-            }
-        }
-        else{
-
-        }
-    }
-}*/
 
 void Semantic::semanticExpr(Expr expr)
 {/*type: Func, Pointer, Array, Basic*/
@@ -340,8 +322,8 @@ void Semantic::semanticExpr(Expr expr)
             break;
         case NODE_EXP_DECLREF:{
             DeclRefExpr expr1 = (DeclRefExpr)expr;
-            Type type = valueEnv.lookUp(expr1->name);
-            if(!type){
+            Symbol symbol = valueEnv.lookUp(expr1->name);
+            if(!symbol){
                 fprintf(stderr, "%d:%d: error: use of undeclared identifier \'%s\'\n",
                         expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
@@ -351,8 +333,8 @@ void Semantic::semanticExpr(Expr expr)
                         expr1->sourceLoc.line, expr1->sourceLoc.col, expr1->name.c_str());
                 exit(0);
             }*/
-            //printf("DEBUG> %s %s\n", expr1->name.c_str(), type->getType().c_str());
-            expr1->type = type;
+            expr1->type = symbol->type;
+            expr1->valueUnion.p = (void *)symbol;
         }
             break;
         case NODE_EXP_PAREN:{
@@ -532,12 +514,12 @@ void Semantic::semanticDecl(Decl decl)
     {
         case NODE_DECL_VAR:
         {
-            Type c=valueEnv.lookUp(decl->name);
+            Symbol c=valueEnv.lookUp(decl->name);
             if(((VarDecl)decl)->init)
                 semanticExpr(((VarDecl)decl)->init);
             if(c!=NULL)
             {
-                std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
+                std::cerr<<"error: redefinition of '"<< decl->name <<"' with a different type: '"<< c->type->getType() <<"' vs '"<< ((VarDecl)decl)->type->getType()<<"'"<<std::endl;
                 assert(0);
             }
             else{
@@ -554,8 +536,11 @@ void Semantic::semanticDecl(Decl decl)
                         break;
                     }
                 }
-
-                valueEnv.addSymbol(decl->name,((VarDecl)decl)->type);
+                Symbol symbol = new VariableSymbol_();
+                symbol->type = ((VarDecl)decl)->type;
+                symbol->name = decl->name;
+                symbol->kind = SK_Variable;
+                valueEnv.addSymbol(decl->name, symbol);
                 //TODO
             }
             break;
@@ -569,12 +554,16 @@ void Semantic::semanticDecl(Decl decl)
             {
                 args.push_back(((ParmVarDecl)e)->type);
             }
+
+            Symbol c=valueEnv.lookUp(decl->name);
             FunctionType funType=new FunctionType_(ret,args);
-
-            Type c=valueEnv.lookUp(decl->name);
-
             if(c==NULL)
             {
+                FunctionSymbol funcSym = new FunctionSymbol_();
+                funcSym->type = funType;
+                funcSym->kind = SK_Function;
+                funcSym->name = decl->name;
+                ((FunctionDecl)decl)->functionSymbol = funcSym;
                 if(((FunctionDecl)decl)->stmt!=NULL)
                 {
                     ((FunctionType)funType)->isDefined=true;
@@ -595,10 +584,14 @@ void Semantic::semanticDecl(Decl decl)
                     }
                     for(auto & e:((FunctionDecl)decl)->parameters)
                     {
-                        valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
-
+                        Symbol symbol = new VariableSymbol_();
+                        symbol->name = ((ParmVarDecl)e)->name;
+                        symbol->type = ((ParmVarDecl)e)->type;
+                        symbol->kind = SK_Variable;
+                        valueEnv.addSymbol(((ParmVarDecl)e)->name, symbol);
+                        funcSym->params.push_back(symbol);
                     }
-                    valueEnv.addSymbol(decl->name,funType);
+                    valueEnv.addSymbol(decl->name, funcSym);
                     semanticStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
                     typeEnv.popEnv();
@@ -612,27 +605,36 @@ void Semantic::semanticDecl(Decl decl)
                             assert(0);
                         }
                         else{
+                            Symbol symbol = new VariableSymbol_();
+                            symbol->name = ((ParmVarDecl)e)->name;
+                            symbol->type = ((ParmVarDecl)e)->type;
+                            symbol->kind = SK_Variable;
+                            funcSym->params.push_back(symbol);
                             semanticDecl(e);
                         }
 
                     }
                 }
-                valueEnv.addSymbol(decl->name,funType);
+                valueEnv.addSymbol(decl->name,funcSym);
 
             }
-            else if(c->id!=CONST_TYPE_FUNC)
+            else if(c->type->id!=CONST_TYPE_FUNC)
             {
                 std::cerr<<"error: redefinition of '"<<decl->name<<"' as different kind of symbol"<<std::endl;
                 assert(0);
             }
-            else if(isMatchFunctionType((FunctionType)c,funType)&& ((FunctionType)c)->isDefined && ((FunctionDecl)decl)->stmt!=NULL)
+            else if(isMatchFunctionType((FunctionType)c->type, funType)&& ((FunctionType)c->type)->isDefined
+                    && ((FunctionDecl)decl)->stmt!=NULL)
             {
                 std::cerr<<"error: redefinition of '"<<decl->name<<"'"<<std::endl;
                 assert(0);
             }
             else{
+                ((FunctionDecl)decl)->functionSymbol = (FunctionSymbol)c;
                 ((FunctionType)funType)->isDefined=true;
                 ((FunctionType)c)->isDefined=true;
+
+                FunctionSymbol funcSym = (FunctionSymbol)c;
 
                 valueEnv.pushEnv();
                 typeEnv.pushEnv();
@@ -649,13 +651,11 @@ void Semantic::semanticDecl(Decl decl)
                     }
 
                 }
-                for(auto & e:((FunctionDecl)decl)->parameters)
+                for(auto & e: funcSym->params)
                 {
-                    valueEnv.addSymbol(((ParmVarDecl)e)->name,((ParmVarDecl)e)->type);
-
+                    valueEnv.addSymbol(e->name, e);
                 }
 
-                valueEnv.addSymbol(decl->name,funType);
                 semanticStmt(((FunctionDecl)decl)->stmt);
                 valueEnv.popEnv();
                 typeEnv.popEnv();

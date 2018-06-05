@@ -243,7 +243,7 @@ struct DeclRefExpr_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("DeclRefExpr_: %s, %s\n", name.c_str(), getType().c_str());
+        printf("DeclRefExpr_: %s, %s, %08x\n", name.c_str(), getType().c_str(), valueUnion.p);
     }
 };
 
@@ -297,7 +297,7 @@ struct IntLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("IntLiteral_: %ld %s\n", value, getType().c_str());
+        printf("IntLiteral_: %ld %s\n", valueUnion.i[0], getType().c_str());
     }
 };
 
@@ -314,7 +314,7 @@ struct CharLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("CharLiteral_: %c %s\n", value, getType().c_str());
+        printf("CharLiteral_: %c %s\n", valueUnion.i[0], getType().c_str());
     }
 };
 
@@ -331,7 +331,7 @@ struct FloatLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("FloatLiteral_: %.3lf %s\n", value, getType().c_str());
+        printf("FloatLiteral_: %.3lf %s\n", valueUnion.d, getType().c_str());
         this->type = BuiltinType_::doubleType;
     }
 };
@@ -354,7 +354,7 @@ struct StrLiteral_:public Expr_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("StrLiteral_: %s %s\n", value.c_str(), getType().c_str());
+        printf("StrLiteral_: %s %s\n", (char *)(valueUnion.p), getType().c_str());
     }
 };
 
