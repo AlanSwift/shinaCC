@@ -18,77 +18,6 @@ typedef int BinaryOperator;
 typedef int UnaryOperator;
 typedef int AssignOperator;
 
-struct SourceLocation
-{
-    int line, col;
-
-    SourceLocation(int line, int col):line(line), col(col)
-    {
-
-    }
-
-    SourceLocation():SourceLocation(0, 0)
-    {
-
-    }
-
-};
-
-struct Node_
-{
-    Identifier id;
-
-    SourceLocation sourceLoc;
-
-    virtual void show(int space = 0)
-    {
-        for(int i = 0; i < space; i++)
-            printf(" ");
-        printf("Node_\n");
-    }
-
-    void setSourceLoc(int line, int col)
-    {
-        sourceLoc.line = line;
-        sourceLoc.col = col;
-    }
-};
-
-typedef struct Type_ *Type;
-typedef struct Decl_ *Decl;
-typedef struct Stmt_ *Stmt;
-typedef struct Expr_ *Expr;
-
-struct Type_:public Node_
-{
-    void show(int space = 0)
-    {
-        for(int i = 0; i < space; i++)
-            printf("%c", SPACE);
-        printf("Type_\n");
-    }
-    virtual void add2Tail(Type c)
-    {
-
-    }
-
-    virtual std::string getType()
-    {
-        return "AbstractType";
-    }
-};
-
-struct Stmt_:public Node_
-{
-    void show(int space = 0)
-    {
-        for(int i = 0; i < space; i++)
-            printf("%c", SPACE);
-        printf("Stmt_\n");
-    }
-};
-
-
 const int NODE_EXP_PAREN=100;
 const int NODE_EXP_BINARY=101;
 const int NODE_EXP_UNARY=102;
@@ -105,161 +34,6 @@ const int NODE_EXP_CHARLITERAL=112;
 const int NODE_EXP_FLOATLITERAL=113;
 const int NODE_EXP_STRLITERAL=114;
 const int NODE_EXP_INITLIST=115;
-
-enum {
-    BOR,//     "|",                    Assign
-    BXOR,//    "^",                    Assign
-    BAND, //   "&",                    Assign
-    LSH,//     "<<",                   Assign
-    RSH,//     ">>",                   Assign
-    ADD, //    "+",                    Assign
-    SUB,//     "-",                    Assign
-    MUL, //    "*",                    Assign
-    DIV, //    "/",                    Assign
-    MOD, //    "%",                    Assign
-    NEG, //    "-",                    Assign
-    BCOM, //   "~",                    Assign
-    JZ, //     "",                     Branch
-    JNZ,//     "!",                    Branch
-    JE,  //    "==",                   Branch
-    JNE,//     "!=",                   Branch
-    JG, //     ">",                    Branch
-    JL, //     "<",                    Branch
-    JGE, //    ">=",                   Branch
-    JLE, //    "<=",                   Branch
-    JMP, //    "jmp",                  Jump
-    IJMP, //   "ijmp",                 IndirectJump
-    INC,  //   "++",                   Inc
-    DEC, //    "--",                   Dec
-    ADDR,//    "&",                    Address
-    DEREF,//   "*",                    Deref
-    EXTI1,//   "(int)(char)",          Cast
-    EXTU1,//   "(int)(unsigned char)", Cast
-    EXTI2,//   "(int)(short)",         Cast
-    EXTU2,//   "(int)(unsigned short)",Cast
-    TRUI1,//   "(char)(int)",          Cast
-    TRUI2, //  "(short)(int)",         Cast
-    CVTI4F4,// "(float)(int)",         Cast
-    CVTI4F8, //"(double)(int)",        Cast
-    CVTU4F4,// "(float)(unsigned)",    Cast
-    CVTU4F8,// "(double)(unsigned)",   Cast
-    CVTF4, //  "(double)(float)",      Cast
-    CVTF4I4,// "(int)(float)",         Cast
-    CVTF4U4,// "(unsigned)(float)",    Cast
-    CVTF8,//   "(float)(double)",      Cast
-    CVTF8I4,// "(int)(double)",        Cast
-    CVTF8U4, //"(unsigned)(double)",   Cast
-    MOV,//     "=",                    Move
-    IMOV,//    "*=",                   IndirectMove
-    CALL,//    "call",                 Call
-    RET, //    "ret",                  Return
-    CLR, //    "",                     Clear
-    NOP, //    "NOP",                  NOP
-};
-
-struct Expr_:public Node_
-{
-    Type type;
-    bool lvalue;
-    union {
-        int i[2];
-        float f;
-        double d;
-        void *p;
-    } valueUnion;
-
-    Expr_():type(NULL), lvalue(false){}
-
-    virtual void show(int space = 0)
-    {
-        for(int i = 0; i < space; i++)
-            printf("%c", SPACE);
-        printf("Expr_\n");
-    }
-
-    std::string getType()
-    {
-        //return "NULL";
-        if(this->type == NULL)
-            return "NULL";
-        else
-            return this->type->getType();
-    }
-
-    bool isConstant()
-    {
-        if(!type)
-            return false;
-        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
-                || this->id == NODE_EXP_FLOATLITERAL || this->id == NODE_EXP_STRLITERAL;
-    }
-
-    bool isNumberConstant()
-    {
-        if(!type)
-            return false;
-        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
-               || this->id == NODE_EXP_FLOATLITERAL;
-    }
-
-    bool isIntConstant()
-    {
-        if(!type)
-            return false;
-        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL;
-    }
-};
-
-struct Decl_:public Node_
-{
-    std::string name;
-    Decl_()
-    {
-
-    }
-    virtual void add2Tail(Type c)
-    {
-
-    }
-    void show(int space=0)
-    {
-        for(int i = 0; i < space; i++)
-            printf("%c", SPACE);
-        printf("Decl_\n");
-    }
-};
-
-typedef class Symbol_ *Symbol;
-typedef class IrInst_ *IrInst;
-typedef class BasicBlock_ *BasicBlock;
-
-class Symbol_
-{
-    Type type;
-    std::string name;
-    union {
-        int i[2];
-        float f;
-        double d;
-        void *p;
-    } valueUnion;
-};
-
-class IrInst_
-{
-public:
-    Type type;
-    int opcode;
-    Symbol opds[3];// dst src src
-};
-
-class BasicBlock_
-{
-public:
-    std::vector<IrInst>insts;
-};
-
-
 const int CONST_TYPE_POINTER=1;
 const int CONST_TYPE_RECORD=2;
 const int CONST_TYPE_ARRAY=3;
@@ -367,6 +141,268 @@ const int OP_ASSIGN_EQ_XOR=437;
 const int OP_ASSIGN_EQ_OR=438;
 const int OP_ASSIGN_EQ_SHIFTLEFT=439;
 const int OP_ASSIGN_EQ_SHIFTRIGHT=440;
+
+struct SourceLocation
+{
+    int line, col;
+
+    SourceLocation(int line, int col):line(line), col(col)
+    {
+
+    }
+
+    SourceLocation():SourceLocation(0, 0)
+    {
+
+    }
+
+};
+
+struct Node_
+{
+    Identifier id;
+
+    SourceLocation sourceLoc;
+
+    virtual void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf(" ");
+        printf("Node_\n");
+    }
+
+    void setSourceLoc(int line, int col)
+    {
+        sourceLoc.line = line;
+        sourceLoc.col = col;
+    }
+};
+
+typedef struct Type_ *Type;
+typedef struct Decl_ *Decl;
+typedef struct Stmt_ *Stmt;
+typedef struct Expr_ *Expr;
+
+struct Type_:public Node_
+{
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Type_\n");
+    }
+    virtual void add2Tail(Type c)
+    {
+
+    }
+
+    virtual std::string getType()
+    {
+        return "AbstractType";
+    }
+};
+
+struct Stmt_:public Node_
+{
+    void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Stmt_\n");
+    }
+};
+
+
+enum
+{
+    SK_Tag,    SK_TypedefName, SK_EnumConstant, SK_Constant, SK_Variable, SK_Temp,
+    SK_Offset, SK_String,      SK_Label,        SK_Function, SK_Register
+};
+
+enum {
+    BOR,//     "|",                    Assign
+    BXOR,//    "^",                    Assign
+    BAND, //   "&",                    Assign
+    LSH,//     "<<",                   Assign
+    RSH,//     ">>",                   Assign
+    ADD, //    "+",                    Assign
+    SUB,//     "-",                    Assign
+    MUL, //    "*",                    Assign
+    DIV, //    "/",                    Assign
+    MOD, //    "%",                    Assign
+    NEG, //    "-",                    Assign
+    BCOM, //   "~",                    Assign
+    JZ, //     "",                     Branch
+    JNZ,//     "!",                    Branch
+    JE,  //    "==",                   Branch
+    JNE,//     "!=",                   Branch
+    JG, //     ">",                    Branch
+    JL, //     "<",                    Branch
+    JGE, //    ">=",                   Branch
+    JLE, //    "<=",                   Branch
+    JMP, //    "jmp",                  Jump
+    IJMP, //   "ijmp",                 IndirectJump
+    INC,  //   "++",                   Inc
+    DEC, //    "--",                   Dec
+    ADDR,//    "&",                    Address
+    DEREF,//   "*",                    Deref
+    EXTI1,//   "(int)(char)",          Cast
+    EXTU1,//   "(int)(unsigned char)", Cast
+    EXTI2,//   "(int)(short)",         Cast
+    EXTU2,//   "(int)(unsigned short)",Cast
+    TRUI1,//   "(char)(int)",          Cast
+    TRUI2, //  "(short)(int)",         Cast
+    CVTI4F4,// "(float)(int)",         Cast
+    CVTI4F8, //"(double)(int)",        Cast
+    CVTU4F4,// "(float)(unsigned)",    Cast
+    CVTU4F8,// "(double)(unsigned)",   Cast
+    CVTF4, //  "(double)(float)",      Cast
+    CVTF4I4,// "(int)(float)",         Cast
+    CVTF4U4,// "(unsigned)(float)",    Cast
+    CVTF8,//   "(float)(double)",      Cast
+    CVTF8I4,// "(int)(double)",        Cast
+    CVTF8U4, //"(unsigned)(double)",   Cast
+    MOV,//     "=",                    Move
+    IMOV,//    "*=",                   IndirectMove
+    CALL,//    "call",                 Call
+    RET, //    "ret",                  Return
+    CLR, //    "",                     Clear
+    NOP, //    "NOP",                  NOP
+};
+
+enum {I1, U1, I2, U2, I4, U4, F4, F8, V, B};
+
+struct Expr_:public Node_
+{
+    Type type;
+    bool lvalue;
+    union {
+        int i[2];
+        float f;
+        double d;
+        void *p;
+    } valueUnion;
+
+    Expr_():type(NULL), lvalue(false){}
+
+    virtual void show(int space = 0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Expr_\n");
+    }
+
+    std::string getType()
+    {
+        //return "NULL";
+        if(this->type == NULL)
+            return "NULL";
+        else
+            return this->type->getType();
+    }
+
+    bool isConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
+                || this->id == NODE_EXP_FLOATLITERAL || this->id == NODE_EXP_STRLITERAL;
+    }
+
+    bool isNumberConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL
+               || this->id == NODE_EXP_FLOATLITERAL;
+    }
+
+    bool isIntConstant()
+    {
+        if(!type)
+            return false;
+        return this->id == NODE_EXP_INTLITERAL || this->id == NODE_EXP_CHARLITERAL;
+    }
+};
+
+struct Decl_:public Node_
+{
+    std::string name;
+    Decl_()
+    {
+
+    }
+    virtual void add2Tail(Type c)
+    {
+
+    }
+    void show(int space=0)
+    {
+        for(int i = 0; i < space; i++)
+            printf("%c", SPACE);
+        printf("Decl_\n");
+    }
+};
+
+typedef class Symbol_ *Symbol;
+typedef class VariableSymbol_ *VariableSymbol;
+typedef class FunctionSymbol_ *FunctionSymbol;
+typedef class IrInst_ *IrInst;
+typedef class BasicBlock_ *BasicBlock;
+
+class Symbol_
+{
+public:
+    int kind;
+    Type type;
+    std::string name;
+    union {
+        int i[2];
+        float f;
+        double d;
+        void *p;
+    } valueUnion;
+    Symbol_():type(NULL){}
+};
+
+
+class VariableSymbol_:public Symbol_
+{
+public:
+    int offset;
+    Expr initData;
+};
+
+class FunctionSymbol_:public Symbol_
+{
+public:
+    std::vector<Symbol> params;
+    std::vector<Symbol> locals;
+    BasicBlock entryBB;
+    BasicBlock exitBB;
+    FunctionSymbol_():entryBB(NULL), exitBB(NULL){}
+};
+
+class IrInst_
+{
+public:
+    Type type;
+    int opcode;
+    Symbol opds[3];// dst src src
+    IrInst_(){
+        opds[0] = opds[1] = opds[2] = NULL;
+    }
+};
+
+class BasicBlock_
+{
+public:
+    int reference;
+    std::vector<IrInst>insts;
+    Symbol symbol;
+    BasicBlock_():reference(0), symbol(NULL){}
+};
+
 
 std::string id2name(int id);
 //int name2id(std::string name);
