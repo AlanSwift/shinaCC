@@ -60,6 +60,8 @@ private:
     Symbol translatePrimaryExpr(Expr expr); //id, str, int, float, parentheses
     Symbol translateArrayIndex(ArraySubscriptExpr expr);
 
+    Symbol translateBranchExpr(BinaryOpExpr expr);
+
     /*translate statement*/
     void translateExprStmt(ExprStmt stmt);
     void translateLabelStmt(LabelStmt stmt);
@@ -76,6 +78,7 @@ private:
     void translateReturnStmt(ReturnStmt stmt);
     void translateCompoundStmt(CompoundStmt stmt);
     void translateSwitchStmt(SwitchStmt stmt);
+
 
     /*utils*/
     Expr notExpr(Expr expr);

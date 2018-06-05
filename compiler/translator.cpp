@@ -73,6 +73,14 @@ Symbol Translator_::translateBinaryExpr(BinaryOpExpr expr)
 {
     if(expr->operator_ == OP_BINARY_COMMA)
         return translateCommaExpr(expr);
+    if(expr->operator_ == OP_BINARY_LOGICAL_AND
+       || expr->operator_ == OP_BINARY_LOGICAL_OR || isRelationalOp(expr->operator_))
+        return ;
+}
+
+Symbol translateBranchExpr(BinaryOpExpr expr)
+{
+
 }
 
 Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
