@@ -49,16 +49,16 @@ private:
     //SymbolTable<Symbol> table;
     Program program;
     /*translate expression*/
-    Symbol translateFunctionCall(CallExpr expr);
+    Symbol translateFunctionCall(CallExpr expr);//1
     Symbol translateBinaryExpr(BinaryOpExpr expr);
     Symbol translateUnaryExpr(UnaryOpExpr expr);
-    Symbol translateIncrement(UnaryOpExpr expr);
-    Symbol translateConditionalExpr(ConditionalExpr expr);
+    Symbol translateIncrement(UnaryOpExpr expr);//1
+    Symbol translateConditionalExpr(ConditionalExpr expr);//1
     Symbol translateAssignmentExpr(AssignExpr expr);
-    Symbol translateCommaExpr(BinaryOpExpr expr);
+    Symbol translateCommaExpr(BinaryOpExpr expr);//1
     Symbol translateCastExpr(Expr expr);
     Symbol translatePrimaryExpr(Expr expr); //id, str, int, float, parentheses
-    Symbol translateArrayIndex(ArraySubscriptExpr expr);
+    Symbol translateArrayIndex(ArraySubscriptExpr expr);//1
 
     Symbol translateBranchExpr(Expr expr);
 
