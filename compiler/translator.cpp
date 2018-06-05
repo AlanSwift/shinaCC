@@ -139,11 +139,10 @@ void Translator_::translateIfStmt(IfStmt stmt)
 
         program->startBasicBlock(trueBB);
         translateStatement(stmt->if_);
-        //TODO:
+        generateJump(nextBB);
 
         program->startBasicBlock(falseBB);
         translateStatement(stmt->else_);
-        //TODO:
     }
     program->startBasicBlock(nextBB);
 }
@@ -154,7 +153,8 @@ void Translator_::translateWhileStmt(WhileStmt stmt)
     stmt->contBB = program->createBasicBlock();
     stmt->nextBB = program->createBasicBlock();
 
-    //TODO:
+    generateJump(stmt->contBB);
+
     program->startBasicBlock(stmt->loopBB);
     translateStatement(stmt->stmt);
 
@@ -166,7 +166,17 @@ void Translator_::translateWhileStmt(WhileStmt stmt)
 
 void Translator_::translateDoStmt(DoStmt stmt)
 {
+    stmt->loopBB = program->createBasicBlock();
+    stmt->contBB = program->createBasicBlock();
+    stmt->nextBB = program->createBasicBlock();
 
+    program->startBasicBlock(stmt->loopBB);
+    translateStatement(stmt->stmt);
+
+    program->startBasicBlock(stmt->contBB);
+    translateBranch(stmt->expr, stmt->loopBB, stmt->nextBB);
+
+    program->startBasicBlock(stmt->nextBB);
 }
 
 void Translator_::translateForStmt(ForStmt stmt)
@@ -206,7 +216,70 @@ void Translator_::translateSwitchStmt(SwitchStmt stmt)
 
 void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock)
 {
-
+    BasicBlock testBlock;
+    Symbol src1, src2;
+    int map[6] ={
+         JGE, JL, JG, JLE, JE, JNE
+    };
+    if(expr->id == NODE_EXP_BINARY){
+        BinaryOpExpr expr1 = (BinaryOpExpr)expr;
+        switch (expr1->operator_){
+            case OP_BINARY_LOGICAL_AND:
+                testBlock = program->createBasicBlock();
+                translateBranch(notExpr(expr1->left), falseBlock, testBlock);
+                program->startBasicBlock(testBlock);
+                translateBranch(expr1->right, trueBlock, falseBlock);
+                break;
+            case OP_BINARY_LOGICAL_OR:
+                testBlock = program->createBasicBlock();
+                translateBranch(expr1->left, trueBlock, testBlock);
+                program->startBasicBlock(testBlock);
+                translateBranch(expr1->right, trueBlock, falseBlock);
+                break;
+            case OP_BINARY_BE: // >=
+            case OP_BINARY_ST: // <
+            case OP_BINARY_GT: // >
+            case OP_BINARY_SE: // <=
+            case OP_BINARY_EQ:
+            case OP_BINARY_NEQ:
+                src1 = translateExpression(expr1->left);
+                src2 = translateExpression(expr1->right);
+                generateBranch(expr1->left->type, trueBlock, map[expr1->operator_], src1, src2);
+                break;
+            default: assert(0); break;
+        }
+    }
+    else if(expr->id == NODE_EXP_UNARY){ //!a
+        UnaryOpExpr expr1 = (UnaryOpExpr)expr;
+        if(expr1->operator_ == OP_UNARY_LOGICAL_NOT){
+            src1 = translateExpression(expr1->expr);
+            Type type = expr1->expr->type;
+            if(type->id < CONST_TYPE_BUILTIN_INT){
+                src1 = translateCast(BuiltinType_::intType, expr1->expr->type, src1);
+                type = BuiltinType_::intType;
+            }
+            generateBranch(type, trueBlock, JZ, src1, NULL);
+        }
+    }
+    else if(expr->isConstant()){ //1
+        if(!(expr->valueUnion.i[0] == 0 && expr->valueUnion.i[1] == 0))
+            generateJump(trueBlock);
+    }
+    else{ //a
+        src1 = translateExpression(expr);
+        if (src1->kind  == SK_Constant) {
+            if (!(src1->valueUnion.i[0] == 0 && src1->valueUnion.i[1] == 0))
+                generateJump(trueBlock);
+        }
+        else{
+            Type type = expr->type;
+            if(type->id < CONST_TYPE_BUILTIN_INT){
+                src1 = translateCast(BuiltinType_::intType, type, src1);
+                type = BuiltinType_::intType;
+            }
+            generateBranch(type, trueBlock, JNZ, src1, NULL);
+        }
+    }
 }
 
 Expr Translator_::notExpr(Expr expr)
@@ -251,6 +324,7 @@ Expr Translator_::notExpr(Expr expr)
             return expr1->expr;
     }
     UnaryOpExpr expr2 = new UnaryOpExpr_(expr, OP_UNARY_LOGICAL_NOT, false);
+    expr2->type = BuiltinType_::intType;
     return expr2;
 }
 

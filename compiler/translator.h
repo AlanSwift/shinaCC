@@ -72,6 +72,40 @@ private:
     /*utils*/
     Expr notExpr(Expr expr);
     void translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock);
+    void generateBranch(Type type, BasicBlock dstBlock, int opcode, Symbol src1, Symbol src2)
+    {
+        IrInst inst = new IrInst_();
+        inst->type = type;
+        inst->opcode = opcode;
+        inst->opds[0] = (Symbol)dstBlock; //!!!
+        inst->opds[1] = src1;
+        inst->opds[2] = src2;
+        program->appendInst(inst);
+    }
+    void generateJump(BasicBlock dstBlock)
+    {
+        IrInst inst = new IrInst_();
+        inst->opcode = JMP;
+        inst->type = BuiltinType_::voidType;
+        inst->opds[0] = (Symbol)dstBlock; //!!!
+        program->appendInst(inst);
+    }
+    void generateAssign(Type type, Symbol dst, int opcode, Symbol src1, Symbol src2)
+    {
+        IrInst inst = new IrInst_();
+        inst->opcode = opcode;
+        inst->opds[0] = dst;
+        inst->opds[1] = src1;
+        inst->opds[2] = src2;
+    }
+    Symbol translateCast(Type to, Type from, Symbol symbol)
+    {
+
+    }
+    Symbol createTemp(Type type)
+    {
+
+    }
 };
 
 #endif //CP_TRANSLATOR_H

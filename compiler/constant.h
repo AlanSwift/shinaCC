@@ -106,6 +106,12 @@ const int NODE_EXP_FLOATLITERAL=113;
 const int NODE_EXP_STRLITERAL=114;
 const int NODE_EXP_INITLIST=115;
 
+enum
+{
+    SK_Tag,    SK_TypedefName, SK_EnumConstant, SK_Constant, SK_Variable, SK_Temp,
+    SK_Offset, SK_String,      SK_Label,        SK_Function, SK_Register
+};
+
 enum {
     BOR,//     "|",                    Assign
     BXOR,//    "^",                    Assign
@@ -235,6 +241,8 @@ typedef class BasicBlock_ *BasicBlock;
 
 class Symbol_
 {
+public:
+    int kind;
     Type type;
     std::string name;
     union {
@@ -243,6 +251,7 @@ class Symbol_
         double d;
         void *p;
     } valueUnion;
+
 };
 
 class IrInst_
@@ -251,12 +260,16 @@ public:
     Type type;
     int opcode;
     Symbol opds[3];// dst src src
+    IrInst_(){
+        opds[0] = opds[1] = opds[2] = NULL;
+    }
 };
 
 class BasicBlock_
 {
 public:
     std::vector<IrInst>insts;
+    Symbol symbol;
 };
 
 
