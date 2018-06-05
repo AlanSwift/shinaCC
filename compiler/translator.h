@@ -233,11 +233,25 @@ private:
         assert(type == BuiltinType_::voidType);
         return V;
     }
+    void TrackValueChange(Symbol p)
+    {
+        valueUse use=dynamic_cast<VariableSymbol>(p)->uses;
+
+        for(auto &e:use->use)
+        {
+            if(e->op!=ADDR)
+            {
+                e->dst=NULL;
+            }
+
+        }
+    }
     void TrackValueUse(Symbol p, valueUseDefine def)
     {
-        reinterpret_cast<VariableSymbol>(p)->uses->use.push_back(
+        dynamic_cast<VariableSymbol>(p)->uses->use.push_back(
             def
         );
+
     }
     void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
     {
@@ -252,7 +266,7 @@ private:
 
         if (op == MOV || op == CALL)
         {
-            (reinterpret_cast<VariableSymbol> (t))->def->def.push_back(def);
+            (dynamic_cast<VariableSymbol> (t))->def->def.push_back(def);
             return;
         }
 
@@ -264,8 +278,8 @@ private:
         {
             TrackValueUse(src2, def);
         }
-        reinterpret_cast<VariableSymbol>(t)->def=new valueDef_();
-        reinterpret_cast<VariableSymbol>(t)->def->def.push_back(
+        dynamic_cast<VariableSymbol>(t)->def=new valueDef_();
+        dynamic_cast<VariableSymbol>(t)->def->def.push_back(
             def
         );
     }
@@ -311,10 +325,7 @@ private:
         return t;
     }
 
-    Symbol addressOf(Symbol symbol)
-    {
-        return symbol;
-    }
+    Symbol addressOf(Symbol symbol);
 
     Symbol deReference(Symbol symbol)
     {

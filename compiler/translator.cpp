@@ -77,9 +77,9 @@ Symbol Translator_::translateFunctionCall(CallExpr expr)
         args.push_back(arg);
     }
     recv=NULL;
-    if(reinterpret_cast<FunctionType>( expr->type)->returnType->id!=CONST_TYPE_BUILTIN_VOID)
+    if(dynamic_cast<FunctionType>( expr->type)->returnType->id!=CONST_TYPE_BUILTIN_VOID)
     {
-        recv=this->createTemp(reinterpret_cast<FunctionType>( expr->type)->returnType);
+        recv=this->createTemp(dynamic_cast<FunctionType>( expr->type)->returnType);
     }
     this->generateFunctionCall(expr->type,recv,faddr,args);
     return recv;
@@ -386,17 +386,17 @@ void Translator_::translateContinueStmt(ContinueStmt stmt)
     {
         case NODE_STM_FOR:
         {
-            this->generateJump(reinterpret_cast<ForStmt>(stmt->target)->contBB);
+            this->generateJump(dynamic_cast<ForStmt>(stmt->target)->contBB);
             break;
         }
         case NODE_STM_WHILE:
         {
-            this->generateJump(reinterpret_cast<WhileStmt>(stmt->target)->contBB);
+            this->generateJump(dynamic_cast<WhileStmt>(stmt->target)->contBB);
             break;
         }
         case NODE_STM_DO:
         {
-            this->generateJump(reinterpret_cast<DoStmt>(stmt->target)->contBB);
+            this->generateJump(dynamic_cast<DoStmt>(stmt->target)->contBB);
             break;
         }
     }
@@ -633,4 +633,25 @@ Symbol Translator_::translateExpression(Expr expr)
         default:
             return NULL;
     }
+}
+
+
+Symbol Translator_::addressOf(Symbol p)
+{
+    
+	if (p->kind == SK_Temp && dynamic_cast<VariableSymbol>(p)->def->def[0]-> op == DEREF)
+	{
+		Symbol t=dynamic_cast<VariableSymbol>(p)->def->def[0]->src1;
+		return t;
+	}
+
+	//p->addressed = 1;
+
+	if (p->kind == SK_Variable)
+	{
+		TrackValueChange(p);
+	}
+	Symbol t=TryAddValue(T(POINTER), ADDR, p, NULL);
+	//debugSymbol(t);
+	return t; 
 }

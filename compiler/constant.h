@@ -391,6 +391,7 @@ public:
         void *p;
     } valueUnion;
     Symbol_():type(NULL){}
+    virtual ~Symbol_(){}
 };
 
 
