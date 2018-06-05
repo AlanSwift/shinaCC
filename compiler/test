@@ -14,7 +14,7 @@ int main()
             a[i][j] = i + j;
     b = 1;
     c = 2;
-
+    b = (i > j ? i : 1.0 * j);
     return 0;
 }
 

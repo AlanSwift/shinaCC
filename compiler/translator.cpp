@@ -170,12 +170,36 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
 
 Symbol Translator_::translateIncrement(UnaryOpExpr expr)
 {
-
+	//TODO:
 }
 
 Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
 {
+	Symbol t, t1, t2;
+	BasicBlock trueBlock, falseBlock, nextBlock;
 
+	assert(expr->type != BuiltinType_::voidType);
+	t = createTemp(expr->type);
+
+	falseBlock = program->createBasicBlock();
+	trueBlock = program->createBasicBlock();
+	nextBlock = program->createBasicBlock();
+
+	translateBranch(expr->condition, trueBlock, falseBlock);
+
+	program->startBasicBlock(falseBlock);
+	t1 = translateExpression(expr->false_);
+	assert(t1 != NULL);
+	generateMove(expr->type, t, t1);
+	generateJump(nextBlock);
+
+	program->startBasicBlock(trueBlock);
+	t2 = translateExpression(expr->true_);
+	assert(t2 != NULL);
+	generateMove(expr->type, t, t2);
+
+	program->startBasicBlock(nextBlock);
+	return t;
 }
 
 Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
@@ -186,9 +210,9 @@ Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 
 Symbol Translator_::translateCommaExpr(BinaryOpExpr expr)
 {
-
+	translateExpression(expr->left);
+	return translateExpression(expr->right);
 }
-
 
 Symbol Translator_::translateCastExpr(Expr expr)
 {
@@ -322,11 +346,13 @@ void Translator_::translateForStmt(ForStmt stmt)
 
     program->startBasicBlock(stmt->loopBB);
     this->translateStatement(stmt->stmt);
+
     program->startBasicBlock(stmt->contBB);
     if(stmt->next)
     {
         this->translateExpression(stmt->next);
     }
+
     program->startBasicBlock(stmt->testBB);
     if(stmt->condition)
     {
@@ -342,6 +368,8 @@ void Translator_::translateForStmt(ForStmt stmt)
 
 void Translator_::translateGotoStmt(GoToStmt stmt)
 {
+	/*GOTO*/
+	//TODO:
     if(stmt->label->respBB==NULL)
     {
         stmt->label->respBB=program->createBasicBlock();
@@ -550,7 +578,6 @@ Expr Translator_::notExpr(Expr expr)
     expr2->type = BuiltinType_::intType;
     return expr2;
 }
-
 
 void Translator_::translateStatement(Stmt stmt)
 {
