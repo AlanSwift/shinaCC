@@ -60,7 +60,7 @@ private:
     Symbol translatePrimaryExpr(Expr expr); //id, str, int, float, parentheses
     Symbol translateArrayIndex(ArraySubscriptExpr expr);
 
-    Symbol translateBranchExpr(BinaryOpExpr expr);
+    Symbol translateBranchExpr(Expr expr);
 
     /*translate statement*/
     void translateExprStmt(ExprStmt stmt);
@@ -248,7 +248,42 @@ private:
         return label;
     }
 
-    Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2);
+    Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2)
+    {
+        Symbol t = createTemp(ty);
+        generateAssign(ty, t, op, src1, src2);
+        return t;
+    }
+
+    Symbol addressOf(Symbol symbol)
+    {
+        return symbol;
+    }
+
+    Symbol deReference(Symbol symbol)
+    {
+        return symbol;
+    }
+
+    Symbol IntConstant(int i)
+    {
+        Symbol p = new Symbol_();
+        p->kind = SK_Constant;
+        p->name = std::to_string(i);
+        p->valueUnion.i[0] = i;
+        p->valueUnion.i[1] = 0;
+        p->type = BuiltinType_::intType;
+        return p;
+    }
+
+    Symbol DoubleConst(double d)
+    {
+        Symbol p = new Symbol_();
+        p->kind = SK_Constant;
+        p->name = std::to_string(d);
+        p->valueUnion.d = d;
+        p->type = BuiltinType_::doubleType;
+    }
 };
 
 #endif //CP_TRANSLATOR_H

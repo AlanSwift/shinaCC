@@ -75,19 +75,80 @@ Symbol Translator_::translateBinaryExpr(BinaryOpExpr expr)
         return translateCommaExpr(expr);
     if(expr->operator_ == OP_BINARY_LOGICAL_AND
        || expr->operator_ == OP_BINARY_LOGICAL_OR || isRelationalOp(expr->operator_))
-        return ;
+        return translateBranchExpr(expr);
+    Symbol src1, src2;
+    src1 = translateBranchExpr(expr->left);
+    src2 = translateBranchExpr(expr->right);
+    if(expr->operator_ == OP_BINARY_OR)
+        return simplify(expr->type, BOR, src1, src2);
+    if(expr->operator_ == OP_BINARY_XOR)
+        return simplify(expr->type, BXOR, src1, src2);
+    if(expr->operator_ == OP_BINARY_AND)
+        return simplify(expr->type, BAND, src1, src2);
+    if(expr->operator_ == OP_BINARY_SHIFTLEFT)
+        return simplify(expr->type, LSH, src1, src2);
+    if(expr->operator_ == OP_BINARY_SHIFTRIGHT)
+        return simplify(expr->type, RSH, src1, src2);
+    if(expr->operator_ == OP_BINARY_ADD)
+        return simplify(expr->type, ADD, src1, src2);
+    if(expr->operator_ == OP_BINARY_MINUS)
+        return simplify(expr->type, SUB, src1, src2);
+    if(expr->operator_ == OP_BINARY_MULTIPLY)
+        return simplify(expr->type, MUL, src1, src2);
+    if(expr->operator_ == OP_BINARY_DIV)
+        return simplify(expr->type, DIV, src1, src2);
+    if(expr->operator_ == OP_BINARY_MOD)
+        return simplify(expr->type, MOD, src1, src2);
 }
 
-Symbol translateBranchExpr(BinaryOpExpr expr)
+Symbol Translator_::translateBranchExpr(Expr expr)
 {
+    BasicBlock nextBB, trueBB, falseBB;
+    Symbol t;
 
+    t = createTemp(expr->type);
+
+    nextBB = program->createBasicBlock();
+    trueBB = program->createBasicBlock();
+    falseBB = program->createBasicBlock();
+
+    translateBranch(expr, trueBB, falseBB);
+
+    program->startBasicBlock(falseBB);
+    generateMove(expr->type, t, IntConstant(0));
+    generateJump(nextBB);
+
+    program->startBasicBlock(trueBB);
+    generateMove(expr->type, t, IntConstant(1));
+
+    program->startBasicBlock(nextBB);
+
+    return t;
 }
 
 Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
 {
     if(expr->operator_ == OP_UNARY_DOUBLEADD || expr->operator_ == OP_UNARY_DOUBLEMINUS)
         return translateIncrement(expr);
-
+    if(expr->operator_ == OP_UNARY_LOGICAL_NOT)
+        return translateBranchExpr(expr);
+    Symbol src = translateExpression(expr->expr);
+    switch (expr->operator_){
+        case OP_UNARY_CAST:
+            assert(0);
+            return NULL;
+        case OP_UNARY_POSITIVE:
+            return src;
+        case OP_UNARY_NEGATIVE:
+            return simplify(expr->type, NEG, src, NULL);
+        case OP_UNARY_STAR:
+            return deReference(src);
+        case OP_UNARY_AND:
+            return addressOf(src);
+        default:
+            assert(0);
+            return NULL;
+    }
 }
 
 Symbol Translator_::translateIncrement(UnaryOpExpr expr)
@@ -102,7 +163,8 @@ Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
 
 Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 {
-
+    Symbol dst, src;
+    //TODO:
 }
 
 Symbol Translator_::translateCommaExpr(BinaryOpExpr expr)
@@ -113,12 +175,28 @@ Symbol Translator_::translateCommaExpr(BinaryOpExpr expr)
 
 Symbol Translator_::translateCastExpr(Expr expr)
 {
-
+    if(expr->id == NODE_EXP_IMPLICITCAST){
+        ImplicitCastExpr expr1 = (ImplicitCastExpr)expr;
+        Symbol src = translateExpression(expr1->expr);
+        return translateCast(expr1->type, expr1->expr->type, src);
+    }
+    else{
+        assert(expr->id == NODE_EXP_CSTYLECAST);
+        return NULL;
+    }
 }
 
 Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, parentheses
 {
-
+    if(expr->isConstant() && expr->id != NODE_EXP_STRLITERAL){
+        if(expr->isIntConstant())
+            return IntConstant(expr->valueUnion.i[0]);
+        return DoubleConst(expr->valueUnion.d);
+    }
+    if(expr->id == NODE_EXP_STRLITERAL || expr->type->id == CONST_TYPE_FUNC || expr->type->id == CONST_TYPE_ARRAY){
+        return addressOf((Symbol)(expr->valueUnion.p));
+    }
+    return (Symbol)expr->valueUnion.p;
 }
 
 Symbol Translator_::translateArrayIndex(ArraySubscriptExpr expr)
@@ -371,7 +449,7 @@ void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock fa
             case OP_BINARY_NEQ:
                 src1 = translateExpression(expr1->left);
                 src2 = translateExpression(expr1->right);
-                generateBranch(expr1->left->type, trueBlock, map[expr1->operator_], src1, src2);
+                generateBranch(expr1->left->type, trueBlock, map[expr1->operator_ - OP_BINARY_GT], src1, src2);
                 break;
             default: assert(0); break;
         }
