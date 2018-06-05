@@ -1334,10 +1334,9 @@ int main(int argc, char *argv[]) {
 	std::cout<<"=================="<<std::endl;
     assert(rootNode->id == NODE_DECL_TRANSLATION);
     Semantic *semantic = new Semantic();
-	//semantic->clear();
     semantic->semanticAnalysis((TranslationUnitDecl)rootNode);
     std::cout << std::endl << "-------------------------------------------------------" << std::endl;
-    //rootNode->show();
+    rootNode->show();
 	std::cout<<"finish semanticAnalysis"<<std::endl;
     return 0;
 }

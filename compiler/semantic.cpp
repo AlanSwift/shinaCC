@@ -7,9 +7,7 @@
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
     for(auto &decl: start->declarations){
-        start->show();
-        printf("================\n");
-        fflush(stdout);
+        
         semanticDecl(decl);
     }
 }
