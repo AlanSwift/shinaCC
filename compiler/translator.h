@@ -8,6 +8,7 @@
 #include "constant.h"
 #include "expression.h"
 #include "declaration.h"
+#include "symbol.h"
 #include "type.h"
 #include "statement.h"
 #include <vector>
@@ -39,6 +40,7 @@ public:
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
 private:
+    SymbolTable<Symbol> table;
     Program program;
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);
@@ -72,6 +74,7 @@ private:
     /*utils*/
     Expr notExpr(Expr expr);
     void translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock);
+
     void generateBranch(Type type, BasicBlock dstBlock, int opcode, Symbol src1, Symbol src2)
     {
         IrInst inst = new IrInst_();
@@ -82,6 +85,7 @@ private:
         inst->opds[2] = src2;
         program->appendInst(inst);
     }
+
     void generateJump(BasicBlock dstBlock)
     {
         IrInst inst = new IrInst_();
@@ -90,6 +94,7 @@ private:
         inst->opds[0] = (Symbol)dstBlock; //!!!
         program->appendInst(inst);
     }
+
     void generateAssign(Type type, Symbol dst, int opcode, Symbol src1, Symbol src2)
     {
         IrInst inst = new IrInst_();
@@ -98,13 +103,100 @@ private:
         inst->opds[1] = src1;
         inst->opds[2] = src2;
     }
-    Symbol translateCast(Type to, Type from, Symbol symbol)
-    {
 
+    Symbol translateCast(Type to, Type from, Symbol src)
+    {
+        Symbol dst;
+        int scode = typeCode(from), dcode = typeCode(to), opcode;
+        switch (scode) {
+            case I1: opcode = EXTI1; break;
+            case I2: opcode = EXTI2; break;
+            case U1: opcode = EXTU1; break;
+            case U2: opcode = EXTU2; break;
+            case I4:
+                if (dcode <= U1)
+                    opcode = TRUI1;
+                else if (dcode <= U2)
+                    opcode = TRUI2;
+                else if (dcode == F4)
+                    opcode = CVTI4F4;
+                else if (dcode == F8)
+                    opcode = CVTI4F8;
+                else
+                    return src;
+                break;
+            case U4:
+                if (dcode == F4)
+                    opcode = CVTU4F4;
+                else if (dcode == F8)
+                    opcode = CVTU4F8;
+                else
+                    return src;
+                break;
+            case F4:
+                if (dcode == I4)
+                    opcode = CVTF4I4;
+                else if (dcode == U4)
+                    opcode = CVTF4U4;
+                else
+                    opcode = CVTF4;
+                break;
+            case F8:
+                if (dcode == I4)
+                    opcode = CVTF8I4;
+                else if (dcode == U4)
+                    opcode = CVTF8U4;
+                else
+                    opcode = CVTF8;
+                break;
+            default:
+                assert(0);
+                return NULL;
+        }
+        dst = createTemp(to);
+        generateAssign(from, dst, opcode, src, NULL);
+        return dst;
     }
+
+    int typeCode(Type type)
+    {
+        if(type == BuiltinType_::intType || type == BuiltinType_::longType)
+            return I4;
+        else if(type == BuiltinType_::unsignedIntType || type == BuiltinType_::unsignedLongType)
+            return U4;
+        else if(type == BuiltinType_::shortType)
+            return I2;
+        else if(type == BuiltinType_::unsignedShortType)
+            return U2;
+        else if(type == BuiltinType_::charType)
+            return I1;
+        else if(type == BuiltinType_::unsignedCharType)
+            return U1;
+        else if(type == BuiltinType_::floatType)
+            return F4;
+        else if(type == BuiltinType_::doubleType || type == BuiltinType_::longDoubleType)
+            return F8;
+        else if(type->id == CONST_TYPE_POINTER)
+            return U4;
+        assert(type == BuiltinType_::voidType);
+        return V;
+    }
+
     Symbol createTemp(Type type)
     {
+        Symbol tmp = new Symbol_();
+        tmp->name = "tmp";
+        tmp->kind = SK_Temp;
+        tmp->type = type;
+        return tmp;
+    }
 
+    Symbol createLabel()
+    {
+        Symbol label = new Symbol_();
+        label->name = "label";
+        label->kind = SK_Label;
+        return label;
     }
 };
 

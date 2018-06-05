@@ -163,6 +163,8 @@ enum {
     NOP, //    "NOP",                  NOP
 };
 
+enum {I1, U1, I2, U2, I4, U4, F4, F8, V, B};
+
 struct Expr_:public Node_
 {
     Type type;
