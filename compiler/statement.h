@@ -85,6 +85,7 @@ struct ContinueStmt_:public Stmt_
 struct CompoundStmt_:public Stmt_
 {
     list<Stmt> stmtList;
+    list<Symbol> locals;
     CompoundStmt_(){this->id = NODE_STM_COMPOUND;}
     CompoundStmt_(list<Stmt> &stmtList):stmtList(stmtList){this->id = NODE_STM_COMPOUND;}
 
@@ -92,7 +93,10 @@ struct CompoundStmt_:public Stmt_
     {
         for(int i = 0; i < space; i++)
             printf("-");
-        printf("CompoundStmt_\n");
+        printf("CompoundStmt_: locals:%d  ", locals.size());
+        for(auto &s: locals)
+            printf("%s(%08x), ", s->name.c_str(), s);
+        printf("\n");
         std::list<Stmt>::iterator it;
         for(it = stmtList.begin(); it != stmtList.end(); it++){
             (*it)->show(space + 1);

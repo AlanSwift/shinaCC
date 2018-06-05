@@ -32,7 +32,6 @@ Program Translator_::translate(TranslationUnitDecl start)
 {
     program = new Program_();
     labelNumber = 0;
-    //TODO: handle var decl
     for(auto &decl: start->declarations){
         if(decl->id == NODE_DECL_VAR){
             VarDecl decl1 = (VarDecl)decl;

@@ -392,8 +392,13 @@ void Semantic::semanticStmt(Stmt stmt)
         case NODE_STM_COMPOUND:
             valueEnv.pushEnv();
             typeEnv.pushEnv();
-            for(auto &s: ((CompoundStmt)stmt)->stmtList)
+            for(auto &s: ((CompoundStmt)stmt)->stmtList){
                 semanticStmt(s);
+                if(s->id == NODE_STM_DECL){
+                    for(auto &d: ((DeclStmt)s)->declarations)
+                        ((CompoundStmt)stmt)->locals.push_back(valueEnv.lookUp(d->name));
+                }
+            }
             valueEnv.popEnv();
             typeEnv.popEnv();
             break;
