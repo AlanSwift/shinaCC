@@ -9,7 +9,6 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
     for(auto &decl: start->declarations){
         semanticDecl(decl);
     }
-    valueEnv.clear();
 }
 
 void Semantic::semanticExpr(Expr expr)

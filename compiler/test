@@ -2,9 +2,19 @@ int factorial(int n);
 
 void g();
 
+int c;
+
 int main()
 {
-
+    int a[2][2];
+    int b;
+    int i, j;
+    for(i = 0; i < 2; i++)
+        for(j = 0; j < 2; j++)
+            a[i][j] = i + j;
+    b = 1;
+    c = 2;
+    return 0;
 }
 
 

@@ -48,7 +48,7 @@ public:
     Symbol translateExpression(Expr expr);
 private:
     int tmpNumber, labelNumber;
-    //SymbolTable<Symbol> table;
+    SymbolTable<Symbol> *table;
     Program program;
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);//1

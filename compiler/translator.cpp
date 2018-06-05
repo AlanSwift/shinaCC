@@ -10,8 +10,8 @@ int level = 0;
 
 void Program_::appendInst(IrInst e)
 {
-    if(currentBlock)
-        currentBlock->insts.push_back(e);
+    assert(currentBlock);
+    currentBlock->insts.push_back(e);
 }
 
 BasicBlock Program_::createBasicBlock()
@@ -23,8 +23,8 @@ BasicBlock Program_::createBasicBlock()
 
 void Program_::startBasicBlock(BasicBlock bb)
 {
-    if(currentBlock)
-        bblocks.push_back(currentBlock);
+    assert(currentBlock);
+    bblocks.push_back(currentBlock);
     currentBlock = bb;
 }
 
@@ -36,11 +36,7 @@ Program Translator_::translate(TranslationUnitDecl start)
     for(auto &decl: start->declarations){
         if(decl->id == NODE_DECL_VAR){
             VarDecl decl1 = (VarDecl)decl;
-            VariableSymbol symbol = new VariableSymbol_();
-            symbol->name = decl1->name;
-            symbol->type = decl1->type;
-            symbol->initData = decl1->init;
-            //table.addSymbol(decl1->name, symbol);
+            Symbol symbol = table->lookUp(decl1->name);
             program->globals.push_back(symbol);
         }
         else if(decl->id == NODE_DECL_FUNCTION){
@@ -49,7 +45,7 @@ Program Translator_::translate(TranslationUnitDecl start)
                 continue;
 
             tmpNumber = 0;
-            program->currentFunc = new FunctionSymbol_();
+            program->currentFunc = decl1->functionSymbol;
             program->currentFunc->entryBB = program->createBasicBlock();
             program->currentFunc->exitBB = program->createBasicBlock();
             program->currentBlock = program->currentFunc->entryBB;
