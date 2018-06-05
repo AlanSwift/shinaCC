@@ -32,7 +32,7 @@ private:
     }
 public:
     SymbolTable():size(0),bufferSize(0){
-
+        clear();
     }
 
     bool addSymbol(std::string id, T type)

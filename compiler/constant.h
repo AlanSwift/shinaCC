@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <list>
 
 #define SPACE '-'
 
@@ -411,11 +412,14 @@ public:
 class FunctionSymbol_:public Symbol_
 {
 public:
-    std::vector<Symbol> params;
+    std::list<Symbol> params;
     std::vector<Symbol> locals;
     BasicBlock entryBB;
     BasicBlock exitBB;
     FunctionSymbol_():entryBB(NULL), exitBB(NULL){}
+    ~FunctionSymbol_(){
+        std::cout<<"~FunctionSymbol_()"<<std::endl;
+    }
 };
 
 class IrInst_

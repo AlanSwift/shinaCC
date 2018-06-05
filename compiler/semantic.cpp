@@ -7,6 +7,9 @@
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
     for(auto &decl: start->declarations){
+        start->show();
+        printf("================\n");
+        fflush(stdout);
         semanticDecl(decl);
     }
 }
@@ -595,6 +598,7 @@ void Semantic::semanticDecl(Decl decl)
                         valueEnv.addSymbol(((ParmVarDecl)e)->name, symbol);
                         funcSym->params.push_back(symbol);
                     }
+
                     valueEnv.addSymbol(decl->name, funcSym);
                     semanticStmt(((FunctionDecl)decl)->stmt);
                     valueEnv.popEnv();
@@ -617,7 +621,9 @@ void Semantic::semanticDecl(Decl decl)
                             semanticDecl(e);
                         }
 
+
                     }
+
                 }
                 valueEnv.addSymbol(decl->name,funcSym);
 
@@ -634,12 +640,14 @@ void Semantic::semanticDecl(Decl decl)
                 assert(0);
             }
             else{
+
                 ((FunctionDecl)decl)->functionSymbol = (FunctionSymbol)c;
+                
                 ((FunctionType)funType)->isDefined=true;
                 ((FunctionType)c->type)->isDefined=true;
 
                 FunctionSymbol funcSym = (FunctionSymbol)c;
-
+                
                 valueEnv.pushEnv();
                 typeEnv.pushEnv();
                 for(auto & e:((FunctionDecl)decl)->parameters)
@@ -659,11 +667,9 @@ void Semantic::semanticDecl(Decl decl)
                 {
                     valueEnv.addSymbol(e->name, e);
                 }
-
                 semanticStmt(((FunctionDecl)decl)->stmt);
                 valueEnv.popEnv();
                 typeEnv.popEnv();
-
             }
             break;
         }

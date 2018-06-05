@@ -1,0 +1,51 @@
+
+int factorial(int n)
+{
+    if(n <= 1)
+        return 1;
+    return n * factorial(n - 1);
+}
+
+
+-------------------------------------------------------
+TranslationUnitDecl_
+-FunctionDecl_: factorial, int, 00000000
+--ParmVarDecl_: n, int
+--CompoundStmt_: locals:0  
+---IfStmt_
+----BinaryOpExpr_: '<=', NULL
+-----DeclRefExpr_: n, NULL, 00000000
+-----IntLiteral_: 1 int
+----ReturnStmt_
+-----IntLiteral_: 1 int
+---ReturnStmt_
+----BinaryOpExpr_: '*', NULL
+-----DeclRefExpr_: n, NULL, 00000000
+-----CallExpr_ NULL
+------DeclRefExpr_: factorial, NULL, 00000000
+------BinaryOpExpr_: '-', NULL
+-------DeclRefExpr_: n, NULL, 00000000
+-------IntLiteral_: 1 int
+==================
+TranslationUnitDecl_
+-FunctionDecl_: factorial, int, 00000000
+--ParmVarDecl_: n, int
+--CompoundStmt_: locals:0  
+---IfStmt_
+----BinaryOpExpr_: '<=', NULL
+-----DeclRefExpr_: n, NULL, 00000000
+-----IntLiteral_: 1 int
+----ReturnStmt_
+-----IntLiteral_: 1 int
+---ReturnStmt_
+----BinaryOpExpr_: '*', NULL
+-----DeclRefExpr_: n, NULL, 00000000
+-----CallExpr_ NULL
+------DeclRefExpr_: factorial, NULL, 00000000
+------BinaryOpExpr_: '-', NULL
+-------DeclRefExpr_: n, NULL, 00000000
+-------IntLiteral_: 1 int
+================
+
+-------------------------------------------------------
+finish semanticAnalysis
