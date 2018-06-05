@@ -22,7 +22,12 @@ typedef class Program_ *Program;
 class Program_
 {
 public:
-    Program_():currentBlock(NULL){}
+    FunctionSymbol currentFunc;
+    std::vector<Symbol> globals;
+    std::vector<FunctionSymbol> functionList;
+    Program_():currentBlock(NULL){
+
+    }
     std::vector<BasicBlock> bblocks;
     BasicBlock currentBlock;
     void appendInst(IrInst e);
@@ -40,6 +45,7 @@ public:
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
 private:
+    int tmpNumber;
     SymbolTable<Symbol> table;
     Program program;
     /*translate expression*/
@@ -80,6 +86,7 @@ private:
         IrInst inst = new IrInst_();
         inst->type = type;
         inst->opcode = opcode;
+        dstBlock->reference++;
         inst->opds[0] = (Symbol)dstBlock; //!!!
         inst->opds[1] = src1;
         inst->opds[2] = src2;
@@ -91,6 +98,7 @@ private:
         IrInst inst = new IrInst_();
         inst->opcode = JMP;
         inst->type = BuiltinType_::voidType;
+        dstBlock->reference++;
         inst->opds[0] = (Symbol)dstBlock; //!!!
         program->appendInst(inst);
     }
@@ -102,6 +110,18 @@ private:
         inst->opds[0] = dst;
         inst->opds[1] = src1;
         inst->opds[2] = src2;
+        program->appendInst(inst);
+    }
+
+    void generateMove(Type type, Symbol dst, Symbol src)
+    {
+        IrInst inst = new IrInst_();
+        inst->opcode = MOV;
+        inst->opds[0] = dst;
+        inst->opds[1] = src;
+        program->appendInst(inst);
+
+        //TODO:
     }
 
     Symbol translateCast(Type to, Type from, Symbol src)
@@ -184,10 +204,12 @@ private:
 
     Symbol createTemp(Type type)
     {
-        Symbol tmp = new Symbol_();
+        assert(program->currentFunc);
+        Symbol tmp = new VariableSymbol_();
         tmp->name = "tmp";
         tmp->kind = SK_Temp;
         tmp->type = type;
+        program->currentFunc->locals.push_back(tmp);
         return tmp;
     }
 

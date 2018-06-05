@@ -26,15 +26,34 @@ void Program_::startBasicBlock(BasicBlock bb)
 
 Program Translator_::translate(TranslationUnitDecl start)
 {
+    program = new Program_();
+    //TODO: handle var decl
     for(auto &decl: start->declarations){
         if(decl->id == NODE_DECL_VAR){
             VarDecl decl1 = (VarDecl)decl;
-            //TODO: varDecl
+            VariableSymbol symbol = new VariableSymbol_();
+            symbol->name = decl1->name;
+            symbol->type = decl1->type;
+            symbol->initData = decl1->init;
+            table.addSymbol(decl1->name, symbol);
+            program->globals.push_back(symbol);
         }
         else if(decl->id == NODE_DECL_FUNCTION){
             FunctionDecl decl1 = (FunctionDecl)decl;
-            if(!decl1->stmt){
-                //TODO: funcDecl
+            if(!decl1->stmt)
+                continue;
+            tmpNumber = 0;
+            program->currentFunc = new FunctionSymbol_();
+            program->currentFunc->entryBB = program->createBasicBlock();
+            program->currentFunc->exitBB = program->createBasicBlock();
+            program->currentBlock = program->currentFunc->entryBB;
+            translateStatement(decl1->stmt);
+            program->startBasicBlock(program->currentFunc->exitBB);
+
+            for(auto &bb: program->bblocks){
+                if(bb->reference > 0){
+                    bb->symbol = createLabel();
+                }
             }
         }
     }
