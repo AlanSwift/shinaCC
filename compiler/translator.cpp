@@ -204,17 +204,89 @@ void Translator_::translateDoStmt(DoStmt stmt)
 
 void Translator_::translateForStmt(ForStmt stmt)
 {
-    
+    stmt->loopBB=program->createBasicBlock();
+    stmt->contBB=program->createBasicBlock();
+    stmt->testBB=program->createBasicBlock();
+    stmt->nextBB=program->createBasicBlock();
+
+    if(stmt->init)
+    {
+        this->translateExpression(stmt->init);
+    }
+    //generate jump  testbb
+
+
+    program->startBasicBlock(stmt->loopBB);
+    this->translateStatement(stmt->stmt);
+    program->startBasicBlock(stmt->contBB);
+    if(stmt->next)
+    {
+        this->translateExpression(stmt->next);
+    }
+    program->startBasicBlock(stmt->testBB);
+    if(stmt->condition)
+    {
+        this->translateBranch(stmt->condition,stmt->loopBB,stmt->nextBB);
+    }
+    else{
+        //generate jump
+    }
+    program->startBasicBlock(stmt->nextBB);
+
+
 }
 
 void Translator_::translateGotoStmt(GoToStmt stmt)
 {
+    if(stmt->label->respBB==NULL)
+    {
+        stmt->label->respBB=program->createBasicBlock();
+    }
+    //GenerateJump(Stmt->label->respBB);
+    program->startBasicBlock(program->createBasicBlock());
 
 }
 
 void Translator_::translateBreakStmt(BreakStmt stmt)
 {
+    switch(stmt->target->id)
+    {
+        case NODE_STM_SWITCH:
+        {
+            //GenerateJump(((SwitchStmt)(stmt->target))->nextBB);
+            break;
+        }
+        case NODE_STM_FOR:
+        {
+            //GenerateJump(((ForStmt)(stmt->target))->nextBB);
+            break;
+        }
+        case NODE_STM_WHILE:
+        {
+            //GenerateJump(((WhileStmt)(stmt->target))->nextBB);
+            break;
+        }
+        case NODE_STM_DO:
+        {
+            
+        }
+    }
+    if(stmt->target->id==NODE_STM_SWITCH)
+    {
+        
+    }
+    
+// AstBreakStatement brkStmt = AsBreak(stmt);
 
+// 	if (brkStmt->target->kind == NK_SwitchStatement)
+// 	{
+// 		GenerateJump(AsSwitch(brkStmt->target)->nextBB);
+// 	}
+// 	else
+// 	{
+// 		GenerateJump(AsLoop(brkStmt->target)->nextBB);
+// 	}
+// 	StartBBlock(CreateBBlock());
 }
 
 void Translator_::translateContinueStmt(ContinueStmt stmt)
