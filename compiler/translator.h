@@ -124,6 +124,17 @@ private:
         //TODO:
     }
 
+    void generateReturn(Type type,Symbol src)
+    {
+        IrInst inst=new IrInst_();
+        inst->type=type;
+        inst->opcode=RET;
+        inst->opds[0]=src;
+        inst->opds[1]=inst->opds[2]=NULL;
+        program->appendInst(inst);
+
+    }
+
     Symbol translateCast(Type to, Type from, Symbol src)
     {
         Symbol dst;

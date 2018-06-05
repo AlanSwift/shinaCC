@@ -213,7 +213,7 @@ void Translator_::translateForStmt(ForStmt stmt)
     {
         this->translateExpression(stmt->init);
     }
-    //generate jump  testbb
+    this->generateJump(stmt->testBB);
 
 
     program->startBasicBlock(stmt->loopBB);
@@ -229,7 +229,7 @@ void Translator_::translateForStmt(ForStmt stmt)
         this->translateBranch(stmt->condition,stmt->loopBB,stmt->nextBB);
     }
     else{
-        //generate jump
+        this->generateJump(stmt->loopBB);
     }
     program->startBasicBlock(stmt->nextBB);
 
@@ -242,7 +242,7 @@ void Translator_::translateGotoStmt(GoToStmt stmt)
     {
         stmt->label->respBB=program->createBasicBlock();
     }
-    //GenerateJump(Stmt->label->respBB);
+    this->generateJump(stmt->label->respBB);
     program->startBasicBlock(program->createBasicBlock());
 
 }
@@ -253,49 +253,63 @@ void Translator_::translateBreakStmt(BreakStmt stmt)
     {
         case NODE_STM_SWITCH:
         {
-            //GenerateJump(((SwitchStmt)(stmt->target))->nextBB);
+            this->generateJump(((SwitchStmt)(stmt->target))->nextBB);
             break;
         }
         case NODE_STM_FOR:
         {
-            //GenerateJump(((ForStmt)(stmt->target))->nextBB);
+            this->generateJump(((ForStmt)(stmt->target))->nextBB);
             break;
         }
         case NODE_STM_WHILE:
         {
-            //GenerateJump(((WhileStmt)(stmt->target))->nextBB);
+            this->generateJump(((WhileStmt)(stmt->target))->nextBB);
             break;
         }
         case NODE_STM_DO:
         {
-            
+            this->generateJump(((DoStmt)(stmt->target))->nextBB);
+            break;
         }
     }
-    if(stmt->target->id==NODE_STM_SWITCH)
-    {
-        
-    }
+    program->startBasicBlock(program->createBasicBlock());
     
-// AstBreakStatement brkStmt = AsBreak(stmt);
-
-// 	if (brkStmt->target->kind == NK_SwitchStatement)
-// 	{
-// 		GenerateJump(AsSwitch(brkStmt->target)->nextBB);
-// 	}
-// 	else
-// 	{
-// 		GenerateJump(AsLoop(brkStmt->target)->nextBB);
-// 	}
-// 	StartBBlock(CreateBBlock());
 }
 
 void Translator_::translateContinueStmt(ContinueStmt stmt)
 {
+    switch(stmt->target->id)
+    {
+        case NODE_STM_FOR:
+        {
+            this->generateJump(reinterpret_cast<ForStmt>(stmt->target)->contBB);
+            break;
+        }
+        case NODE_STM_WHILE:
+        {
+            this->generateJump(reinterpret_cast<WhileStmt>(stmt->target)->contBB);
+            break;
+        }
+        case NODE_STM_DO:
+        {
+            this->generateJump(reinterpret_cast<DoStmt>(stmt->target)->contBB);
+            break;
+        }
+    }
+    program->startBasicBlock(program->createBasicBlock());
 
 }
 
 void Translator_::translateReturnStmt(ReturnStmt stmt)
 {
+    if(stmt->result)
+    {
+        this->generateReturn(stmt->result->type,
+            this->translateExpression(stmt->result)
+        );
+    }
+    this->generateJump(program->currentFunc->exitBB);
+    program->startBasicBlock(program->createBasicBlock());
 
 }
 
