@@ -244,6 +244,8 @@ private:
         label->kind = SK_Label;
         return label;
     }
+
+    Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2);
 };
 
 #endif //CP_TRANSLATOR_H
