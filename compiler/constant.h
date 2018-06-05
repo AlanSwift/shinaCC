@@ -352,28 +352,26 @@ typedef class IrInst_ *IrInst;
 typedef class BasicBlock_ *BasicBlock;
 typedef class valueDef_ *valueDef;
 typedef class valueUse_ *valueUse;
-typedef class valueUseDefine_ *valueUseDefine;
 
-class valueUseDefine_{
+
+class valueDef_
+{
 public:
     Symbol dst;
 	int op;
 	Symbol src1;
 	Symbol src2;
-	BasicBlock ownBB;
-};
+    BasicBlock ownBB;
 
-class valueDef_
-{
-public:
-	std::vector<valueUseDefine>def;
+	valueDef link;
 };
 
 
 class valueUse_
 {
 public:
-	std::vector<valueUseDefine>use;
+	valueDef def;
+    valueUse next;
 };
 
 
@@ -390,6 +388,7 @@ public:
         double d;
         void *p;
     } valueUnion;
+    bool addressed;
     Symbol_():type(NULL){}
     virtual ~Symbol_(){}
 };
@@ -417,6 +416,9 @@ public:
     std::vector<Symbol> locals;
     BasicBlock entryBB;
     BasicBlock exitBB;
+
+    valueDef valNumTable[16];
+
     FunctionSymbol_():entryBB(NULL), exitBB(NULL){}
     ~FunctionSymbol_(){
         std::cout<<"~FunctionSymbol_()"<<std::endl;

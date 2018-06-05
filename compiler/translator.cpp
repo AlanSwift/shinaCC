@@ -666,19 +666,52 @@ Symbol Translator_::translateExpression(Expr expr)
 Symbol Translator_::addressOf(Symbol p)
 {
     
-	if (p->kind == SK_Temp && dynamic_cast<VariableSymbol>(p)->def->def[0]-> op == DEREF)
+	if (p->kind == SK_Temp && dynamic_cast<VariableSymbol>(p)->def->op == DEREF)
 	{
-		Symbol t=dynamic_cast<VariableSymbol>(p)->def->def[0]->src1;
+		Symbol t=dynamic_cast<VariableSymbol>(p)->def->src1;
 		return t;
 	}
 
-	//p->addressed = 1;
+	p->addressed = 1;
 
 	if (p->kind == SK_Variable)
 	{
 		TrackValueChange(p);
 	}
-	Symbol t=TryAddValue(T(POINTER), ADDR, p, NULL);
+	Symbol t=TryAddValue(new PointerType_(NULL), ADDR, p, NULL);
 	//debugSymbol(t);
 	return t; 
+}
+
+Symbol Translator_::TryAddValue(Type ty, int op, Symbol src1, Symbol src2)
+{
+	int h = ((unsigned int)(long long)src1 + (unsigned int)(long long)src2 + op) & 15;
+
+	valueDef def = program->currentFunc->valNumTable[h];
+
+	Symbol t;
+
+	if (op != ADDR && (src1->addressed || (src2 && src2->addressed)))
+		goto new_temp;
+
+	while (def)
+	{
+		if (def->op == op && (def->src1 == src1 && def->src2 == src2))
+			break;
+		def = def->link;
+	}
+
+	if (def && def->ownBB == program->currentBlock && def->dst != NULL)
+		return def->dst;
+
+new_temp:
+	t = createTemp(ty);
+	generateAssign(ty, t, op, src1, src2);
+
+    def = dynamic_cast<VariableSymbol>(t)->def;
+
+	def->link = program->currentFunc->valNumTable[h];
+	program->currentFunc->valNumTable[h] = def;
+
+	return t;
 }

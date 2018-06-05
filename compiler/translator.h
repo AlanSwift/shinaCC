@@ -116,6 +116,7 @@ private:
         inst->opds[1] = src1;
         inst->opds[2] = src2;
         program->appendInst(inst);
+        DefineTemp(dst,opcode,src1,src2);
     }
 
     void generateMove(Type type, Symbol dst, Symbol src)
@@ -233,40 +234,42 @@ private:
         assert(type == BuiltinType_::voidType);
         return V;
     }
+
     void TrackValueChange(Symbol p)
     {
-        valueUse use=dynamic_cast<VariableSymbol>(p)->uses;
+        valueUse use = dynamic_cast<VariableSymbol>(p)->uses;
 
-        for(auto &e:use->use)
+        while (use)
         {
-            if(e->op!=ADDR)
-            {
-                e->dst=NULL;
-            }
-
+            if (use->def->op != ADDR)
+                use->def->dst = NULL;
+            use = use->next;
         }
     }
-    void TrackValueUse(Symbol p, valueUseDefine def)
+    void TrackValueUse(Symbol p, valueDef  def)
     {
-        dynamic_cast<VariableSymbol>(p)->uses->use.push_back(
-            def
-        );
+        valueUse use=new valueUse_();
+
+        use->def = def;
+
+        use->next = dynamic_cast<VariableSymbol>(p)->uses;
+        dynamic_cast<VariableSymbol>(p)->uses = use;
 
     }
     void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
     {
-        valueUseDefine def=new valueUseDefine_();
+        valueDef def=new valueDef_();
 
         def->dst = t;
         def->op = op;
         def->src1 = src1;
         def->src2 = src2;
-
         def->ownBB = program->currentBlock;
 
         if (op == MOV || op == CALL)
         {
-            (dynamic_cast<VariableSymbol> (t))->def->def.push_back(def);
+            def->link = dynamic_cast<VariableSymbol>(t)->def;
+            dynamic_cast<VariableSymbol>(t)->def = def;
             return;
         }
 
@@ -278,10 +281,7 @@ private:
         {
             TrackValueUse(src2, def);
         }
-        dynamic_cast<VariableSymbol>(t)->def=new valueDef_();
-        dynamic_cast<VariableSymbol>(t)->def->def.push_back(
-            def
-        );
+        dynamic_cast<VariableSymbol>(t)->def = def;
     }
 
     bool lookUp(std::string name)
@@ -351,6 +351,7 @@ private:
         p->valueUnion.d = d;
         p->type = BuiltinType_::doubleType;
     }
+    Symbol TryAddValue(Type ty, int op, Symbol src1, Symbol src2);
 };
 
 #endif //CP_TRANSLATOR_H
