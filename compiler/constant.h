@@ -349,6 +349,33 @@ typedef class VariableSymbol_ *VariableSymbol;
 typedef class FunctionSymbol_ *FunctionSymbol;
 typedef class IrInst_ *IrInst;
 typedef class BasicBlock_ *BasicBlock;
+typedef class valueDef_ *valueDef;
+typedef class valueUse_ *valueUse;
+typedef class valueUseDefine_ *valueUseDefine;
+
+class valueUseDefine_{
+public:
+    Symbol dst;
+	int op;
+	Symbol src1;
+	Symbol src2;
+	BasicBlock ownBB;
+};
+
+class valueDef_
+{
+public:
+	std::vector<valueUseDefine>def;
+};
+
+
+class valueUse_
+{
+public:
+	std::vector<valueUseDefine>use;
+};
+
+
 
 class Symbol_
 {
@@ -371,6 +398,14 @@ class VariableSymbol_:public Symbol_
 public:
     int offset;
     Expr initData;
+    valueDef def;
+    valueUse uses;
+    VariableSymbol_()
+    {
+        def=new valueDef_();
+        uses=new valueUse_();
+        
+    }
 };
 
 class FunctionSymbol_:public Symbol_

@@ -15,6 +15,8 @@
 #include <string>
 #include <cstring>
 #include <cassert>
+#include <utility>
+
 typedef class Translator_ *Translator;
 typedef class Program_ *Program;
 
@@ -137,6 +139,22 @@ private:
         program->appendInst(inst);
 
     }
+    void generateFunctionCall(Type type,Symbol recv,Symbol faddr, std::vector<std::pair<Symbol,Type> >args)
+    {
+        pair<Symbol,Type> p;
+        IrInst inst=new IrInst_();
+        inst->type=type;
+        inst->opcode=CALL;
+        inst->opds[0]=recv;
+        inst->opds[1] = faddr;
+        inst->opds[2] = (Symbol)( &args );
+        program->appendInst(inst);
+
+        if(!recv)
+        {
+            this->DefineTemp(recv, CALL, (Symbol)inst, NULL);
+        }
+    }
 
     Symbol translateCast(Type to, Type from, Symbol src)
     {
@@ -215,6 +233,42 @@ private:
         assert(type == BuiltinType_::voidType);
         return V;
     }
+    void TrackValueUse(Symbol p, valueUseDefine def)
+    {
+        reinterpret_cast<VariableSymbol>(p)->uses->use.push_back(
+            def
+        );
+    }
+    void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
+    {
+        valueUseDefine def=new valueUseDefine_();
+
+        def->dst = t;
+        def->op = op;
+        def->src1 = src1;
+        def->src2 = src2;
+
+        def->ownBB = program->currentBlock;
+
+        if (op == MOV || op == CALL)
+        {
+            (reinterpret_cast<VariableSymbol> (t))->def->def.push_back(def);
+            return;
+        }
+
+        if (src1->kind == SK_Variable)
+        {
+            TrackValueUse(src1, def);
+        }
+        if (src2 && src2->kind == SK_Variable)
+        {
+            TrackValueUse(src2, def);
+        }
+        reinterpret_cast<VariableSymbol>(t)->def=new valueDef_();
+        reinterpret_cast<VariableSymbol>(t)->def->def.push_back(
+            def
+        );
+    }
 
     bool lookUp(std::string name)
     {
@@ -239,6 +293,8 @@ private:
         //table.addSymbol(name, tmp);
         return tmp;
     }
+
+
 
     Symbol createLabel()
     {

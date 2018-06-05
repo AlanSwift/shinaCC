@@ -3,6 +3,8 @@
 //
 
 #include "translator.h"
+#include <utility>
+
 
 int level = 0;
 
@@ -66,6 +68,26 @@ Program Translator_::translate(TranslationUnitDecl start)
 
 Symbol Translator_::translateFunctionCall(CallExpr expr)
 {
+    Symbol faddr,recv;
+
+    faddr=this->translateExpression(expr->func);//may be function pointer
+
+    vector<pair<Symbol,Type> > args;
+
+    for(auto &e:expr->args)
+    {
+        pair<Symbol,Type> arg;
+        arg.first=this->translateExpression(e);
+        arg.second=e->type;
+        args.push_back(arg);
+    }
+    recv=NULL;
+    if(reinterpret_cast<FunctionType>( expr->type)->returnType->id!=CONST_TYPE_BUILTIN_VOID)
+    {
+        recv=this->createTemp(reinterpret_cast<FunctionType>( expr->type)->returnType);
+    }
+    this->generateFunctionCall(expr->type,recv,faddr,args);
+    return recv;
 
 }
 
