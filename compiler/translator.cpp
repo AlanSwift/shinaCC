@@ -168,7 +168,6 @@ Symbol Translator_::translateCommaExpr(BinaryOpExpr expr)
 
 }
 
-
 Symbol Translator_::translateCastExpr(Expr expr)
 {
     if(expr->id == NODE_EXP_IMPLICITCAST){
@@ -301,11 +300,13 @@ void Translator_::translateForStmt(ForStmt stmt)
 
     program->startBasicBlock(stmt->loopBB);
     this->translateStatement(stmt->stmt);
+
     program->startBasicBlock(stmt->contBB);
     if(stmt->next)
     {
         this->translateExpression(stmt->next);
     }
+
     program->startBasicBlock(stmt->testBB);
     if(stmt->condition)
     {
@@ -321,6 +322,8 @@ void Translator_::translateForStmt(ForStmt stmt)
 
 void Translator_::translateGotoStmt(GoToStmt stmt)
 {
+	/*GOTO*/
+	//TODO:
     if(stmt->label->respBB==NULL)
     {
         stmt->label->respBB=program->createBasicBlock();
@@ -529,7 +532,6 @@ Expr Translator_::notExpr(Expr expr)
     expr2->type = BuiltinType_::intType;
     return expr2;
 }
-
 
 void Translator_::translateStatement(Stmt stmt)
 {
