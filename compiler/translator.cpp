@@ -439,7 +439,7 @@ void Translator_::translateSwitchStmt(SwitchStmt stmt)
 
 void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock)
 {
-    BasicBlock testBlock;
+    BasicBlock testBlock;// now -> trueBlock -> falseBlock
     Symbol src1, src2;
     int map[6] ={
          JGE, JL, JG, JLE, JE, JNE

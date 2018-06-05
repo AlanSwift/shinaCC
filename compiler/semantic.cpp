@@ -636,7 +636,7 @@ void Semantic::semanticDecl(Decl decl)
             else{
                 ((FunctionDecl)decl)->functionSymbol = (FunctionSymbol)c;
                 ((FunctionType)funType)->isDefined=true;
-                ((FunctionType)c)->isDefined=true;
+                ((FunctionType)c->type)->isDefined=true;
 
                 FunctionSymbol funcSym = (FunctionSymbol)c;
 
