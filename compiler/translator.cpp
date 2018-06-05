@@ -4,6 +4,8 @@
 
 #include "translator.h"
 
+int level = 0;
+
 void Program_::appendInst(IrInst e)
 {
     if(currentBlock)
@@ -27,6 +29,7 @@ void Program_::startBasicBlock(BasicBlock bb)
 Program Translator_::translate(TranslationUnitDecl start)
 {
     program = new Program_();
+    labelNumber = 0;
     //TODO: handle var decl
     for(auto &decl: start->declarations){
         if(decl->id == NODE_DECL_VAR){
@@ -35,13 +38,14 @@ Program Translator_::translate(TranslationUnitDecl start)
             symbol->name = decl1->name;
             symbol->type = decl1->type;
             symbol->initData = decl1->init;
-            table.addSymbol(decl1->name, symbol);
+            //table.addSymbol(decl1->name, symbol);
             program->globals.push_back(symbol);
         }
         else if(decl->id == NODE_DECL_FUNCTION){
             FunctionDecl decl1 = (FunctionDecl)decl;
             if(!decl1->stmt)
                 continue;
+
             tmpNumber = 0;
             program->currentFunc = new FunctionSymbol_();
             program->currentFunc->entryBB = program->createBasicBlock();
@@ -57,7 +61,7 @@ Program Translator_::translate(TranslationUnitDecl start)
             }
         }
     }
-    return NULL;
+    return program;
 }
 
 Symbol Translator_::translateFunctionCall(CallExpr expr)
@@ -225,7 +229,17 @@ void Translator_::translateReturnStmt(ReturnStmt stmt)
 
 void Translator_::translateCompoundStmt(CompoundStmt stmt)
 {
-
+    level++;
+    for(auto &s: stmt->stmtList){
+        if(s->id == NODE_STM_DECL){
+            VarDecl decl = (VarDecl)s;
+            //TODO: initialize
+        }
+        else{
+            translateStatement(s);
+        }
+    }
+    level--;
 }
 
 void Translator_::translateSwitchStmt(SwitchStmt stmt)

@@ -45,8 +45,8 @@ public:
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
 private:
-    int tmpNumber;
-    SymbolTable<Symbol> table;
+    int tmpNumber, labelNumber;
+    //SymbolTable<Symbol> table;
     Program program;
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);
@@ -202,21 +202,34 @@ private:
         return V;
     }
 
+    bool lookUp(std::string name)
+    {
+        for(auto &symbol: program->currentFunc->locals)
+            if(symbol->name == name)
+                return true;
+        return false;
+    }
+
     Symbol createTemp(Type type)
     {
         assert(program->currentFunc);
+        std::string name;
+        do{
+            name = "temp_" + std::to_string(tmpNumber++);
+        }while(!lookUp(name));
         Symbol tmp = new VariableSymbol_();
-        tmp->name = "tmp";
+        tmp->name = name;
         tmp->kind = SK_Temp;
         tmp->type = type;
         program->currentFunc->locals.push_back(tmp);
+        //table.addSymbol(name, tmp);
         return tmp;
     }
 
     Symbol createLabel()
     {
         Symbol label = new Symbol_();
-        label->name = "label";
+        label->name = "label_" + std::to_string(labelNumber++);
         label->kind = SK_Label;
         return label;
     }
