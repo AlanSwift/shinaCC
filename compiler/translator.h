@@ -336,19 +336,13 @@ private:
         return label;
     }
 
-    Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2)
-    {
-        Symbol t = createTemp(ty);
-        generateAssign(ty, t, opcode, src1, src2);
-        return t;
-    }
+    Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2);
+    
 
     Symbol addressOf(Symbol symbol);
 
-    Symbol deReference(Type type, Symbol symbol)
-    {
-        return symbol;
-    }
+    Symbol deReference(Type type,Symbol symbol);
+
 
     Symbol IntConstant(int i)
     {

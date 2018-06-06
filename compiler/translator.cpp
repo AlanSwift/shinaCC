@@ -753,3 +753,25 @@ new_temp:
 
 	return t;
 }
+
+ Symbol Translator_::deReference(Type type,Symbol addr)
+{
+    Symbol tmp;
+
+	if (addr->kind == SK_Temp && dynamic_cast<VariableSymbol>(addr)->def->op == ADDR)
+	{
+		return dynamic_cast<VariableSymbol>(addr)->def->src1;
+	}
+
+	tmp = createTemp(type);
+	generateAssign(type, tmp, DEREF, addr, NULL);
+	return tmp;
+}
+
+Symbol Translator_::simplify(Type ty, int opcode, Symbol src1, Symbol src2)
+{
+    
+    Symbol t = createTemp(ty);
+    generateAssign(ty, t, opcode, src1, src2);
+    return t;
+}
