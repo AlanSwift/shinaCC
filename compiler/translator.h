@@ -344,6 +344,8 @@ private:
     Symbol addressOf(Symbol symbol);
 
     Symbol deReference(Type type,Symbol symbol);
+    Symbol offset(Type ty, Symbol addr, Symbol voff, int coff);
+    Symbol createOffset(Type ty, Symbol base, int coff);
 
 
     Symbol IntConstant(int i)
@@ -364,8 +366,13 @@ private:
         p->name = std::to_string(d);
         p->valueUnion.d = d;
         p->type = BuiltinType_::doubleType;
+        return p;
     }
     Symbol TryAddValue(Type ty, int op, Symbol src1, Symbol src2);
+    bool isRealType(Type c);
+    bool isIntegType(Type c);
+    bool isPointerType(Type c);
+    int powerOf2(unsigned int u);
 };
 
 #endif //CP_TRANSLATOR_H

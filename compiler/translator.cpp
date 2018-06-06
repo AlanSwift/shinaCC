@@ -771,10 +771,259 @@ new_temp:
 	return tmp;
 }
 
+bool Translator_::isRealType(Type type)
+{
+    return !type && type->id== CONST_TYPE_BUILTIN &&
+           (dynamic_cast<BuiltinType> (type)->builtinType == CONST_TYPE_BUILTIN_FLOAT ||
+            dynamic_cast<BuiltinType> (type)->builtinType == CONST_TYPE_BUILTIN_DOUBLE ||
+            dynamic_cast<BuiltinType> (type)->builtinType == CONST_TYPE_BUILTIN_LONG_DOUBLE
+    );
+}
+bool Translator_::isIntegType(Type c)
+{
+    return !c && c->id== CONST_TYPE_BUILTIN &&
+            (
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_CHAR ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_UNSIGNED_CHAR ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_SHORT ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_UNSIGNED_SHORT ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_INT ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_UNSIGNED_INT ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_UNSIGNED ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_LONG ||
+                dynamic_cast<BuiltinType>(c)->builtinType==CONST_TYPE_BUILTIN_UNSIGNED_LONG
+                
+            );
+}
+
+bool Translator_::isPointerType(Type c)
+{
+    return !c && (c->id==CONST_TYPE_POINTER);
+}
+int Translator_::powerOf2(unsigned int u)
+{
+	int n;
+
+	if (u > 1 && (u &(u - 1)) == 0)
+	{
+		for (n = 0; u; u >>= 1, n++)
+		{
+			if (u & 1)
+				return n;
+		}
+	}
+	return 0;
+}
+
+
 Symbol Translator_::simplify(Type ty, int opcode, Symbol src1, Symbol src2)
 {
-    
-    Symbol t = createTemp(ty);
-    generateAssign(ty, t, opcode, src1, src2);
-    return t;
+    VariableSymbol t;
+	Symbol p1, p2;
+	int c1, c2;
+
+	if (isRealType(ty))
+		goto add_value;
+
+	if (src2 == NULL || (src2->kind != SK_Constant && opcode != SUB))
+		goto add_value;
+
+	switch (opcode)
+	{
+	case ADD:
+		// a + 0 = a
+		if (src2->valueUnion.i[0] == 0)
+			return src1;
+
+		// a + c1 + c2 = a + (c1 + c2)
+		// a - c1 + c2 = a + (-c1 + c2)
+		p1 = src1; c1 = 0;
+		if (src1->kind == SK_Temp)
+		{
+			t = dynamic_cast<VariableSymbol>(src1);
+
+			if (t->def->src2 && t->def->src2->kind == SK_Constant && 
+			    (t->def->op == ADD || t->def->op == SUB))
+			{
+				p1 = t->def->src1;
+				c1 = (t->def->op == ADD ? 1 : -1) * t->def->src2->valueUnion.i[0];
+			}
+
+		}
+		if (c1 != 0)
+		{
+			src1 = p1;
+			src2 = IntConstant(c1 + src2->valueUnion.i[0]);
+		}
+		break;
+
+	case SUB:
+		// a - 0 = a
+		if (src2->kind == SK_Constant && src2->valueUnion.i[0] == 0)
+			return src1;
+
+		// put source operand into v + c format (v maybe NULL, c maybe 0)
+		p1 = src1; c1 = 0;
+		if (src1->kind == SK_Temp)
+		{
+			t = dynamic_cast<VariableSymbol>(src1);
+			if (t->def->src2 && t->def->src2->kind == SK_Constant && 
+			    (t->def->op == ADD || t->def->op == SUB))
+			{
+				p1 = t->def->src1;
+				c1 = (t->def->op == ADD ? 1 : -1) * t->def->src2->valueUnion.i[0];
+			}
+		}
+		else if (src1->kind == SK_Constant)
+		{
+			p1 = NULL;
+			c1 = src1->valueUnion.i[0];
+		}
+		p2 = src2; c2 = 0;
+		if (src2->kind == SK_Temp)
+		{
+			t = dynamic_cast<VariableSymbol>(src2);
+			if (t->def->src2 && t->def->src2->kind == SK_Constant && 
+			    (t->def->op == ADD || t->def->op == SUB))
+			{
+				p2 = t->def->src1;
+				c2 = (t->def->op == ADD ? 1 : -1) * t->def->src2->valueUnion.i[0];
+			}
+		}
+		else if (src2->kind == SK_Constant)
+		{
+			p2 = NULL;
+			c2 = src2->valueUnion.i[0];
+		}
+
+		if (p1 == p2)
+		{
+			// (a + c1) - (a + c2) = c1 - c2
+			return IntConstant(c1 - c2);
+		}
+		else if (p1 == NULL)
+		{
+			// c1 - (a + c2) = (c1 - c2) - a
+			src1 = IntConstant(c1 - c2);
+			src2 = p2;
+		}
+		else if (p2 == NULL)
+		{
+			// (a + c1) - c2 = a + (c1 - c2)
+			src1 = p1;
+			opcode = ADD;
+			src2 = IntConstant(c1 - c2);
+		}
+		break;
+
+	case MUL:
+	case DIV:
+		// a * 1 = a; a / 1 = a;
+		if (src2->valueUnion.i[0] == 1)
+			return src1;
+
+		// a * 2 power of n = a >> n
+		c1 = powerOf2(src2->valueUnion.i[0]);
+		if (c1 != 0)
+		{
+			src2 = IntConstant(c1);
+			opcode = opcode == MUL ? LSH : RSH;
+        }
+		break;
+
+	case MOD:
+		// a % 1 = 0
+		if (src2->valueUnion.i[0] == 1)
+			return IntConstant(0);
+
+		// a % 2 power of n = a & (2 power of n - 1)
+		c1 = powerOf2(src2->valueUnion.i[0]);
+		if (c1 != 0)
+		{
+			src2 = IntConstant(src2->valueUnion.i[0] - 1);
+			opcode = BAND;
+		}
+		break;
+
+	case LSH:
+	case RSH:
+		// a >> 0 = a << 0 = a
+		if (src2->valueUnion.i[0] == 0)
+			return src1;
+		break;
+
+	case BOR:
+		// a | 0 = a; a | -1 = -1
+		if (src2->valueUnion.i[0] == 0)
+			return src1;
+		if (src2->valueUnion.i[0] == -1)
+			return src2;
+		break;
+
+	case BXOR:
+		// a ^ 0 = a
+		if (src2->valueUnion.i[0] == 0)
+			return src1;
+		break;
+
+	case BAND:
+		// a & 0 = 0, a & -1 = a
+		if (src2->valueUnion.i[0] == 0)
+			return IntConstant(0);
+		if (src2->valueUnion.i[0] == -1)
+			return src1;
+		break;
+
+	default:
+		break;
+	}
+
+add_value:
+	return TryAddValue(ty, opcode, src1, src2);
 }
+
+
+Symbol Translator_::offset(Type ty, Symbol addr, Symbol voff, int coff)
+{
+	if (voff != NULL)
+	{
+		voff = simplify(new PointerType_(NULL), ADD, voff, IntConstant(coff));
+		addr = simplify(new PointerType_(NULL), ADD, addr, voff);
+		return deReference(ty, addr);
+	}
+
+	if (addr->kind == SK_Temp && dynamic_cast<VariableSymbol>(addr)->def->op == ADDR)
+	{
+		return createOffset(ty, dynamic_cast<VariableSymbol>(addr)->def->src1, coff);
+	}
+
+	return deReference(ty, simplify(new PointerType_(NULL), ADD, addr, IntConstant(coff)));
+
+}
+
+Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
+{
+	VariableSymbol p;
+
+	if (coff == 0)
+		return base;
+
+	p=new VariableSymbol_();
+
+	if (base->kind == SK_Offset)
+	{
+		coff += dynamic_cast<VariableSymbol>(base)->offset;
+		base = base->link;
+	}
+	p->addressed = 1;
+	p->kind = SK_Offset;
+	p->ty = ty;
+	p->link = base;
+	p->offset = coff;
+	p->name = FormatName("%s[%d]", base->name, coff);
+	base->ref++;
+
+	return (Symbol)p;
+}
+
+
