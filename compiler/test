@@ -1,14 +1,14 @@
-int f(int a)
-{	
-	return a * a;
+
+void f()
+{
 }
 
 int main()
 {
-	int a;
-	double b;
-	a = 1;
-	b = 1.0;
-	f(b);
+	int a[3];
+	int *p;
+	void (*fp)();
+	p = a + 1;
+	fp = f;
 	return 0;
 }

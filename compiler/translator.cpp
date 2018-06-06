@@ -802,7 +802,6 @@ new_temp:
 
 Symbol Translator_::simplify(Type ty, int opcode, Symbol src1, Symbol src2)
 {
-    
     Symbol t = createTemp(ty);
     generateAssign(ty, t, opcode, src1, src2);
     return t;

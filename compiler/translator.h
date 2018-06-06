@@ -177,8 +177,17 @@ private:
 
     Symbol translateCast(Type to, Type from, Symbol src)
     {
-        Symbol dst;
-        int scode = typeCode(from), dcode = typeCode(to), opcode;
+        Symbol dst;	
+		if (to->id == CONST_TYPE_POINTER) {
+			assert(from->id == CONST_TYPE_ARRAY || from->id == CONST_TYPE_FUNC);
+			/*if (from->id == CONST_TYPE_ARRAY) {
+				dst = createTemp(to);
+			}*/
+			dst = createTemp(to);
+			generateMove(to, dst, src);
+			return dst;
+		}
+		int scode = typeCode(from), dcode = typeCode(to), opcode;
         switch (scode) {
             case I1: opcode = EXTI1; break;
             case I2: opcode = EXTI2; break;
