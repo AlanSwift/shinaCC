@@ -10,5 +10,6 @@ int main()
 	void (*fp)();
 	p = a + 1;
 	fp = f;
+	*p = 19;
 	return 0;
 }

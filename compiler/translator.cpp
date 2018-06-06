@@ -179,7 +179,7 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
 
 Symbol Translator_::translateIncrement(UnaryOpExpr expr)
 {
-	//TODO:
+	//if()
 }
 
 Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
