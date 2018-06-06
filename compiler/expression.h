@@ -9,6 +9,7 @@
 #include "type.h"
 #include "constant.h"
 #include "utils.h"
+#include <cstring>
 using namespace std;
 
 //can be modified
@@ -339,15 +340,27 @@ struct FloatLiteral_:public Expr_
 struct StrLiteral_:public Expr_
 {
     string value;
+	static int cnt;
     StrLiteral_(string &value):value(value){
         this->id = NODE_EXP_STRLITERAL;
-        valueUnion.p = (void *)value.c_str();
         this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
+
+		Symbol sym = new Symbol_();
+		sym->name = "String" + std::to_string(cnt++);
+		sym->kind = SK_Constant;
+		sym->type = this->type;
+		valueUnion.p = (void *)sym;
     }
     StrLiteral_(char *value){
         this->value = string(value);
         this->id = NODE_EXP_STRLITERAL;
         this->type = new PointerType_(BuiltinType_::charType);
+
+		Symbol sym = new Symbol_();
+		sym->name = "String" + std::to_string(cnt++);
+		sym->kind = SK_Constant;
+		sym->type = this->type;
+		valueUnion.p = (void *)sym;
     }
 
     void show(int space = 0)

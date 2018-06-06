@@ -180,9 +180,6 @@ private:
         Symbol dst;	
 		if (to->id == CONST_TYPE_POINTER) {
 			assert(from->id == CONST_TYPE_ARRAY || from->id == CONST_TYPE_FUNC);
-			/*if (from->id == CONST_TYPE_ARRAY) {
-				dst = createTemp(to);
-			}*/
 			dst = createTemp(to);
 			generateMove(to, dst, src);
 			return dst;
@@ -392,8 +389,9 @@ private:
 			if (decl->id == NODE_DECL_FUNCTION) {
 				FunctionDecl decl1 = (FunctionDecl)decl;
 				program->currentFunc = decl1->functionSymbol;
+				program->currentFunc->entryBB->symbol->name = program->currentFunc->name;
 				//printf("number of basic blocks in %s: %d\n", program->currentFunc->name.c_str(), program->bblocks.size());
-				fprintf(stdout, "%s: \n", program->currentFunc->name.c_str());
+				//fprintf(stdout, "%s: \n", program->currentFunc->name.c_str());
 				showFunction(decl1->functionSymbol, ptr);
 			}
 		}

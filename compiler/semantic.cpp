@@ -15,12 +15,30 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
 	translaor->translate(start);
 }
 
+int sizeOf(Type type)
+{
+	assert(type != BuiltinType_::voidType);
+	if (type == BuiltinType_::intType || type == BuiltinType_::unsignedIntType || type == BuiltinType_::longType || type == BuiltinType_::unsignedLongType)
+		return 4;
+	if (type == BuiltinType_::unsignedCharType || type == BuiltinType_::charType)
+		return 1;
+	if (type == BuiltinType_::unsignedShortType || type == BuiltinType_::shortType)
+		return 2;
+	if (type == BuiltinType_::floatType)
+		return 4;
+	if (type == BuiltinType_::doubleType || type == BuiltinType_::longDoubleType)
+		return 8;
+	if (type->id == CONST_TYPE_ARRAY)
+		return sizeOf(dynamic_cast<ArrayType>(type)->basicType) * dynamic_cast<ArrayType>(type)->size->valueUnion.i[0];
+	if (type->id == CONST_TYPE_POINTER || type->id == CONST_TYPE_FUNC)
+		return 4;
+}
+
 void Semantic::semanticExpr(Expr expr)
 {/*type: Func, Pointer, Array, Basic*/
     switch (expr->id){
         case NODE_EXP_STRLITERAL:{
             StrLiteral expr1 = (StrLiteral)expr;
-            //TODO:
         }
             break;
         case NODE_EXP_FLOATLITERAL:{
@@ -154,17 +172,22 @@ void Semantic::semanticExpr(Expr expr)
                     fprintf(stderr, "%d:%d: error: invalid operator to binary(pointer and integer)\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
                 }
-                Expr p = (expr1->left->type->id == CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
-                if(!p->isIntConstant() && !(p->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)p->type)->isInteger())){
+                Expr p1 = (expr1->left->type->id == CONST_TYPE_BUILTIN) ? expr1->left : expr1->right, p2;
+
+                if(!p1->isIntConstant() && !(p1->type->id == CONST_TYPE_BUILTIN && ((BuiltinType)p1->type)->isInteger())){
                     fprintf(stderr, "%d:%d: error: invalid operands to binary(pointer and integer)\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                     exit(0);
                 }
-                p = (expr1->left->type->id != CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
+                p2 = (expr1->left->type->id != CONST_TYPE_BUILTIN) ? expr1->left : expr1->right;
 
-                if(isLogicalOp(expr1->operator_) || isRelationalOp(expr1->operator_))
-                    expr1->type = BuiltinType_::intType;
-                else
-                    expr1->type = p->type;
+				int size = sizeOf(((PointerType)(p2->type))->pointTo);
+
+				Expr tmp = new BinaryOpExpr_(p1, OP_BINARY_MULTIPLY, new IntLiteral_(size));
+				if (expr1->left->type->id == CONST_TYPE_BUILTIN)
+					expr1->right = tmp;
+				else
+					expr1->left = tmp;
+				expr1->type = p2->type;
             }
         }
             break;
@@ -315,12 +338,26 @@ void Semantic::semanticExpr(Expr expr)
                 fprintf(stderr, "%d:%d: error: array subscript is not an integer\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
                 exit(0);
             }
+			int size;
             if(expr1->array->type->id == CONST_TYPE_ARRAY){
+				size = sizeOf(((ArrayType)expr1->array->type)->basicType);
+				//printf("size ============= %d\n", size);
+				//fflush(stdout);
                 expr1->type = ((ArrayType)expr1->array->type)->basicType;
                 expr1->array = transformImplicitExp(expr1->array, CONST_TYPE_POINTER);
             }
-            else
-                expr1->type = ((PointerType)expr1->array->type)->pointTo;
+			else {
+				size = sizeOf(((PointerType)expr1->array->type)->pointTo);
+				//printf("size ============= %d\n", size);
+				//fflush(stdout);
+				expr1->type = ((PointerType)expr1->array->type)->pointTo;
+			}
+			if (expr1->offset->type->id < CONST_TYPE_BUILTIN_INT)
+				expr1->offset = new ImplicitCastExpr_(BuiltinType_::intType, expr1->offset);
+			expr1->offset = new BinaryOpExpr_(expr1->offset, OP_BINARY_MULTIPLY, new IntLiteral_(size));
+			expr1->offset->type = BuiltinType_::intType;
+			//expr1->show();
+			//fflush(stdout);
         }
             break;
         case NODE_EXP_DECLREF:{
