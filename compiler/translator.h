@@ -106,6 +106,7 @@ private:
         inst->type = BuiltinType_::voidType;
         dstBlock->reference++;
         inst->opds[0] = (Symbol)dstBlock; //!!!
+		//printf("\n-----------------------addr1 = %p\n", inst->opds[0]);
         program->appendInst(inst);
     }
 
@@ -158,19 +159,18 @@ private:
 		program->appendInst(inst);
 	}
 
-    void generateFunctionCall(Type type,Symbol recv,Symbol faddr, std::vector<std::pair<Symbol,Type> >args)
+    void generateFunctionCall(Type type,Symbol recv,Symbol faddr, std::vector<std::pair<Symbol,Type> > *args)
     {
         pair<Symbol,Type> p;
         IrInst inst=new IrInst_();
         inst->type=type;
         inst->opcode=CALL;
-        inst->opds[0]=recv;
+        inst->opds[0] = recv;
         inst->opds[1] = faddr;
-        inst->opds[2] = (Symbol)( &args );
+        inst->opds[2] = (Symbol)( args );
         program->appendInst(inst);
 
-        if(!recv)
-        {
+        if(!recv) {
             this->DefineTemp(recv, CALL, (Symbol)inst, NULL);
         }
     }
@@ -259,8 +259,8 @@ private:
 
         while (use)
         {
-            printf("------%p-----\n",use);
-            printf("++++++%p+++++\n",use->def);
+            //printf("------%p-----\n",use);
+            //printf("++++++%p+++++\n",use->def);
             if (use->def->op != ADDR)
                 use->def->dst = NULL;
             use = use->next;
@@ -319,8 +319,9 @@ private:
         assert(program->currentFunc);
         std::string name;
         do{
-            name = "temp_" + std::to_string(tmpNumber++);
-        }while(!lookUp(name));
+            name = "tmp" + std::to_string(tmpNumber++);
+			//printf("???%s, %d\n", name.c_str(), lookUp(name));
+        }while(lookUp(name));
         Symbol tmp = new VariableSymbol_();
         tmp->name = name;
         tmp->kind = SK_Temp;
@@ -368,11 +369,132 @@ private:
         p->type = BuiltinType_::doubleType;
         return p;
     }
+
     Symbol TryAddValue(Type ty, int op, Symbol src1, Symbol src2);
     bool isRealType(Type c);
     bool isIntegType(Type c);
     bool isPointerType(Type c);
     int powerOf2(unsigned int u);
+
+	void showProgram(TranslationUnitDecl start)
+	{
+		int ptr = 0;
+		for (auto &decl : start->declarations) {
+			if (decl->id == NODE_DECL_FUNCTION) {
+				FunctionDecl decl1 = (FunctionDecl)decl;
+				program->currentFunc = decl1->functionSymbol;
+				//printf("number of basic blocks in %s: %d\n", program->currentFunc->name.c_str(), program->bblocks.size());
+				fprintf(stdout, "%s: \n", program->currentFunc->name.c_str());
+				showFunction(decl1->functionSymbol, ptr);
+			}
+		}
+	}
+
+	void showFunction(FunctionSymbol functionSymbol, int& ptr)
+	{
+		for (; program->bblocks[ptr] != functionSymbol->exitBB; ptr++) {
+			fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
+			for (auto &i : program->bblocks[ptr]->insts) {
+				showInstruction(i);
+			}
+		}
+		fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
+		for (auto &i : program->bblocks[ptr]->insts) {
+			showInstruction(i);
+		}
+		ptr++;
+	}
+
+	void showInstruction(IrInst inst)
+	{
+#define DST  inst->opds[0]
+#define SRC1 inst->opds[1]
+#define SRC2 inst->opds[2]
+		assert(inst);
+		char opCodeNames[][30] = { 
+			"|", "^", "&", "<<", ">>", "+", "-", "*", "/", "%",
+			"-", "~", "", "!", "==", "!=", ">", "<", ">=", "<=",
+			"jump", "ijump", "++", "--", "&", "*", "(int)(char)", "(int)(unsigned char)",
+			"(int)(short)", "(int)(unsigned short)", "(char)(int)",
+			"(short)(int)", "(float)(int)", "(double)(int)", "(float)(unsigned)",
+			"(double)(unsigned)", "(double)(float)", "(int)(float)", "(unsigned)(float)",
+			"(float)(double)", "(int)(double)", "(unsigned)(double)", "=", "*=", "call", "ret", "", "NOP"
+		};
+		int op = inst->opcode;
+		//printf("=============op = %d %s\n", op, opCodeNames[op]);
+		fprintf(stdout, "\t");
+		fflush(stdout);
+		switch (op) {
+		case BOR:
+		case BXOR:
+		case BAND:
+		case LSH:
+		case RSH:
+		case ADD:
+		case SUB:
+		case MUL:
+		case DIV:
+		case MOD:
+			fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
+			break;
+		case INC:
+		case DEC:
+			fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
+			break;
+		case BCOM:
+		case NEG:
+		case ADDR:
+		case DEREF:
+			fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+			break;
+		case MOV:
+			fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
+			break;
+		case IMOV:
+			fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
+			break;
+		case JE:
+		case JNE:
+		case JG:
+		case JL:
+		case JGE:
+		case JLE:
+			fprintf(stdout, "if (%s %s %s) goto %s", SRC1->name.c_str(), opCodeNames[op],
+				SRC2->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+			break;
+		case JZ:
+			fprintf(stdout, "if (! %s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+			break;
+		case JNZ:
+			fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+			break;
+		case JMP:
+			//printf("\n-----------------------addr2 = %p\n", ((BasicBlock)DST));
+			assert(((BasicBlock)DST)->symbol);
+			fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
+			break;
+		case RET:
+			fprintf(stdout, "return %s", DST->name.c_str());
+			break;
+		case CALL:{
+			vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)SRC2;
+			int i;
+
+			if (DST != NULL)
+				fprintf(stdout, "%s = ", DST->name.c_str());
+			fprintf(stdout, "%s(", SRC1->name.c_str());
+			for (auto &arg: *args) {
+				fprintf(stdout, "%s, ", arg.first->name.c_str());
+			}
+			fprintf(stdout, ")");
+		}
+			break;
+		default:
+			fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+			break;
+		}
+		fprintf(stdout, ";\n");
+	}
 };
 
 #endif //CP_TRANSLATOR_H
