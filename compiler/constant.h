@@ -399,7 +399,11 @@ public:
         void *p;
     } valueUnion;
     bool addressed;
-    Symbol_():type(NULL){}
+    Symbol link;
+    Symbol_():type(NULL),link(NULL)
+    {
+
+    }
     virtual ~Symbol_(){}
 };
 

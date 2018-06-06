@@ -1030,6 +1030,7 @@ Symbol Translator_::offset(Type ty, Symbol addr, Symbol voff, int coff)
 
 }
 
+
 Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
 {
 	VariableSymbol p;
@@ -1046,13 +1047,11 @@ Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
 	}
 	p->addressed = 1;
 	p->kind = SK_Offset;
-	p->ty = ty;
+	p->type = ty;
 	p->link = base;
 	p->offset = coff;
-	p->name = FormatName("%s[%d]", base->name, coff);
-	base->ref++;
-
-	return (Symbol)p;
+    p->name=base->name+"["+ to_string(coff)+"]";
+	return dynamic_cast<Symbol>(p);
 }
 
 
