@@ -159,7 +159,7 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
         case OP_UNARY_NEGATIVE:
             return simplify(expr->type, NEG, src, NULL);
         case OP_UNARY_STAR:
-            return deReference(src);
+            return deReference(expr->type, src);
         case OP_UNARY_AND:
             return addressOf(src);
         default:

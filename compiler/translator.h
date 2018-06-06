@@ -128,7 +128,12 @@ private:
         inst->opds[1] = src;
         program->appendInst(inst);
 
-        //TODO:
+		if (dst->kind == SK_Variable){
+			TrackValueChange(dst);
+		}
+		else if (dst->kind == SK_Temp){
+			DefineTemp(dst, MOV, (Symbol)inst, NULL);
+		}
     }
 
     void generateReturn(Type type,Symbol src)
@@ -141,6 +146,17 @@ private:
         program->appendInst(inst);
 
     }
+
+	void generateIndirectMove(Type ty, Symbol dst, Symbol src)
+	{
+		IrInst inst = new IrInst_();
+		inst->type = ty;
+		inst->opcode = IMOV;
+		inst->opds[0] = dst;
+		inst->opds[1] = src;
+		inst->opds[2] = NULL;
+		program->appendInst(inst);
+	}
 
     void generateFunctionCall(Type type,Symbol recv,Symbol faddr, std::vector<std::pair<Symbol,Type> >args)
     {
@@ -248,6 +264,7 @@ private:
             use = use->next;
         }
     }
+
     void TrackValueUse(Symbol p, valueDef  def)
     {
         valueUse use=new valueUse_();
@@ -328,7 +345,7 @@ private:
 
     Symbol addressOf(Symbol symbol);
 
-    Symbol deReference(Symbol symbol)
+    Symbol deReference(Type type, Symbol symbol)
     {
         return symbol;
     }
