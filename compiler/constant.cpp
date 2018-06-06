@@ -1,6 +1,9 @@
 #include "constant.h"
 #include <map>
 using namespace std;
+#include "expression.h"
+
+int StrLiteral_::cnt = 1;
 
 map<int,string>map_id2name={
 {1,"PointerType_"},

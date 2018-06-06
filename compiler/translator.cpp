@@ -30,6 +30,7 @@ void Program_::startBasicBlock(BasicBlock bb)
 
 Program Translator_::translate(TranslationUnitDecl start)
 {
+	//return NULL;
     program = new Program_();
     labelNumber = 0;
     for(auto &decl: start->declarations){
@@ -179,7 +180,7 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
 
 Symbol Translator_::translateIncrement(UnaryOpExpr expr)
 {
-	//TODO:
+	//if()
 }
 
 Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
@@ -217,12 +218,48 @@ Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
     Symbol dst, src;
 	VariableSymbol tmp;
 	dst = translateExpression(expr->var);
-	//printf("1: =========================???????????????????????????????\n");
-	if (expr->operator_ != OP_ASSIGN_EQ) {
-		expr->valueUnion.p = (Symbol)dst;
-	}
-
 	src = translateExpression(expr->expr);
+	if (expr->operator_ != OP_ASSIGN_EQ) {
+		int opcode;
+		switch (expr->operator_) {
+		case OP_ASSIGN_EQ_ADD:
+			opcode = ADD;
+			break;
+		case OP_ASSIGN_EQ_MINUS:
+			opcode = SUB;
+			break;
+		case OP_ASSIGN_EQ_MULTIPLY:
+			opcode = MUL;
+			break;
+		case OP_ASSIGN_EQ_DIV:
+			opcode = DIV;
+			break;
+		case OP_ASSIGN_EQ_MOD:
+			opcode = MOD;
+			break;
+		case OP_ASSIGN_EQ_AND:
+			opcode = BAND;
+			break;
+		case OP_ASSIGN_EQ_XOR:
+			opcode = BXOR;
+			break;
+		case OP_ASSIGN_EQ_OR:
+			opcode = BOR;
+			break;
+		case OP_ASSIGN_EQ_SHIFTLEFT:
+			opcode = LSH;
+			break;
+		case OP_ASSIGN_EQ_SHIFTRIGHT:
+			opcode = RSH;
+			break;
+		default:
+			assert(0);
+			break;
+		}
+		Symbol tmp;
+		tmp = simplify(expr->type, opcode, dst, src);
+		src = tmp;
+	}
 	//printf("2: =========================???????????????????????????????\n");
 	//printf("src = %08x, dst = %08x\n", src, dst);
 	if (dst->kind == SK_Temp && (tmp = dynamic_cast<VariableSymbol>(dst)) && tmp->def->op == DEREF) {
@@ -264,9 +301,12 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
             return IntConstant(expr->valueUnion.i[0]);
         return DoubleConst(expr->valueUnion.d);
     }
+	if (expr->id == NODE_EXP_STRLITERAL) {
+		return addressOf((Symbol)(expr->valueUnion.p));
+	}
     assert(expr->id != NODE_EXP_STRLITERAL);//TODO:
     if(expr->type->id == CONST_TYPE_FUNC || expr->type->id == CONST_TYPE_ARRAY){
-        return addressOf((Symbol)(expr->valueUnion.p));
+		return (Symbol)(expr->valueUnion.p);
     }
     return (Symbol)expr->valueUnion.p;
 }
@@ -278,20 +318,11 @@ Symbol Translator_::translateArrayIndex(ArraySubscriptExpr expr)
 
 	ArraySubscriptExpr p = expr;
 
-	do {
-		if (p->offset->isConstant()) {
-			coff += p->valueUnion.i[0];
-		}
-		else if(voff == NULL){
-			voff = translateExpression(p->offset);
-		}
-		else {
-
-		}
-		p = dynamic_cast<ArraySubscriptExpr>(p->array);
-	} while (p && p->id == NODE_EXP_ARRAYSUBSCRIPT);
-
-	return expr->type->id == CONST_TYPE_ARRAY ? addressOf(dst) : dst;
+	voff = translateExpression(p->offset);
+	addr = translateExpression(p->array);
+	if (expr->type->id == CONST_TYPE_ARRAY)
+		return simplify(addr->type, ADD, addr, voff);
+	return deReference(expr->type, simplify(addr->type, ADD, addr, voff));
 }
 
 void Translator_::translateExprStmt(ExprStmt stmt)
@@ -808,6 +839,7 @@ bool Translator_::isRealType(Type type)
             dynamic_cast<BuiltinType> (type)->builtinType == CONST_TYPE_BUILTIN_LONG_DOUBLE
     );
 }
+
 bool Translator_::isIntegType(Type c)
 {
     return !c && c->id== CONST_TYPE_BUILTIN &&
@@ -829,6 +861,7 @@ bool Translator_::isPointerType(Type c)
 {
     return !c && (c->id==CONST_TYPE_POINTER);
 }
+
 int Translator_::powerOf2(unsigned int u)
 {
 	int n;

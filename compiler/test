@@ -1,14 +1,29 @@
 
-void f()
-{
-}
+int binarySearch(int *a, int len, int key);
 
 int main()
 {
-	int a[3];
-	int *p;
-	void (*fp)();
-	p = a + 1;
-	fp = f;
+	int a[10];
+	int i;
+	for(i = 0; i < 10; i += 1){
+		a[i] = 100 - i;
+	}
+	i = binarySearch(a, 10, 91);
 	return 0;
+}
+
+int binarySearch(int *a, int len, int key)
+{
+	int left, right, mid;
+	left = 0, right = len - 1;
+	while(left <= right){
+		mid = (left + right) / 2;
+		if(a[mid] == key)
+			return mid;
+		else if(a[mid] < key)
+			left = mid + 1;
+		else
+			right = mid - 1;
+	}
+	return -1;
 }
