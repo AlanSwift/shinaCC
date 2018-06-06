@@ -1,7 +1,14 @@
+int f(int a)
+{	
+	return a * a;
+}
+
 int main()
 {
-    int b;
-    int i, j;
-    b = 1;
-    return 0;
+	int a;
+	double b;
+	a = 1;
+	b = 1.0;
+	f(b);
+	return 0;
 }

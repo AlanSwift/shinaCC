@@ -48,16 +48,20 @@ Program Translator_::translate(TranslationUnitDecl start)
             program->currentFunc->entryBB = program->createBasicBlock();
             program->currentFunc->exitBB = program->createBasicBlock();
             program->currentBlock = program->currentFunc->entryBB;
+
             translateStatement(decl1->stmt);
             program->startBasicBlock(program->currentFunc->exitBB);
-
-            for(auto &bb: program->bblocks){
-                if(bb->reference > 0){
-                    bb->symbol = createLabel();
-                }
-            }
+			program->bblocks.push_back(program->currentFunc->exitBB);
         }
     }
+	for (auto &bb : program->bblocks) {
+		//if(bb->reference > 0){
+		bb->symbol = createLabel();
+		printf("allocate label: %s for %p\n", bb->symbol->name.c_str(), bb);
+		//}
+	}
+	showProgram(start);
+	exit(0);
     return program;
 }
 
@@ -65,37 +69,41 @@ Symbol Translator_::translateFunctionCall(CallExpr expr)
 {
     Symbol faddr,recv;
 
-    faddr=this->translateExpression(expr->func);//may be function pointer
+    faddr = this->translateExpression(expr->func);//may be function pointer
 
-    vector<pair<Symbol,Type> > args;
+    vector<pair<Symbol,Type> > *args = new vector<pair<Symbol, Type> >();
 
     for(auto &e:expr->args)
     {
         pair<Symbol,Type> arg;
-        arg.first=this->translateExpression(e);
+        arg.first = this->translateExpression(e);
         arg.second=e->type;
-        args.push_back(arg);
+        args->push_back(arg);
     }
-    recv=NULL;
-    if(dynamic_cast<FunctionType>( expr->type)->returnType->id!=CONST_TYPE_BUILTIN_VOID)
-    {
-        recv=this->createTemp(dynamic_cast<FunctionType>( expr->type)->returnType);
+
+
+    recv = NULL;
+	
+    if(dynamic_cast<FunctionType>(expr->func->type)->returnType->id != CONST_TYPE_BUILTIN_VOID) {
+        recv = this->createTemp(dynamic_cast<FunctionType>(expr->func->type)->returnType);
     }
-    this->generateFunctionCall(expr->type,recv,faddr,args);
+    this->generateFunctionCall(expr->type, recv, faddr, args);
     return recv;
 
 }
 
 Symbol Translator_::translateBinaryExpr(BinaryOpExpr expr)
 {
+	//printf("-2: =========================???????????????????????????????\n");
     if(expr->operator_ == OP_BINARY_COMMA)
         return translateCommaExpr(expr);
     if(expr->operator_ == OP_BINARY_LOGICAL_AND
        || expr->operator_ == OP_BINARY_LOGICAL_OR || isRelationalOp(expr->operator_))
         return translateBranchExpr(expr);
+	//printf("-1: =========================???????????????????????????????\n");
     Symbol src1, src2;
-    src1 = translateBranchExpr(expr->left);
-    src2 = translateBranchExpr(expr->right);
+    src1 = translateExpression(expr->left);
+    src2 = translateExpression(expr->right);
     if(expr->operator_ == OP_BINARY_OR)
         return simplify(expr->type, BOR, src1, src2);
     if(expr->operator_ == OP_BINARY_XOR)
@@ -116,15 +124,14 @@ Symbol Translator_::translateBinaryExpr(BinaryOpExpr expr)
         return simplify(expr->type, DIV, src1, src2);
     if(expr->operator_ == OP_BINARY_MOD)
         return simplify(expr->type, MOD, src1, src2);
+	assert(0);
 }
 
 Symbol Translator_::translateBranchExpr(Expr expr)
 {
     BasicBlock nextBB, trueBB, falseBB;
     Symbol t;
-
     t = createTemp(expr->type);
-
     nextBB = program->createBasicBlock();
     trueBB = program->createBasicBlock();
     falseBB = program->createBasicBlock();
@@ -162,6 +169,8 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
             return deReference(expr->type, src);
         case OP_UNARY_AND:
             return addressOf(src);
+		case OP_UNARY_NOT:
+			return simplify(expr->type, BCOM, src, NULL);
         default:
             assert(0);
             return NULL;
@@ -204,23 +213,25 @@ Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
 
 Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 {
+	//printf("0: =========================???????????????????????????????\n");
     Symbol dst, src;
 	VariableSymbol tmp;
 	dst = translateExpression(expr->var);
-
+	//printf("1: =========================???????????????????????????????\n");
 	if (expr->operator_ != OP_ASSIGN_EQ) {
 		expr->valueUnion.p = (Symbol)dst;
 	}
 
 	src = translateExpression(expr->expr);
-	printf("src = %08x, dst = %08x\n", src, dst);
+	//printf("2: =========================???????????????????????????????\n");
+	//printf("src = %08x, dst = %08x\n", src, dst);
 	if (dst->kind == SK_Temp && (tmp = dynamic_cast<VariableSymbol>(dst)) && tmp->def->op == DEREF) {
 		Symbol addr = tmp->def->src1;
 		generateIndirectMove(expr->type, addr, src);
 		dst = deReference(expr->type, addr);
 	}
-	else
-    {
+	else {
+		//printf("3: =========================???????????????????????????????\n");
         generateMove(expr->type, dst, src);
     }
 		
@@ -478,7 +489,7 @@ void Translator_::translateReturnStmt(ReturnStmt stmt)
         );
     }
     this->generateJump(program->currentFunc->exitBB);
-    program->startBasicBlock(program->createBasicBlock());
+    //program->startBasicBlock(program->createBasicBlock());
 
 }
 
@@ -514,6 +525,7 @@ void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock fa
          JGE, JL, JG, JLE, JE, JNE
     };
     if(expr->id == NODE_EXP_BINARY){
+		//printf("********************************here is a binary!!!\n");
         BinaryOpExpr expr1 = (BinaryOpExpr)expr;
         switch (expr1->operator_){
             case OP_BINARY_LOGICAL_AND:
@@ -538,10 +550,12 @@ void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock fa
                 src2 = translateExpression(expr1->right);
                 generateBranch(expr1->left->type, trueBlock, map[expr1->operator_ - OP_BINARY_GT], src1, src2);
                 break;
-            default: assert(0); break;
+			default: assert(0); break;
         }
+		return;
     }
-    else if(expr->id == NODE_EXP_UNARY){ //!a
+    if(expr->id == NODE_EXP_UNARY){ //!a
+		//printf("********************************here is a unary!!!\n");
         UnaryOpExpr expr1 = (UnaryOpExpr)expr;
         if(expr1->operator_ == OP_UNARY_LOGICAL_NOT){
             src1 = translateExpression(expr1->expr);
@@ -552,12 +566,15 @@ void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock fa
             }
             generateBranch(type, trueBlock, JZ, src1, NULL);
         }
+		return;
     }
-    else if(expr->isConstant()){ //1
+    if(expr->isConstant()){ //1
+		//printf("********************************here is a constant!!!\n");
         if(!(expr->valueUnion.i[0] == 0 && expr->valueUnion.i[1] == 0))
             generateJump(trueBlock);
     }
     else{ //a
+		//printf("********************************here is an variable!!!\n");
         src1 = translateExpression(expr);
         if (src1->kind  == SK_Constant) {
             if (!(src1->valueUnion.i[0] == 0 && src1->valueUnion.i[1] == 0))
@@ -615,6 +632,17 @@ Expr Translator_::notExpr(Expr expr)
         if(expr1->operator_ == OP_UNARY_LOGICAL_NOT)
             return expr1->expr;
     }
+	else if (expr->isIntConstant()) {
+		if (expr->valueUnion.i[0] || expr->valueUnion.i[1]) {
+			expr->valueUnion.i[0] = 0;
+			expr->valueUnion.i[1] = 0;
+		}
+		else {
+			expr->valueUnion.i[0] = 1;
+			expr->valueUnion.i[1] = 0;
+		}
+		return expr;
+	}
     UnaryOpExpr expr2 = new UnaryOpExpr_(expr, OP_UNARY_LOGICAL_NOT, false);
     expr2->type = BuiltinType_::intType;
     return expr2;
@@ -677,6 +705,7 @@ void Translator_::translateStatement(Stmt stmt)
 
 Symbol Translator_::translateExpression(Expr expr)
 {
+	//printf("begin translate expression!!!\n");
     switch (expr->id){
         case NODE_EXP_PAREN:
             return translateExpression(((ParenExpr)expr)->expr);
@@ -685,6 +714,7 @@ Symbol Translator_::translateExpression(Expr expr)
         case NODE_EXP_DECLREF: case NODE_EXP_CHARLITERAL:
             return translatePrimaryExpr(expr);
         case NODE_EXP_BINARY:
+			printf("begin translate binary expression!!!\n");
             return translateBinaryExpr((BinaryOpExpr)expr);
         case NODE_EXP_UNARY:
             return translateUnaryExpr((UnaryOpExpr)expr);
@@ -702,7 +732,6 @@ Symbol Translator_::translateExpression(Expr expr)
             return NULL;
     }
 }
-
 
 Symbol Translator_::addressOf(Symbol p)
 {
