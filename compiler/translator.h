@@ -388,6 +388,8 @@ private:
 		for (auto &decl : start->declarations) {
 			if (decl->id == NODE_DECL_FUNCTION) {
 				FunctionDecl decl1 = (FunctionDecl)decl;
+				if (!decl1->stmt)
+					continue;
 				program->currentFunc = decl1->functionSymbol;
 				program->currentFunc->entryBB->symbol->name = program->currentFunc->name;
 				//printf("number of basic blocks in %s: %d\n", program->currentFunc->name.c_str(), program->bblocks.size());
@@ -405,6 +407,7 @@ private:
 				showInstruction(i);
 			}
 		}
+		assert(program->bblocks[ptr]);
 		fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
 		for (auto &i : program->bblocks[ptr]->insts) {
 			showInstruction(i);
@@ -476,11 +479,17 @@ private:
 			fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
 			break;
 		case JMP:
-			//printf("\n-----------------------addr2 = %p\n", ((BasicBlock)DST));
+			/*printf("%p\n", inst->opds[0]);
+			fflush(stdout);
+			printf("%p\n", reinterpret_cast<BasicBlock>(inst->opds[0]));
+			fflush(stdout);*/
+			assert(((BasicBlock)DST));
 			assert(((BasicBlock)DST)->symbol);
 			fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
 			break;
 		case RET:
+			if(DST == NULL)
+				fprintf(stdout, "return", DST->name.c_str());
 			fprintf(stdout, "return %s", DST->name.c_str());
 			break;
 		case CALL:{
@@ -501,6 +510,7 @@ private:
 			break;
 		}
 		fprintf(stdout, ";\n");
+		fflush(stdout);
 	}
 };
 

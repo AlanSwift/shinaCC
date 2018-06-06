@@ -1,19 +1,29 @@
-double b[4];
 
-void g(char *s, int n)
-{
-	if(n <= 1)
-		return;
-	g(s, n - 1);
-}
+int binarySearch(int *a, int len, int key);
 
 int main()
 {
-	char *c;
-	int a[4];
-	c = "hello world";
-	a[2] = 2;
-	b[3] = 3;
-	g("This is a test", a[1]);
+	int a[10];
+	int i;
+	for(i = 0; i < 10; i += 1){
+		a[i] = 100 - i;
+	}
+	i = binarySearch(a, 10, 91);
 	return 0;
+}
+
+int binarySearch(int *a, int len, int key)
+{
+	int left, right, mid;
+	left = 0, right = len - 1;
+	while(left <= right){
+		mid = (left + right) / 2;
+		if(a[mid] == key)
+			return mid;
+		else if(a[mid] < key)
+			left = mid + 1;
+		else
+			right = mid - 1;
+	}
+	return -1;
 }

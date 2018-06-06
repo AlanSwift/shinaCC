@@ -489,7 +489,8 @@ void Semantic::semanticStmt(Stmt stmt)
             semanticStmt( ((DefaultStmt)stmt)->stmt);
             break;
         case NODE_STM_RETURN:
-            semanticExpr(((ReturnStmt)stmt)->result);
+			if(((ReturnStmt)stmt)->result)
+				semanticExpr(((ReturnStmt)stmt)->result);
             break;
         case NODE_STM_IF:
             semanticExpr(((IfStmt)stmt)->condition);
