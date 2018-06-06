@@ -364,6 +364,11 @@ public:
     BasicBlock ownBB;
 
 	valueDef link;
+
+    valueDef_():dst(NULL),op(-1),src1(NULL),src2(NULL),ownBB(NULL)
+    {
+
+    }
 };
 
 
@@ -372,6 +377,10 @@ class valueUse_
 public:
 	valueDef def;
     valueUse next;
+    valueUse_():def(NULL),next(NULL)
+    {
+
+    }
 };
 
 
@@ -401,10 +410,8 @@ public:
     Expr initData;
     valueDef def;
     valueUse uses;
-    VariableSymbol_()
+    VariableSymbol_():def(NULL),uses(NULL)
     {
-        def=new valueDef_();
-        uses=new valueUse_();
         
     }
 };

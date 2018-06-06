@@ -220,7 +220,10 @@ Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 		dst = deReference(expr->type, addr);
 	}
 	else
-		generateMove(expr->type, dst, src);
+    {
+        generateMove(expr->type, dst, src);
+    }
+		
 	return dst;
 }
 

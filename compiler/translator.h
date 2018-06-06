@@ -259,6 +259,8 @@ private:
 
         while (use)
         {
+            printf("------%p-----\n",use);
+            printf("++++++%p+++++\n",use->def);
             if (use->def->op != ADDR)
                 use->def->dst = NULL;
             use = use->next;
