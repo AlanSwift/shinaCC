@@ -84,6 +84,7 @@ private:
 
     /*utils*/
     Expr notExpr(Expr expr);
+
     void translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock falseBlock);
 
     void generateBranch(Type type, BasicBlock dstBlock, int opcode, Symbol src1, Symbol src2)
@@ -140,6 +141,7 @@ private:
         program->appendInst(inst);
 
     }
+
     void generateFunctionCall(Type type,Symbol recv,Symbol faddr, std::vector<std::pair<Symbol,Type> >args)
     {
         pair<Symbol,Type> p;
@@ -256,6 +258,7 @@ private:
         dynamic_cast<VariableSymbol>(p)->uses = use;
 
     }
+
     void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
     {
         valueDef def=new valueDef_();
@@ -307,8 +310,6 @@ private:
         //table.addSymbol(name, tmp);
         return tmp;
     }
-
-
 
     Symbol createLabel()
     {

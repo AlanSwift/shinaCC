@@ -205,7 +205,21 @@ Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
 Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 {
     Symbol dst, src;
-    //TODO:
+    
+	dst = translateExpression(expr->var);
+
+	if (expr->operator_ != OP_ASSIGN_EQ) {
+		//TODO:
+	}
+
+	src = translateExpression(expr->expr);
+	
+	if (dst->kind == SK_Temp) {
+		
+	}
+	else
+		generateMove(expr->type, dst, src);
+	return dst;
 }
 
 Symbol Translator_::translateCommaExpr(BinaryOpExpr expr)
@@ -448,6 +462,10 @@ void Translator_::translateReturnStmt(ReturnStmt stmt)
 void Translator_::translateCompoundStmt(CompoundStmt stmt)
 {
     level++;
+	if (level == 1) {
+		for (auto &v : stmt->locals)
+			program->currentFunc->locals.push_back(v);
+	}
     for(auto &s: stmt->stmtList){
         if(s->id == NODE_STM_DECL){
             VarDecl decl = (VarDecl)s;
