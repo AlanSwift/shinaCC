@@ -12,6 +12,7 @@
 #include <list>
 
 #define SPACE '-'
+#define SYM_HASH_MASK 127
 
 typedef int Identifier;
 typedef int BasicOperator;
@@ -398,7 +399,11 @@ public:
         void *p;
     } valueUnion;
     bool addressed;
-    Symbol_():type(NULL){}
+    Symbol link;
+    Symbol_():type(NULL),link(NULL)
+    {
+
+    }
     virtual ~Symbol_(){}
 };
 
