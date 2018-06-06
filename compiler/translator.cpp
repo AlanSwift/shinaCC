@@ -205,17 +205,19 @@ Symbol Translator_::translateConditionalExpr(ConditionalExpr expr)
 Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 {
     Symbol dst, src;
-    
+	VariableSymbol tmp;
 	dst = translateExpression(expr->var);
 
 	if (expr->operator_ != OP_ASSIGN_EQ) {
-		//TODO:
+		expr->valueUnion.p = (Symbol)dst;
 	}
 
 	src = translateExpression(expr->expr);
 	
-	if (dst->kind == SK_Temp) {
-		
+	if (dst->kind == SK_Temp && (tmp = dynamic_cast<VariableSymbol>(dst)) && tmp->def->op == DEREF) {
+		Symbol addr = tmp->def->src1;
+		generateIndirectMove(expr->type, addr, src);
+		dst = deReference(expr->type, addr);
 	}
 	else
 		generateMove(expr->type, dst, src);
@@ -257,7 +259,25 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
 
 Symbol Translator_::translateArrayIndex(ArraySubscriptExpr expr)
 {
+	Symbol addr, dst, voff = NULL;
+	int coff = 0;
 
+	ArraySubscriptExpr p = expr;
+
+	do {
+		if (p->offset->isConstant()) {
+			coff += p->valueUnion.i[0];
+		}
+		else if(voff == NULL){
+			voff = translateExpression(p->offset);
+		}
+		else {
+
+		}
+		p = dynamic_cast<ArraySubscriptExpr>(p->array);
+	} while (p && p->id == NODE_EXP_ARRAYSUBSCRIPT);
+
+	return expr->type->id == CONST_TYPE_ARRAY ? addressOf(dst) : dst;
 }
 
 void Translator_::translateExprStmt(ExprStmt stmt)
