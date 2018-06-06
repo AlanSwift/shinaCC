@@ -42,9 +42,9 @@ Program Translator_::translate(TranslationUnitDecl start)
             FunctionDecl decl1 = (FunctionDecl)decl;
             if(!decl1->stmt)
                 continue;
-
             tmpNumber = 0;
             program->currentFunc = decl1->functionSymbol;
+			printf("begin to translate %s\n", program->currentFunc->name.c_str());
             program->currentFunc->entryBB = program->createBasicBlock();
             program->currentFunc->exitBB = program->createBasicBlock();
             program->currentBlock = program->currentFunc->entryBB;
@@ -213,7 +213,7 @@ Symbol Translator_::translateAssignmentExpr(AssignExpr expr)
 	}
 
 	src = translateExpression(expr->expr);
-	
+	printf("src = %08x, dst = %08x\n", src, dst);
 	if (dst->kind == SK_Temp && (tmp = dynamic_cast<VariableSymbol>(dst)) && tmp->def->op == DEREF) {
 		Symbol addr = tmp->def->src1;
 		generateIndirectMove(expr->type, addr, src);

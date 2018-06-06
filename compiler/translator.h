@@ -40,6 +40,7 @@ public:
 class Translator_
 {
 public:
+	SymbolTable<Symbol> *table;
     Translator_(){
         program = new Program_();
     }
@@ -48,7 +49,6 @@ public:
     Symbol translateExpression(Expr expr);
 private:
     int tmpNumber, labelNumber;
-    SymbolTable<Symbol> *table;
     Program program;
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);//1
@@ -127,7 +127,7 @@ private:
         inst->opds[0] = dst;
         inst->opds[1] = src;
         program->appendInst(inst);
-
+		
 		if (dst->kind == SK_Variable){
 			TrackValueChange(dst);
 		}

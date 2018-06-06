@@ -3,13 +3,16 @@
 //
 
 #include "semantic.h"
+#include "translator.h"
 
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
     for(auto &decl: start->declarations){
-        
         semanticDecl(decl);
     }
+	Translator translaor = new Translator_();
+	translaor->table = &valueEnv;
+	translaor->translate(start);
 }
 
 void Semantic::semanticExpr(Expr expr)
