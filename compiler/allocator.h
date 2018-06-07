@@ -16,21 +16,33 @@ typedef struct Access_ *Access;
 
 struct Access_
 {
-    enum { InReg, InFrame } kind;
-    union {
-        int offset; /*InFrame*/
-        Register reg; /*In Reg*/
-    }u;
+	enum { InReg, InFrame, InGlobal } kind;
+	union {
+		int offset; /*InFrame*/
+		Register reg; /*In Reg*/
+		char *global;
+	}u;
 
-    Access_(Register reg){
-        kind = InReg;
-        u.reg = reg;
-    }
+	Access_() {
+	}
 
-    Access_(int offset){
-        kind = InFrame;
-        u.offset = offset;
-    }
+	void putInReg(Register reg)
+	{
+		kind = InReg;
+		u.reg = reg;
+	}
+
+	void putInGlobal(char *global)
+	{
+		kind = InGlobal;
+		u.global = global;
+	}
+
+	void putInFrame(int offset)
+	{
+		kind = InFrame;
+		u.offset = offset;
+	}
 };
 
 char *FP = "rbp";
