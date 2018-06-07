@@ -98,7 +98,43 @@ private:
 
 	void emitAssign(IrInst& inst)
 	{
+		char opCodeNames[][30] = {
+			"or", "xor", "and", "sal", "sar", "add", "sub", "imul", "idiv", "idiv",
+			"-", "~", "je", "jne", "je", "jne", "jg", "jl", "jge", "jle"
+		};
+		int code = typeCode(inst->type);
+		if (code == F4 || code == F8) {
+			assert(0);
+			return;
+		}
+		if (inst->opcode == MUL || inst->opcode == DIV || inst->opcode == MOD) {
 
+		}
+		else {
+			std::string src1, src2;
+			if (SRC1->kind == SK_Constant)
+				src1 = getConstant(code, SRC1);
+			else {
+				Access addr1 = allocator->access(SRC1);
+				src1 = getAddress(addr1, 32, true);
+			}
+			
+			if (SRC2->kind == SK_Constant)
+				src2 = getConstant(code, SRC2);
+			else {
+				Access addr2 = allocator->access(SRC2);
+				src2 = getAddress(addr2, 32);
+			}
+
+			if (code != P) {
+				fprintf(fp, "\t%sl %s, %s\n", opCodeNames[inst->opcode], src2.c_str(), src1.c_str());
+				fprintf(fp, "\t%movl %s, %s\n", src1.c_str(), 
+					getAddress(allocator->access(DST), 32).c_str());
+			}
+			else {
+				assert(0);
+			}
+		}
 	}
 
 	void emitCast(IrInst& inst)
@@ -110,10 +146,30 @@ private:
 	{
 		char opCodeNames[][30] = {
 			"|", "^", "&", "<<", ">>", "+", "-", "*", "/", "%",
-			"-", "~", "je", "jne", "==", "!=", ">", "<", ">=", "<="
+			"-", "~", "je", "jne", "je", "jne", "jg", "jl", "jge", "jle"
 		};
+		int code = typeCode(inst->type);
+		if (code == F4 || code == F8) {
+			assert(0);
+			return;
+		}
 		if (SRC2) {
-
+			assert(SRC1->kind != SK_Constant || SRC2->kind != SK_Constant);
+			std::string src1, src2;
+			if (SRC1->kind == SK_Constant)
+				src1 = getConstant(code, SRC1);
+			else {
+				Access addr1 = allocator->access(SRC1);
+				src1 = getAddress(addr1, 32, true);
+			}
+			if (SRC2->kind == SK_Constant)
+				src2 = getConstant(code, SRC2);
+			else {
+				Access addr2 = allocator->access(SRC2);
+				src2 = getAddress(addr2, 32, false);
+			}
+			fprintf(fp, "\tcmpl %s, %s\n", src2.c_str(), src1.c_str());
+			fprintf(fp, "\t%s %s\n", opCodeNames[inst->opcode], ((BasicBlock)DST)->symbol->name.c_str());
 		}
 		else {
 			std::string src;
@@ -137,11 +193,11 @@ private:
 			return;
 		}
 		std::string src, dst;
-		if (SRC1->kind == SK_Constant)
-			src = getConstant(code, SRC1);
+		if (DST->kind == SK_Constant)
+			src = getConstant(code, DST);
 		else
-			src = getAddress(allocator->access(SRC1));
-		fprintf(fp, "\tmovl %s, %eax\n", src.c_str());
+			src = getAddress(allocator->access(DST));
+		fprintf(fp, "\tmovl %s, %%eax\n", src.c_str());
 	}
 
 	void emitCall(IrInst& inst)
@@ -180,25 +236,25 @@ private:
 	{
 		if (access->kind == access->InReg) {
 			if (bits == 64)
-				return std::string(REGS[access->reg]);
+				return "%" + std::string(REGS[access->reg]);
 			if (src || bits == 32)
-				return std::string(WREGS[access->reg]);
+				return "%" + std::string(WREGS[access->reg]);
 			if (bits == 16)
-				return std::string(HREGS[access->reg]);
+				return "%" + std::string(HREGS[access->reg]);
 			if (bits == 8)
-				return std::string(BREGS[access->reg]);
+				return "%" + std::string(BREGS[access->reg]);
 		}
 		else if (access->kind == access->InFrame) {
 			if (src) {
 				if (bits == 64) {
-					fprintf(fp, "\tmovq %s, %rax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+					fprintf(fp, "\tmovq %s, %%rax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
 					return "%rax";
 				}
 				if(bits == 32)
-					fprintf(fp, "\tmovl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+					fprintf(fp, "\tmovl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
 				if (bits == 16)
-					fprintf(fp, "\tmovzwl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
-				fprintf(fp, "\tmovzbl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+					fprintf(fp, "\tmovzwl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+				fprintf(fp, "\tmovzbl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
 				return "%eax";
 			}
 			return std::to_string(access->offset) + "(%rbp)";

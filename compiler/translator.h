@@ -122,6 +122,8 @@ private:
         inst->opds[0] = dst;
         inst->opds[1] = src1;
         inst->opds[2] = src2;
+		assert(type);
+		inst->type = type;
         dst->ref++;
         src1->ref++;
         if(src2)    src2->ref++;

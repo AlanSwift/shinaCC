@@ -14,7 +14,7 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
     }
 	Translator translaor = new Translator_();
 	translaor->table = &valueEnv;
-	FILE *fp = fopen("asm.txt", "w");
+	FILE *fp = fopen("asm.s", "w");
 	Emitter emitter = new Emitter_(fp);
 	emitter->emitCode(translaor->translate(start));
 	fclose(fp);

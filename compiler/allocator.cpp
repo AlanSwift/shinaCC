@@ -73,7 +73,7 @@ Access Allocator::access(Symbol symbol)
     else if(symbol->kind==SK_Variable)
     {
         VariableSymbol sym=dynamic_cast<VariableSymbol>(symbol);
-        int offset=sizeOf(sym->type);
+        int offset=-sizeOf(sym->type);
         
         Access ret=new Access_();
         ret->kind=Access_::InFrame;
