@@ -108,6 +108,7 @@ public:
         graph=new ConflictGraph();
 
     }
+    
 	void allocate(Program program)
 	{
 		
@@ -116,6 +117,12 @@ public:
     
 
 	Access access(Symbol symbol);
+
+    void clearCache()
+    {
+        cache.clear();
+        offset=0;
+    }
     
 
 
@@ -123,6 +130,9 @@ private:
     bool regUsed[100];
     std::map<Symbol,int>regMap;
     vector<Symbol> id2Symbol[100];
+    std::map<Symbol,Access>cache;
+    int offset=0;
+
     const int regStart=6;
     const int regEnd=13;
     const int generalCnt=8;

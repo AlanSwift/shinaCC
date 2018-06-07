@@ -1103,6 +1103,19 @@ Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
 
 void Translator_::controlFlowOptimise()
 {
+    int startIndex;
+    for(startIndex=0;startIndex<program->functionList.size();startIndex++)
+    {
+        
+    }
+    for (auto &fsym : program->functionList) {
 
+		for (int i = fsym->start; i <= fsym->end; i++) {
+            
+			// if(i != fsym->start)
+			// 	fprintf(fp, "%s:\n", getAccessName(program->bblocks[i]->symbol).c_str());
+			// emitBasicBlock(program->bblocks[i]);
+		}
+	}
 }
 
