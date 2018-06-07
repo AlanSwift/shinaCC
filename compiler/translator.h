@@ -257,7 +257,7 @@ private:
         else if(type == BuiltinType_::doubleType || type == BuiltinType_::longDoubleType)
             return F8;
         else if(type->id == CONST_TYPE_POINTER)
-            return U4;
+            return P;
         assert(type == BuiltinType_::voidType);
         return V;
     }

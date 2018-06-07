@@ -272,7 +272,7 @@ enum {
     NOP, //    "NOP",                  NOP
 };
 
-enum {I1, U1, I2, U2, I4, U4, F4, F8, V, B};
+enum {I1, U1, I2, U2, I4, U4, F4, F8, V, B, P};
 
 struct Expr_:public Node_
 {

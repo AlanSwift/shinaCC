@@ -37,7 +37,7 @@ int sizeOf(Type type)
 	if (type->id == CONST_TYPE_ARRAY)
 		return sizeOf(dynamic_cast<ArrayType>(type)->basicType) * dynamic_cast<ArrayType>(type)->size->valueUnion.i[0];
 	if (type->id == CONST_TYPE_POINTER || type->id == CONST_TYPE_FUNC)
-		return 4;
+		return 8;
 }
 
 void Semantic::semanticExpr(Expr expr)

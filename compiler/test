@@ -23,6 +23,11 @@ int main()
 	return 0;
 }
 
+void f()
+{
+	return;
+}
+
 int binarySearch(int *a, int len, int key)
 {
 	int left, right, mid;

@@ -3,6 +3,7 @@
 #include <cassert>
 #include "constant.h"
 #include "translator.h"
+#include "allocator.h"
 #include <string>
 #define DST  inst->opds[0]
 #define SRC1 inst->opds[1]
@@ -15,6 +16,7 @@ class Emitter_
 private:
 	FILE *fp;
 	Program program;
+	Allocator allocator;
 public:
 	Emitter_()
 	{
@@ -35,6 +37,7 @@ public:
 	{
 		assert(fp);
 		this->program = program;
+		allocator.allocate(program);
 		fprintf(fp, "\t.text\n");
 		for (auto &fsym : program->functionList) {
 			emitFunction(fsym);
@@ -112,6 +115,22 @@ private:
 
 	void emitMove(IrInst& inst)
 	{
+		int code = typeCode(inst->type);
+		switch (code) {
+		case I1:case U1:
+			Access addr1 = allocator.access(DST);
+			if (SRC1->kind == SK_Constant) {
+
+			}
+			else {
+
+			}
+			break;
+		}
+	}
+
+	void address(int code, Access access)
+	{
 
 	}
 
@@ -179,6 +198,49 @@ private:
 		case SK_String:
 			return std::string((char *)symbol->valueUnion.p);
 		}
+	}
+
+	int sizeOf(Type type)
+	{
+		assert(type != BuiltinType_::voidType);
+		if (type == BuiltinType_::intType || type == BuiltinType_::unsignedIntType || type == BuiltinType_::longType || type == BuiltinType_::unsignedLongType)
+			return 4;
+		if (type == BuiltinType_::unsignedCharType || type == BuiltinType_::charType)
+			return 1;
+		if (type == BuiltinType_::unsignedShortType || type == BuiltinType_::shortType)
+			return 2;
+		if (type == BuiltinType_::floatType)
+			return 4;
+		if (type == BuiltinType_::doubleType || type == BuiltinType_::longDoubleType)
+			return 8;
+		if (type->id == CONST_TYPE_ARRAY)
+			return sizeOf(dynamic_cast<ArrayType>(type)->basicType) * dynamic_cast<ArrayType>(type)->size->valueUnion.i[0];
+		if (type->id == CONST_TYPE_POINTER || type->id == CONST_TYPE_FUNC)
+			return 8;
+	}
+
+	int typeCode(Type type)
+	{
+		if (type == BuiltinType_::intType || type == BuiltinType_::longType)
+			return I4;
+		else if (type == BuiltinType_::unsignedIntType || type == BuiltinType_::unsignedLongType)
+			return U4;
+		else if (type == BuiltinType_::shortType)
+			return I2;
+		else if (type == BuiltinType_::unsignedShortType)
+			return U2;
+		else if (type == BuiltinType_::charType)
+			return I1;
+		else if (type == BuiltinType_::unsignedCharType)
+			return U1;
+		else if (type == BuiltinType_::floatType)
+			return F4;
+		else if (type == BuiltinType_::doubleType || type == BuiltinType_::longDoubleType)
+			return F8;
+		else if (type->id == CONST_TYPE_POINTER)
+			return P;
+		assert(type == BuiltinType_::voidType);
+		return V;
 	}
 };
 
