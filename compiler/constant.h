@@ -148,15 +148,15 @@ struct SourceLocation
 {
     int line, col;
 
-    SourceLocation(int line, int col):line(line), col(col)
-    {
+	SourceLocation(int line, int col) :line(line), col(col)
+	{
 
-    }
+	}
 
-    SourceLocation():SourceLocation(0, 0)
-    {
+	SourceLocation() :SourceLocation(0, 0)
+	{
 
-    }
+	}
 
 };
 
@@ -400,7 +400,7 @@ public:
         void *p;
     } valueUnion;
     bool addressed;
-    Symbol link;
+    Symbol link, next, reg;
     int ref;
     Symbol_():type(NULL),link(NULL),ref(0)
     {

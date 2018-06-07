@@ -12,16 +12,35 @@
 
 typedef class Emitter_ *Emitter;
 
+enum ASMCode
+{
+#define TEMPLATE(code, str) code,
+#include "x86win32.tpl"
+#undef TEMPLATE
+};
+
+#define ASM_CODE(opcode, tcode) ((opcode << 2) + tcode - I4)
+
+extern char *REGS[];
+extern char *WREGS[];
+extern char *HREGS[];
+extern char *BREGS[];
+extern char *FP;
+extern char *SP;
+
+
 class Emitter_
 {
 private:
 	FILE *fp;
 	Program program;
 	Allocator* allocator;
+	Symbol X87Top;
 
 public:
 	Emitter_()
 	{
+		X87Top = NULL;
 		fp = stdout;
 		allocator=new Allocator();
 	}
@@ -40,7 +59,7 @@ public:
 	{
 		assert(fp);
 		this->program = program;
-		allocator.allocate(program);
+		allocator->allocate(program);
 		fprintf(fp, "\t.text\n");
 		for (auto &fsym : program->functionList) {
 			emitFunction(fsym);
@@ -117,22 +136,6 @@ private:
 
 	}
 
-	void emitMove(IrInst& inst)
-	{
-		int code = typeCode(inst->type);
-		switch (code) {
-		case I1:case U1:
-			Access addr1 = allocator.access(DST);
-			if (SRC1->kind == SK_Constant) {
-
-			}
-			else {
-
-			}
-			break;
-		}
-	}
-
 	void address(int code, Access access)
 	{
 
@@ -141,6 +144,81 @@ private:
 	void emitIndirectMove(IrInst& inst)
 	{
 
+	}
+
+	std::string getConstant(int code, Symbol s)
+	{
+		if (code == F4 || code == F8)
+			return std::to_string(*((unsigned long long *)(&(s->valueUnion.d))));
+		return std::to_string(s->valueUnion.i[0]);
+	}
+
+	std::string getAddress(Access access, int bits = 32)
+	{
+		if (access->kind == access->InReg) {
+			if (bits == 32)
+				return std::string(WREGS[access->reg]);
+			if (bits == 64)
+				return std::string(REGS[access->reg]);
+			if (bits == 16)
+				return std::string(HREGS[access->reg]);
+			if (bits == 8)
+				return std::string(BREGS[access->reg]);
+		}
+		else if (access->kind == access->InFrame) {
+			return std::to_string(access->offset) + "(%rbp)";
+		}
+		else
+			return access->global;
+	}
+
+	void emitMove(IrInst& inst)
+	{
+		int code = typeCode(inst->type);
+		std::string src, dst;
+		if (code == F4 || code == F8) {
+			assert(0);
+			return;
+		}
+		switch (code)
+		{
+		case I1: case U1:
+			if (SRC1->kind == SK_Constant)
+				src = getConstant(code, SRC1);
+			else
+				src = getAddress(allocator->access(SRC1));
+			dst = getAddress(allocator->access(DST));
+			fprintf(fp, "\tmovl %s %s\n", src.c_str(), dst.c_str());
+			break;
+
+		case I2: case U2:
+			/*if (SRC1->kind == SK_Constant)
+				Move(X86_MOVI2, DST, SRC1);
+			else{
+				reg = GetWordReg();
+				Move(X86_MOVI2, reg, SRC1);
+				Move(X86_MOVI2, DST, reg);
+			}*/
+			break;
+
+		case I4: case U4:
+			/*if (SRC1->kind == SK_Constant)
+				Move(X86_MOVI4, DST, SRC1);
+			else {
+				AllocateReg(inst, 1);
+				AllocateReg(inst, 0);
+				if (SRC1->reg == NULL && DST->reg == NULL) {
+					reg = GetReg();
+					Move(X86_MOVI4, reg, SRC1);
+					Move(X86_MOVI4, DST, reg);
+				}
+				else {
+					Move(X86_MOVI4, DST, SRC1);
+				}
+			}*/
+		default:
+			break;
+		}
 	}
 
 	void emitIrInst(IrInst inst)

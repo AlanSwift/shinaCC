@@ -2,11 +2,11 @@
 	.globl	main
 	.seh_proc	main
 main:
-	pushq	rbq
-	.seh_pushreg	rbp
-	movq	rsp, rbp
-	.seh_setframe	rbp, 0
-	subq	$0, rsp
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
 	.seh_stackalloc	0
 	.seh_endprologuep
 label_1:
@@ -25,22 +25,35 @@ label_13:
 label_14:
 label_15:
 label_16:
-	addq	$0, rsp
-	popq	rbp
+	addq	$0, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
+	.globl	f
+	.seh_proc	f
+f:
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_18:
+	addq	$0, %rsp
+	popq	%rbp
 	ret
 	.seh_endproc
 	.globl	binarySearch
 	.seh_proc	binarySearch
 binarySearch:
-	pushq	rbq
-	.seh_pushreg	rbp
-	movq	rsp, rbp
-	.seh_setframe	rbp, 0
-	subq	$0, rsp
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
 	.seh_stackalloc	0
 	.seh_endprologuep
-label_18:
-label_19:
 label_20:
 label_21:
 label_22:
@@ -49,7 +62,9 @@ label_24:
 label_25:
 label_26:
 label_27:
-	addq	$0, rsp
-	popq	rbp
+label_28:
+label_29:
+	addq	$0, %rsp
+	popq	%rbp
 	ret
 	.seh_endproc
