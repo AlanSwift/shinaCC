@@ -49,6 +49,7 @@ Program Translator_::translate(TranslationUnitDecl start)
             program->currentFunc->exitBB = program->createBasicBlock();
             program->currentBlock = program->currentFunc->entryBB;
 
+			program->functionList.push_back(decl1->functionSymbol);
             translateStatement(decl1->stmt);
             program->startBasicBlock(program->currentFunc->exitBB);
 			program->bblocks.push_back(program->currentFunc->exitBB);
