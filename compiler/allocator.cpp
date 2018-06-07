@@ -58,6 +58,7 @@ void Allocator::precess(BasicBlock bb)
     }
     printf("---------\n");
 
+
 }
 
 Access Allocator::access(Symbol symbol)
@@ -111,10 +112,15 @@ Access Allocator::access(Symbol symbol)
     }
     else if(symbol->kind==SK_Temp)
     {
-
-        if(regMap.find(symbol)!=regMap.end())
+        if(regMap.find(symbol)==regMap.end())
         {
+            cout<<symbol->name<<endl;
+
             cerr<<"reg error...."<<endl;
+            for(auto &i:regMap)
+            {
+                printf("%s  %d\n",i.first->name.c_str(),i.second);
+            }
             assert(0);
         }
         int retReg=regMap[symbol];
