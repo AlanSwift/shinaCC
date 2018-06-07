@@ -181,7 +181,10 @@ private:
 		if (to->id == CONST_TYPE_POINTER) {
 			assert(from->id == CONST_TYPE_ARRAY || from->id == CONST_TYPE_FUNC);
 			dst = createTemp(to);
-			generateMove(to, dst, src);
+			if(from->id == CONST_TYPE_ARRAY)
+				generateMove(to, dst, src);
+			else
+				generateMove(to, dst, addressOf(src));
 			return dst;
 		}
 		int scode = typeCode(from), dcode = typeCode(to), opcode;
@@ -401,6 +404,16 @@ private:
 
 	void showFunction(FunctionSymbol functionSymbol, int& ptr)
 	{
+		printf("locals temporary variables: ");
+		for(auto &s: program->currentFunc->locals)
+			if(s->kind == SK_Temp)
+				printf("%s, ", s->name.c_str());
+		printf("\n");
+		printf("locals variables: ");
+		for (auto &s : program->currentFunc->locals)
+			if (s->kind == SK_Variable)
+				printf("%s, ", s->name.c_str());
+		printf("\n");
 		for (; program->bblocks[ptr] != functionSymbol->exitBB; ptr++) {
 			fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
 			for (auto &i : program->bblocks[ptr]->insts) {

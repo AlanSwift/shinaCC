@@ -4,10 +4,19 @@ int binarySearch(int *a, int len, int key);
 int main()
 {
 	int a[10];
-	int i;
+	int i, j;
+	int (*fp)(int*, int, int);
+	fp = binarySearch;
+	i = 0;
+	if(a[i] < 10 || a[i] > 20)
+		a[i] = 1;
+	for(i = 1; i <= 10; i += 1)
+		for(j = 1; j <= 20; j += 1)
+			a[i] = i + j;
 	for(i = 0; i < 10; i += 1){
 		a[i] = 100 - i;
 	}
+	i = fp(a, 10, 91);
 	i = binarySearch(a, 10, 91);
 	return 0;
 }

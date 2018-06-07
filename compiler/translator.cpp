@@ -30,7 +30,6 @@ void Program_::startBasicBlock(BasicBlock bb)
 
 Program Translator_::translate(TranslationUnitDecl start)
 {
-	//return NULL;
     program = new Program_();
     labelNumber = 0;
     for(auto &decl: start->declarations){
@@ -70,6 +69,7 @@ Symbol Translator_::translateFunctionCall(CallExpr expr)
 {
     Symbol faddr,recv;
 
+
     faddr = this->translateExpression(expr->func);//may be function pointer
 
     vector<pair<Symbol,Type> > *args = new vector<pair<Symbol, Type> >();
@@ -84,9 +84,15 @@ Symbol Translator_::translateFunctionCall(CallExpr expr)
 
 
     recv = NULL;
-	
-    if(dynamic_cast<FunctionType>(expr->func->type)->returnType->id != CONST_TYPE_BUILTIN_VOID) {
-        recv = this->createTemp(dynamic_cast<FunctionType>(expr->func->type)->returnType);
+	Type t = expr->func->type;
+	if (expr->func->type->id == CONST_TYPE_POINTER) {
+		t = ((PointerType)t)->pointTo;
+	}
+	//t->show();
+	assert(t->id == CONST_TYPE_FUNC);
+	//exit(0);
+    if(t->id == CONST_TYPE_FUNC && dynamic_cast<FunctionType>(t)->returnType->id != CONST_TYPE_BUILTIN_VOID) {
+        recv = this->createTemp(dynamic_cast<FunctionType>(t)->returnType);
     }
     this->generateFunctionCall(expr->type, recv, faddr, args);
     return recv;
@@ -301,11 +307,11 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
             return IntConstant(expr->valueUnion.i[0]);
         return DoubleConst(expr->valueUnion.d);
     }
-	if (expr->id == NODE_EXP_STRLITERAL) {
+	if (expr->id == NODE_EXP_STRLITERAL || expr->type->id == CONST_TYPE_ARRAY) {
 		return addressOf((Symbol)(expr->valueUnion.p));
 	}
     assert(expr->id != NODE_EXP_STRLITERAL);//TODO:
-    if(expr->type->id == CONST_TYPE_FUNC || expr->type->id == CONST_TYPE_ARRAY){
+    if(expr->type->id == CONST_TYPE_FUNC){
 		return (Symbol)(expr->valueUnion.p);
     }
     return (Symbol)expr->valueUnion.p;
@@ -745,7 +751,7 @@ Symbol Translator_::translateExpression(Expr expr)
         case NODE_EXP_DECLREF: case NODE_EXP_CHARLITERAL:
             return translatePrimaryExpr(expr);
         case NODE_EXP_BINARY:
-			printf("begin translate binary expression!!!\n");
+			//printf("begin translate binary expression!!!\n");
             return translateBinaryExpr((BinaryOpExpr)expr);
         case NODE_EXP_UNARY:
             return translateUnaryExpr((UnaryOpExpr)expr);

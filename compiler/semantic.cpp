@@ -266,6 +266,8 @@ void Semantic::semanticExpr(Expr expr)
                 exit(0);
             }
             expr1->type = expr1->var->type;
+			//printf("1: ");expr1->expr->type->show();
+			//printf("2: ");expr1->var->type->show();
             Expr tmp = castFromTo(expr1->expr, expr1->var->type);
             if(!tmp){
                 fprintf(stderr, "%d:%d: error: incompatible implicit type\n", expr1->sourceLoc.line, expr1->sourceLoc.col);
@@ -776,6 +778,7 @@ Expr Semantic::castFromTo(Expr expr, Type type)
             if(expr->type->id == CONST_TYPE_FUNC){
                 //printf("impossible!!!!!");
                 //exit(0);
+				//printf("3: ");((PointerType)type)->pointTo->show();
                 if(isMatchType(((PointerType)type)->pointTo, expr->type))
                     return transformImplicitExp(expr, CONST_TYPE_POINTER);
                 return NULL;
