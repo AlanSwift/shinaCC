@@ -1106,16 +1106,18 @@ void Translator_::controlFlowOptimise()
     int startIndex;
     for(startIndex=0;startIndex<program->functionList.size();startIndex++)
     {
-        
+        FunctionSymbol fsym=program->functionList[startIndex];
+        if(getAccessName(program->bblocks[fsym->start]->symbol)==string("main"))
+        {
+            break;
+        }
     }
-    for (auto &fsym : program->functionList) {
-
-		for (int i = fsym->start; i <= fsym->end; i++) {
-            
-			// if(i != fsym->start)
-			// 	fprintf(fp, "%s:\n", getAccessName(program->bblocks[i]->symbol).c_str());
-			// emitBasicBlock(program->bblocks[i]);
-		}
+    FunctionSymbol mainFsym=program->functionList[startIndex];
+    for (int i = mainFsym->start; i <= mainFsym->end; i++)
+    {
+        
 	}
+
+
 }
 
