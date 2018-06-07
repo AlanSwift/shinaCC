@@ -6,12 +6,13 @@
 #define CP_FRAME_H
 
 #include <string>
+#include <map>
 #include "type.h"
 #include "constant.h"
 #include "translator.h"
 
-typedef unsigned int Register_;
-typedef std::string Register;
+
+typedef int Register;
 typedef struct Access_ *Access;
 
 struct Access_
@@ -61,11 +62,97 @@ public:
 
 	Access access(Symbol symbol)
 	{
+        assert(symbol!=NULL);
+        if(symbol->kind==SK_Function)
+        {
+            FunctionSymbol funsym=dynamic_cast<FunctionSymbol>(symbol);
+            std::string ret="."+funsym->name+"(%rip)";
+            Access retAccess=new Access_();
+            retAccess->kind=Access_::InGlobal;
+            retAccess->global=ret;
+            return retAccess;
+        }
+        else if(symbol->kind==SK_Variable)
+        {
+            VariableSymbol sym=dynamic_cast<VariableSymbol>(symbol);
+            int offset=sizeOf(sym->type);
+            
+            Access ret=new Access_();
+            ret->kind=Access_::InFrame;
+            ret->offset=offset;
+            return ret;
+        }
+        else if(symbol->kind==SK_String)
+        {
+            std::string str=std::string(reinterpret_cast<char*>(symbol->valueUnion.p));
+            int cnt;
+            if(stringMap.count(str)==0)
+            {
+                stringMap[str]=stringCnt++;
+                //TODO
+            }
+            else{
+                //TODO
+            }
+            cnt=stringMap[str];
+            std::string retStr = std::string(".LC")+std::to_string(cnt)+"(%rip)";
+            Access ret=new Access_();
+            ret->global=retStr;
+            ret->kind=Access_::InGlobal;
+            return ret;
+        }
+        else if(symbol->kind==SK_Temp)
+        {
+            if(isGeneralUsedUp())
+            {
+                //spill
+                int offset=sizeOf(symbol->type);
+                Access ret=new Access_();
+                ret->kind= Access_::InFrame;
+                ret->offset=offset;
+                return ret;
+            }
+            else{
+                int regPosition=getFirstReg();
+                regUsed[regPosition]=1;
+                Access ret=new Access_();
+                ret->kind=Access_::InReg;
+                ret->reg=regPosition;
+            }
+        }
 
 	}
 
 private:
+    bool regUsed[100];
+    const int regStart=6;
+    const int regEnd=13;
+    const int generalCnt=8;
 
+    std::map<std::string,int>stringMap;
+    int stringCnt=0;
+
+
+    void clear()
+    {
+        memset(regUsed,0,sizeof(regUsed));
+    }
+    bool isGeneralUsedUp()
+    {
+        for(int i=regStart;i<=regEnd;i++)
+        {
+            if(regUsed[i])  return true;
+        }
+        return false;
+    }
+    int getFirstReg()
+    {
+        for(int i=regStart;i<=regEnd;i++)
+        {
+            if(regUsed[i])  return i;
+        }
+        assert(0);
+    }
 
 };
 

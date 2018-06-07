@@ -1,7 +1,6 @@
 //
 // Created by Administrator on 2018/5/25/025.
 //
-
 #ifndef COMPILER_TYPE_H
 #define COMPILER_TYPE_H
 
@@ -10,12 +9,14 @@
 #include "constant.h"
 using namespace std;
 
+
 typedef struct BuiltinType_ *BuiltinType;
 typedef struct PointerType_ *PointerType;
 typedef struct RecordType_ *RecordType;
 typedef struct ArrayType_ *ArrayType;
 typedef struct FunctionType_ *FunctionType;
 typedef struct TypedefType_ *TypedefType;
+int sizeOf(Type type);
 
 struct BuiltinType_:public Type_
 {
@@ -32,6 +33,7 @@ struct BuiltinType_:public Type_
     static Type unsignedLongType;
     static Type unsignedCharType;
     static Type invalidType;
+    int sizeOf(Type type);
 
     int builtinType;
     Type next;

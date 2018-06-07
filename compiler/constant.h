@@ -401,7 +401,8 @@ public:
     } valueUnion;
     bool addressed;
     Symbol link;
-    Symbol_():type(NULL),link(NULL)
+    int ref;
+    Symbol_():type(NULL),link(NULL),ref(0)
     {
 
     }

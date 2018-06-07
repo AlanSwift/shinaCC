@@ -47,6 +47,8 @@ public:
     Program translate(TranslationUnitDecl start);
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
+    void controlFlowOptimise();
+
 private:
     int tmpNumber, labelNumber;
     Program program;
@@ -93,6 +95,9 @@ private:
         inst->type = type;
         inst->opcode = opcode;
         dstBlock->reference++;
+        src1->ref++;
+        if(src2)    src2->ref++;
+
         inst->opds[0] = (Symbol)dstBlock; //!!!
         inst->opds[1] = src1;
         inst->opds[2] = src2;
@@ -117,6 +122,9 @@ private:
         inst->opds[0] = dst;
         inst->opds[1] = src1;
         inst->opds[2] = src2;
+        dst->ref++;
+        src1->ref++;
+        if(src2)    src2->ref++;
         program->appendInst(inst);
         DefineTemp(dst,opcode,src1,src2);
     }
@@ -124,6 +132,8 @@ private:
     void generateMove(Type type, Symbol dst, Symbol src)
     {
         IrInst inst = new IrInst_();
+        dst->ref++;
+        src->ref++;
         inst->opcode = MOV;
         inst->opds[0] = dst;
         inst->opds[1] = src;
@@ -144,6 +154,7 @@ private:
         inst->opcode=RET;
         inst->opds[0]=src;
         inst->opds[1]=inst->opds[2]=NULL;
+        src->ref++;
         program->appendInst(inst);
 
     }
@@ -156,6 +167,9 @@ private:
 		inst->opds[0] = dst;
 		inst->opds[1] = src;
 		inst->opds[2] = NULL;
+        dst->ref++;
+        src->ref++;
+
 		program->appendInst(inst);
 	}
 
@@ -170,9 +184,23 @@ private:
         inst->opds[2] = (Symbol)( args );
         program->appendInst(inst);
 
+        faddr->ref++;
+        if(recv)
+        {
+            recv->ref++;
+        }
+        for(auto &i:*args )
+        {
+            i.first->ref++;
+
+        }
+
         if(!recv) {
             this->DefineTemp(recv, CALL, (Symbol)inst, NULL);
         }
+
+        
+
     }
 
     Symbol translateCast(Type to, Type from, Symbol src)

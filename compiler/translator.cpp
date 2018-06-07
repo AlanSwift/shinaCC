@@ -1097,7 +1097,12 @@ Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
 	p->link = base;
 	p->offset = coff;
     p->name=base->name+"["+ to_string(coff)+"]";
+    base->ref++;
 	return dynamic_cast<Symbol>(p);
 }
 
+void Translator_::controlFlowOptimise()
+{
+
+}
 
