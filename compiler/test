@@ -1,5 +1,13 @@
 
 int binarySearch(int *a, int len, int key);
+int f(int a)
+{
+	int b;
+	a=a+1;
+	b=0;
+	b=b+1;
+	return a+1;
+}
 
 int main()
 {

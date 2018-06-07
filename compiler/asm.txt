@@ -1,0 +1,83 @@
+	.text
+	.globl	f
+	.seh_proc	f
+f:
+	pushq	rbq
+	.seh_pushreg	rbp
+	movq	rsp, rbp
+	.seh_setframe	rbp, 0
+	subq	$0, rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_1:
+	addq	$0, rsp
+	popq	rbp
+	ret
+	.seh_endproc
+	.globl	main
+	.seh_proc	main
+main:
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_3:
+label_4:
+label_5:
+label_6:
+label_7:
+label_8:
+label_9:
+label_10:
+label_11:
+label_12:
+label_13:
+label_14:
+label_15:
+label_16:
+	addq	$0, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
+	.globl	f
+	.seh_proc	f
+f:
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_18:
+	addq	$0, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
+	.globl	binarySearch
+	.seh_proc	binarySearch
+binarySearch:
+	pushq	%rbq
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$0, %rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_20:
+label_21:
+label_22:
+label_23:
+label_24:
+label_25:
+label_26:
+label_27:
+label_28:
+label_29:
+	addq	$0, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
