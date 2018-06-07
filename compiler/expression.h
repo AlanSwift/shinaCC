@@ -344,22 +344,26 @@ struct StrLiteral_:public Expr_
     StrLiteral_(string &value):value(value){
         this->id = NODE_EXP_STRLITERAL;
         this->type = new PointerType_(new BuiltinType_(CONST_TYPE_BUILTIN_CHAR, NULL));
-
+		char *c = new char[value.size() + 1];
+		strcpy(c, value.c_str());
 		Symbol sym = new Symbol_();
 		sym->name = "String" + std::to_string(cnt++);
 		sym->kind = SK_Constant;
 		sym->type = this->type;
+		sym->valueUnion.p = c;
 		valueUnion.p = (void *)sym;
     }
     StrLiteral_(char *value){
         this->value = string(value);
         this->id = NODE_EXP_STRLITERAL;
         this->type = new PointerType_(BuiltinType_::charType);
-
+		char *c = new char[strlen(value) +1];
+		strcpy(c, value);
 		Symbol sym = new Symbol_();
 		sym->name = "String" + std::to_string(cnt++);
 		sym->kind = SK_Constant;
 		sym->type = this->type;
+		sym->valueUnion.p = c;
 		valueUnion.p = (void *)sym;
     }
 

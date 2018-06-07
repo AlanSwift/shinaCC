@@ -8,11 +8,13 @@
 #include <string>
 #include "type.h"
 #include "constant.h"
+#include "translator.h"
 
 typedef unsigned int Register_;
-typedef Register_ *Register;
+typedef char *Register;
+typedef struct Access_ *Access;
 
-struct Access
+struct Access_
 {
     enum { InReg, InFrame } kind;
     union {
@@ -20,38 +22,40 @@ struct Access
         Register reg; /*In Reg*/
     }u;
 
-    Access(Register reg){
+    Access_(Register reg){
         kind = InReg;
         u.reg = reg;
     }
 
-    Access(int offset){
+    Access_(int offset){
         kind = InFrame;
         u.offset = offset;
     }
 };
 
+char *FP = "rbp";
+char *SP = "rsp";
+char *REGS[] = {  "rax", "rcx", "rdx", "rbx", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" }; //64bit
+char *WREGS[] = { "eax", "ecx", "edx", "ebx", "esi", "edi", "r8d", "r9d", "r10d", "r11d", "r12d", "r13d", "r14d", "r15d" }; //32bit
+char *HREGS[] = { "ax", "cx", "dx", "bx", "si", "di", "r8w", "r9w", "r10w", "r11w", "r12w", "r13w", "r14w", "r15w" }; //16bit
+char *BREGS[] = { "al", "cl", "dl", "bl", "sil", "sil", "r8b", "r9b", "r10b", "r11b", "r12b", "r13b", "r14b", "r15b" }; //8bit
 
-struct Temp_label_
-{
-    std::string id;
-};
-
-struct Temp_temp_
-{
-
-};
-
-typedef struct Temp_label_ *Temp_label;
-typedef struct Temp_temp_ *Temp_temp;
-
-/* Allocator
+class Allocator
 {
 public:
-    bool allocateLocal(std::string id, Type type, bool escape = false); //local variables, in stack, registers
-    bool allocateGlobal(std::string id, Type type); //global variables, function, in data, text segment
-    bool allocateLabel(std::string label);
-    bool allocateTemp(std::string id);
-};*/
+	void allocate(Program program)
+	{
+		
+	}
+
+	Access access(Symbol symbol)
+	{
+
+	}
+
+private:
+
+
+};
 
 #endif //CP_FRAME_H

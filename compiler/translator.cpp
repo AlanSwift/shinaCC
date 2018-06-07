@@ -308,6 +308,9 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
         return DoubleConst(expr->valueUnion.d);
     }
 	if (expr->id == NODE_EXP_STRLITERAL || expr->type->id == CONST_TYPE_ARRAY) {
+		if (expr->id == NODE_EXP_STRLITERAL) {
+			program->globals.push_back((Symbol)(expr->valueUnion.p));
+		}
 		return addressOf((Symbol)(expr->valueUnion.p));
 	}
     assert(expr->id != NODE_EXP_STRLITERAL);//TODO:

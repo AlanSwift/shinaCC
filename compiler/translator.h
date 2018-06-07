@@ -350,7 +350,6 @@ private:
 
     Symbol simplify(Type ty, int opcode, Symbol src1, Symbol src2);
     
-
     Symbol addressOf(Symbol symbol);
 
     Symbol deReference(Type type,Symbol symbol);
@@ -388,6 +387,10 @@ private:
 	void showProgram(TranslationUnitDecl start)
 	{
 		int ptr = 0;
+		printf("global(%d): ", program->globals.size());
+		for (auto &s : program->globals)
+			printf("%s, ", s->name.c_str());
+		printf("\n");
 		for (auto &decl : start->declarations) {
 			if (decl->id == NODE_DECL_FUNCTION) {
 				FunctionDecl decl1 = (FunctionDecl)decl;
@@ -395,8 +398,6 @@ private:
 					continue;
 				program->currentFunc = decl1->functionSymbol;
 				program->currentFunc->entryBB->symbol->name = program->currentFunc->name;
-				//printf("number of basic blocks in %s: %d\n", program->currentFunc->name.c_str(), program->bblocks.size());
-				//fprintf(stdout, "%s: \n", program->currentFunc->name.c_str());
 				showFunction(decl1->functionSymbol, ptr);
 			}
 		}
@@ -406,7 +407,7 @@ private:
 	{
 		printf("locals temporary variables: ");
 		for(auto &s: program->currentFunc->locals)
-			if(s->kind == SK_Temp)
+			if (s->kind == SK_Temp) 
 				printf("%s, ", s->name.c_str());
 		printf("\n");
 		printf("locals variables: ");
