@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EMITTER_H
+#define EMITTER_H
 #include <cstdio>
 #include <cassert>
 #include "constant.h"
@@ -181,4 +182,4 @@ private:
 		}
 	}
 };
-
+#endif
