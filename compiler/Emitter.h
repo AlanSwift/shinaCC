@@ -4,6 +4,9 @@
 #include "constant.h"
 #include "translator.h"
 #include <string>
+#define DST  inst->opds[0]
+#define SRC1 inst->opds[1]
+#define SRC2 inst->opds[2]
 
 typedef class Emitter_ *Emitter;
 
@@ -50,9 +53,98 @@ private:
 
 		emitPrologue(frameSize);
 
-		
+		for (int i = fsym->start; i <= fsym->end; i++) {
+			if(i != fsym->start)
+				fprintf(fp, "%s:\n", getAccessName(program->bblocks[i]->symbol).c_str());
+			emitBasicBlock(program->bblocks[i]);
+		}
 
 		emitEpilogue(frameSize);
+	}
+
+	void emitBasicBlock(BasicBlock block)
+	{
+		assert(block);
+		for (auto &inst : block->insts) {
+			emitIrInst(inst);
+		}
+	}
+
+	void emitAssign(IrInst& inst)
+	{
+
+	}
+
+	void emitCast(IrInst& inst)
+	{
+
+	}
+
+	void emitBranch(IrInst& inst)
+	{
+
+	}
+
+	void emitJump(IrInst& inst)
+	{
+
+	}
+
+	void emitReturn(IrInst& inst)
+	{
+
+	}
+
+	void emitCall(IrInst& inst)
+	{
+
+	}
+
+	void emitAddress(IrInst& inst)
+	{
+
+	}
+
+	void emitDeref(IrInst& inst)
+	{
+
+	}
+
+	void emitMove(IrInst& inst)
+	{
+
+	}
+
+	void emitIndirectMove(IrInst& inst)
+	{
+
+	}
+
+	void emitIrInst(IrInst inst)
+	{
+		switch (inst->opcode) {
+		case BOR:case BXOR:case BAND:case LSH:case RSH:case ADD:
+		case SUB:case MUL:case DIV:case MOD:case NEG:case BCOM:
+			emitAssign(inst); break;
+		case JZ:case JNZ:case JG:case JL:case JGE:case JLE:
+			emitBranch(inst); break;
+		case JMP:
+			emitJump(inst); break;
+		case ADDR:
+			emitAddress(inst); break;
+		case DEREF:
+			emitDeref(inst);break;
+		case RET:
+			emitReturn(inst);break;
+		case CALL:
+			emitCall(inst);break;
+		case MOV:
+			emitMove(inst);break;
+		case IMOV:
+			emitIndirectMove(inst);break;
+		default:
+			emitCast(inst);
+		}
 	}
 
 	void emitPrologue(int size)

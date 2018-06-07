@@ -5,6 +5,7 @@
 #include "semantic.h"
 #include "translator.h"
 #include "Emitter.h"
+#include <cstdio>
 
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
@@ -13,8 +14,10 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
     }
 	Translator translaor = new Translator_();
 	translaor->table = &valueEnv;
-	Emitter emitter = new Emitter_();
+	FILE *fp = fopen("asm.txt", "w");
+	Emitter emitter = new Emitter_(fp);
 	emitter->emitCode(translaor->translate(start));
+	fclose(fp);
 	exit(0);
 }
 

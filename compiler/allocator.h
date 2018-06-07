@@ -11,37 +11,36 @@
 #include "translator.h"
 
 typedef unsigned int Register_;
-typedef char *Register;
+typedef std::string Register;
 typedef struct Access_ *Access;
 
 struct Access_
 {
 	enum { InReg, InFrame, InGlobal } kind;
-	union {
-		int offset; /*InFrame*/
-		Register reg; /*In Reg*/
-		char *global;
-	}u;
+	int offset; /*InFrame*/
+	Register reg; /*In Reg*/
+	std::string global;
 
-	Access_() {
+	Access_() 
+	{
 	}
 
 	void putInReg(Register reg)
 	{
 		kind = InReg;
-		u.reg = reg;
+		this->reg = reg;
 	}
 
-	void putInGlobal(char *global)
+	void putInGlobal(std::string global)
 	{
 		kind = InGlobal;
-		u.global = global;
+		this->global = global;
 	}
 
 	void putInFrame(int offset)
 	{
 		kind = InFrame;
-		u.offset = offset;
+		this->offset = offset;
 	}
 };
 
