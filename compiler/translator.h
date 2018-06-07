@@ -318,7 +318,11 @@ private:
     void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
     {
         valueDef def=new valueDef_();
-
+        if(!t)
+        {
+            printf("NULL!!!!!!!!!!!!!!\n");
+            
+        }
         def->dst = t;
         def->op = op;
         def->src1 = src1;

@@ -4,6 +4,7 @@
 #include <cassert>
 #include "constant.h"
 #include "translator.h"
+#include "allocator.h"
 #include <string>
 #define DST  inst->opds[0]
 #define SRC1 inst->opds[1]
@@ -16,15 +17,19 @@ class Emitter_
 private:
 	FILE *fp;
 	Program program;
+	Allocator* allocator;
+
+
 public:
 	Emitter_()
 	{
 		fp = stdout;
+		allocator=new Allocator();
 	}
 
 	Emitter_(FILE *fp):fp(fp)
 	{
-
+		allocator=new Allocator();
 	}
 
 	~Emitter_()
@@ -66,6 +71,7 @@ private:
 	void emitBasicBlock(BasicBlock block)
 	{
 		assert(block);
+		allocator->precess(block);
 		for (auto &inst : block->insts) {
 			emitIrInst(inst);
 		}
