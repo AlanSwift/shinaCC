@@ -108,17 +108,40 @@ private:
 
 	void emitBranch(IrInst& inst)
 	{
+		char opCodeNames[][30] = {
+			"|", "^", "&", "<<", ">>", "+", "-", "*", "/", "%",
+			"-", "~", "je", "jne", "==", "!=", ">", "<", ">=", "<="
+		};
+		if (SRC2) {
 
+		}
+		else {
+			std::string src;
+			assert(SRC1->kind != SK_Constant);
+			src = getAddress(allocator->access(SRC1));
+			fprintf(fp, "\tcmpl $0, %s\n", src.c_str());
+			fprintf(fp, "\t%s %s\n", opCodeNames[inst->opcode], ((BasicBlock)DST)->symbol->name.c_str());
+		}
 	}
 
 	void emitJump(IrInst& inst)
 	{
-
+		fprintf(fp, "\tjmp %s\n", ((BasicBlock)DST)->symbol->name.c_str());
 	}
 
 	void emitReturn(IrInst& inst)
 	{
-
+		int code = typeCode(inst->type);
+		if (code == F4 || code == F8) {
+			assert(0);
+			return;
+		}
+		std::string src, dst;
+		if (SRC1->kind == SK_Constant)
+			src = getConstant(code, SRC1);
+		else
+			src = getAddress(allocator->access(SRC1));
+		fprintf(fp, "\tmovl %s, %eax\n", src.c_str());
 	}
 
 	void emitCall(IrInst& inst)
@@ -149,23 +172,35 @@ private:
 	std::string getConstant(int code, Symbol s)
 	{
 		if (code == F4 || code == F8)
-			return std::to_string(*((unsigned long long *)(&(s->valueUnion.d))));
-		return std::to_string(s->valueUnion.i[0]);
+			return "$" + std::to_string(*((unsigned long long *)(&(s->valueUnion.d))));
+		return "$" + std::to_string(s->valueUnion.i[0]);
 	}
 
-	std::string getAddress(Access access, int bits = 32)
+	std::string getAddress(Access access, int bits = 32, bool src = false)
 	{
 		if (access->kind == access->InReg) {
-			if (bits == 32)
-				return std::string(WREGS[access->reg]);
 			if (bits == 64)
 				return std::string(REGS[access->reg]);
+			if (src || bits == 32)
+				return std::string(WREGS[access->reg]);
 			if (bits == 16)
 				return std::string(HREGS[access->reg]);
 			if (bits == 8)
 				return std::string(BREGS[access->reg]);
 		}
 		else if (access->kind == access->InFrame) {
+			if (src) {
+				if (bits == 64) {
+					fprintf(fp, "\tmovq %s, %rax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+					return "%rax";
+				}
+				if(bits == 32)
+					fprintf(fp, "\tmovl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+				if (bits == 16)
+					fprintf(fp, "\tmovzwl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+				fprintf(fp, "\tmovzbl %s, %eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+				return "%eax";
+			}
 			return std::to_string(access->offset) + "(%rbp)";
 		}
 		else
@@ -174,6 +209,10 @@ private:
 
 	void emitMove(IrInst& inst)
 	{
+#define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
+#define InReg(addr) (((addr)->kind) == ((addr)->InReg))
+#define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
+		Access dstAddr;
 		int code = typeCode(inst->type);
 		std::string src, dst;
 		if (code == F4 || code == F8) {
@@ -182,40 +221,42 @@ private:
 		}
 		switch (code)
 		{
-		case I1: case U1:
+		case I1: case U1: //Src1 -> Dst
+			if (SRC1->kind == SK_Constant)
+				src = getConstant(code, SRC1);
+			else
+				src = getAddress(allocator->access(SRC1), 8, true);
+			dstAddr = allocator->access(DST);
+			dst = getAddress(dstAddr, 8);
+			if (InReg(dstAddr))
+				fprintf(fp, "\tmovl %s, %s\n", src.c_str(), dst.c_str());
+			fprintf(fp, "\tmovb %s, %s\n", src.c_str(), dst.c_str());
+			break;
+		case I2: case U2:
+			if (SRC1->kind == SK_Constant)
+				src = getConstant(code, SRC1);
+			else
+				src = getAddress(allocator->access(SRC1), 16, true);
+			dstAddr = allocator->access(DST);
+			dst = getAddress(dstAddr, 8);
+			if (InReg(dstAddr))
+				fprintf(fp, "\tmovl %s, %s\n", src.c_str(), dst.c_str());
+			fprintf(fp, "\tmovw %s, %s\n", src.c_str(), dst.c_str());
+			break;
+		case I4: case U4:
 			if (SRC1->kind == SK_Constant)
 				src = getConstant(code, SRC1);
 			else
 				src = getAddress(allocator->access(SRC1));
 			dst = getAddress(allocator->access(DST));
-			fprintf(fp, "\tmovl %s %s\n", src.c_str(), dst.c_str());
-			break;
-
-		case I2: case U2:
-			/*if (SRC1->kind == SK_Constant)
-				Move(X86_MOVI2, DST, SRC1);
-			else{
-				reg = GetWordReg();
-				Move(X86_MOVI2, reg, SRC1);
-				Move(X86_MOVI2, DST, reg);
-			}*/
-			break;
-
-		case I4: case U4:
-			/*if (SRC1->kind == SK_Constant)
-				Move(X86_MOVI4, DST, SRC1);
-			else {
-				AllocateReg(inst, 1);
-				AllocateReg(inst, 0);
-				if (SRC1->reg == NULL && DST->reg == NULL) {
-					reg = GetReg();
-					Move(X86_MOVI4, reg, SRC1);
-					Move(X86_MOVI4, DST, reg);
-				}
-				else {
-					Move(X86_MOVI4, DST, SRC1);
-				}
-			}*/
+			fprintf(fp, "\tmovl %s, %s\n", src.c_str(), dst.c_str());
+		case P:
+			if (SRC1->kind == SK_Constant)
+				src = getConstant(code, SRC1);
+			else
+				src = getAddress(allocator->access(SRC1), 64);
+			dst = getAddress(allocator->access(DST), 64);
+			fprintf(fp, "\tmovq %s, %s\n", src.c_str(), dst.c_str());
 		default:
 			break;
 		}

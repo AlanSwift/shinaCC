@@ -134,6 +134,7 @@ private:
         IrInst inst = new IrInst_();
         dst->ref++;
         src->ref++;
+		inst->type = type;
         inst->opcode = MOV;
         inst->opds[0] = dst;
         inst->opds[1] = src;
