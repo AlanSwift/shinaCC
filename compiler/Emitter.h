@@ -128,7 +128,7 @@ private:
 
 			if (code != P) {
 				fprintf(fp, "\t%sl %s, %s\n", opCodeNames[inst->opcode], src2.c_str(), src1.c_str());
-				fprintf(fp, "\t%movl %s, %s\n", src1.c_str(), 
+				fprintf(fp, "\tmovl %s, %s\n", src1.c_str(), 
 					getAddress(allocator->access(DST), 32).c_str());
 			}
 			else {
@@ -252,9 +252,10 @@ private:
 				}
 				if(bits == 32)
 					fprintf(fp, "\tmovl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
-				if (bits == 16)
+				else if (bits == 16)
 					fprintf(fp, "\tmovzwl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
-				fprintf(fp, "\tmovzbl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
+				else
+					fprintf(fp, "\tmovzbl %s, %%eax\n", (std::to_string(access->offset) + "(%rbp)").c_str());
 				return "%eax";
 			}
 			return std::to_string(access->offset) + "(%rbp)";
