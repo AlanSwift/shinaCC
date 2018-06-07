@@ -47,11 +47,15 @@ Program Translator_::translate(TranslationUnitDecl start)
 			printf("begin to translate %s\n", program->currentFunc->name.c_str());
             program->currentFunc->entryBB = program->createBasicBlock();
             program->currentFunc->exitBB = program->createBasicBlock();
+
+			program->currentFunc->start = program->bblocks.size();
             program->currentBlock = program->currentFunc->entryBB;
 
 			program->functionList.push_back(decl1->functionSymbol);
             translateStatement(decl1->stmt);
             program->startBasicBlock(program->currentFunc->exitBB);
+
+			program->currentFunc->end = program->bblocks.size();
 			program->bblocks.push_back(program->currentFunc->exitBB);
         }
     }
@@ -62,7 +66,6 @@ Program Translator_::translate(TranslationUnitDecl start)
 		//}
 	}
 	showProgram(start);
-	exit(0);
     return program;
 }
 

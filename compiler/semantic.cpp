@@ -4,6 +4,7 @@
 
 #include "semantic.h"
 #include "translator.h"
+#include "Emitter.h"
 
 void Semantic::semanticAnalysis(TranslationUnitDecl start)
 {
@@ -12,7 +13,9 @@ void Semantic::semanticAnalysis(TranslationUnitDecl start)
     }
 	Translator translaor = new Translator_();
 	translaor->table = &valueEnv;
-	translaor->translate(start);
+	Emitter emitter = new Emitter_();
+	emitter->emitCode(translaor->translate(start));
+	exit(0);
 }
 
 int sizeOf(Type type)

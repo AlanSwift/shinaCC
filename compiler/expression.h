@@ -348,7 +348,7 @@ struct StrLiteral_:public Expr_
 		strcpy(c, value.c_str());
 		Symbol sym = new Symbol_();
 		sym->name = "String" + std::to_string(cnt++);
-		sym->kind = SK_Constant;
+		sym->kind = SK_String;
 		sym->type = this->type;
 		sym->valueUnion.p = c;
 		valueUnion.p = (void *)sym;
@@ -361,7 +361,7 @@ struct StrLiteral_:public Expr_
 		strcpy(c, value);
 		Symbol sym = new Symbol_();
 		sym->name = "String" + std::to_string(cnt++);
-		sym->kind = SK_Constant;
+		sym->kind = SK_String;
 		sym->type = this->type;
 		sym->valueUnion.p = c;
 		valueUnion.p = (void *)sym;

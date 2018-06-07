@@ -428,7 +428,7 @@ public:
     std::vector<Symbol> locals;
     BasicBlock entryBB;
     BasicBlock exitBB;
-
+	int start, end;
     valueDef valNumTable[16];
 
     FunctionSymbol_():entryBB(NULL), exitBB(NULL){}
