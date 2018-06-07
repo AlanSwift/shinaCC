@@ -12,12 +12,12 @@
 
 typedef class Emitter_ *Emitter;
 
-enum ASMCode
-{
-#define TEMPLATE(code, str) code,
-#include "x86win32.tpl"
-#undef TEMPLATE
-};
+// enum ASMCode
+// {
+// #define TEMPLATE(code, str) code,
+// #include "x86win32.tpl"
+// #undef TEMPLATE
+// };
 
 #define ASM_CODE(opcode, tcode) ((opcode << 2) + tcode - I4)
 

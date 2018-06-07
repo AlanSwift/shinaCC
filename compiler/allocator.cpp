@@ -9,6 +9,7 @@ char *SP = "rsp";
 
 void Allocator::precess(BasicBlock bb)
 {
+    printf("==start=======\n");
     clear();
     vector<pair<Symbol,vector<Symbol>>>ans=graph->analysis(bb);
     for(auto &i:ans)
@@ -55,11 +56,13 @@ void Allocator::precess(BasicBlock bb)
     {
         printf("%s  %d\n",i.first->name.c_str(),i.second);
     }
+    printf("---------\n");
 
 }
 
 Access Allocator::access(Symbol symbol)
 {
+
     assert(symbol!=NULL);
     if(cache.find(symbol)!=cache.end())
     {
