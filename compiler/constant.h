@@ -370,6 +370,7 @@ public:
     {
 
     }
+    virtual void show();
 };
 
 
@@ -405,6 +406,12 @@ public:
 
     }
     virtual ~Symbol_(){}
+    virtual void show()
+    {
+        //printf("====== show symbol name:%s======\n",name.c_str());
+        //type->show();
+
+    }
 };
 
 
@@ -418,6 +425,29 @@ public:
     VariableSymbol_():def(NULL),uses(NULL)
     {
         
+    }
+    void show() override
+    {
+        printf("-------show variable symbol:%s ------\n",name.c_str());
+        valueDef ptr=def;
+        printf("show def:------\n");
+        while(ptr)
+        {
+            printf("##########\n");
+            ptr->show();
+            ptr=ptr->link;
+        }
+        printf("show use:------\n");
+        valueUse f=uses;
+        while(f)
+        {
+            printf("----------\n");
+            f->def->show();
+            f=f->next;
+
+        }
+        printf("&&&&&out&&&&&\n");
+
     }
 };
 

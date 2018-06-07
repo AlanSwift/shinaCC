@@ -460,7 +460,23 @@ private:
 		case DIV:
 		case MOD:
 			fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case INC:
 		case DEC:
 			fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
@@ -470,13 +486,61 @@ private:
 		case ADDR:
 		case DEREF:
 			fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case MOV:
 			fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case IMOV:
 			fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case JE:
 		case JNE:
 		case JG:
@@ -500,7 +564,8 @@ private:
 			assert(((BasicBlock)DST));
 			assert(((BasicBlock)DST)->symbol);
 			fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
-			break;
+			
+            break;
 		case RET:
 			if(DST == NULL)
 				fprintf(stdout, "return", DST->name.c_str());
@@ -525,6 +590,8 @@ private:
 		}
 		fprintf(stdout, ";\n");
 		fflush(stdout);
+        
+
 	}
 };
 

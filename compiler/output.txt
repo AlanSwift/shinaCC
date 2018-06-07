@@ -1,51 +1,1599 @@
 
-int factorial(int n)
+int binarySearch(int *a, int len, int key);
+
+int main()
 {
-    if(n <= 1)
-        return 1;
-    return n * factorial(n - 1);
+	int a[10];
+	int i;
+	for(i = 0; i < 10; i += 1){
+		a[i] = 100 - i;
+	}
+	i = binarySearch(a, 10, 91);
+	return 0;
 }
 
-
+int binarySearch(int *a, int len, int key)
+{
+	int left, right, mid;
+	left = 0, right = len - 1;
+	while(left <= right){
+		mid = (left + right) / 2;
+		if(a[mid] == key)
+			return mid;
+		else if(a[mid] < key)
+			left = mid + 1;
+		else
+			right = mid - 1;
+	}
+	return -1;
+}
 -------------------------------------------------------
 TranslationUnitDecl_
--FunctionDecl_: factorial, int, 00000000
---ParmVarDecl_: n, int
+-FunctionDecl_: binarySearch, int, 00000000
+--ParmVarDecl_: a, int *
+--ParmVarDecl_: len, int
+--ParmVarDecl_: key, int
+-FunctionDecl_: main, int, 00000000
 --CompoundStmt_: locals:0  
----IfStmt_
-----BinaryOpExpr_: '<=', NULL
------DeclRefExpr_: n, NULL, 00000000
+---DeclStmt_
+----VarDecl_: a, int []
+---DeclStmt_
+----VarDecl_: i, int
+---ForStmt_
+----AssignExpr_: '=', NULL
+-----DeclRefExpr_: i, NULL, 00000000
+-----IntLiteral_: 0 int
+----BinaryOpExpr_: '<', NULL
+-----DeclRefExpr_: i, NULL, 00000000
+-----IntLiteral_: 10 int
+----AssignExpr_: '+=', NULL
+-----DeclRefExpr_: i, NULL, 00000000
 -----IntLiteral_: 1 int
-----ReturnStmt_
------IntLiteral_: 1 int
----ReturnStmt_
-----BinaryOpExpr_: '*', NULL
------DeclRefExpr_: n, NULL, 00000000
+----CompoundStmt_: locals:0  
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------ArraySubscriptExpr_ NULL
+--------DeclRefExpr_: a, NULL, 00000000
+--------DeclRefExpr_: i, NULL, 00000000
+-------BinaryOpExpr_: '-', NULL
+--------IntLiteral_: 100 int
+--------DeclRefExpr_: i, NULL, 00000000
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----DeclRefExpr_: i, NULL, 00000000
 -----CallExpr_ NULL
-------DeclRefExpr_: factorial, NULL, 00000000
+------DeclRefExpr_: binarySearch, NULL, 00000000
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 10 int
+------IntLiteral_: 91 int
+---ReturnStmt_
+----IntLiteral_: 0 int
+-FunctionDecl_: binarySearch, int, 00000000
+--ParmVarDecl_: a, int *
+--ParmVarDecl_: len, int
+--ParmVarDecl_: key, int
+--CompoundStmt_: locals:0  
+---DeclStmt_
+----VarDecl_: left, int
+----VarDecl_: right, int
+----VarDecl_: mid, int
+---ExprStmt_
+----BinaryOpExpr_: ',', NULL
+-----AssignExpr_: '=', NULL
+------DeclRefExpr_: left, NULL, 00000000
+------IntLiteral_: 0 int
+-----AssignExpr_: '=', NULL
+------DeclRefExpr_: right, NULL, 00000000
 ------BinaryOpExpr_: '-', NULL
--------DeclRefExpr_: n, NULL, 00000000
+-------DeclRefExpr_: len, NULL, 00000000
 -------IntLiteral_: 1 int
+---WhileStmt_
+----BinaryOpExpr_: '<=', NULL
+-----DeclRefExpr_: left, NULL, 00000000
+-----DeclRefExpr_: right, NULL, 00000000
+----CompoundStmt_: locals:0  
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: mid, NULL, 00000000
+-------BinaryOpExpr_: '/', NULL
+--------ParenExpr_ NULL
+---------BinaryOpExpr_: '+', NULL
+----------DeclRefExpr_: left, NULL, 00000000
+----------DeclRefExpr_: right, NULL, 00000000
+--------IntLiteral_: 2 int
+-----IfStmt_
+------BinaryOpExpr_: '==', NULL
+-------ArraySubscriptExpr_ NULL
+--------DeclRefExpr_: a, NULL, 00000000
+--------DeclRefExpr_: mid, NULL, 00000000
+-------DeclRefExpr_: key, NULL, 00000000
+------ReturnStmt_
+-------DeclRefExpr_: mid, NULL, 00000000
+------IfStmt_
+-------BinaryOpExpr_: '<', NULL
+--------ArraySubscriptExpr_ NULL
+---------DeclRefExpr_: a, NULL, 00000000
+---------DeclRefExpr_: mid, NULL, 00000000
+--------DeclRefExpr_: key, NULL, 00000000
+-------ExprStmt_
+--------AssignExpr_: '=', NULL
+---------DeclRefExpr_: left, NULL, 00000000
+---------BinaryOpExpr_: '+', NULL
+----------DeclRefExpr_: mid, NULL, 00000000
+----------IntLiteral_: 1 int
+-------ExprStmt_
+--------AssignExpr_: '=', NULL
+---------DeclRefExpr_: right, NULL, 00000000
+---------BinaryOpExpr_: '-', NULL
+----------DeclRefExpr_: mid, NULL, 00000000
+----------IntLiteral_: 1 int
+---ReturnStmt_
+----UnaryOpExpr_: '-' NULL
+-----IntLiteral_: 1 int
 ==================
-TranslationUnitDecl_
--FunctionDecl_: factorial, int, 00000000
---ParmVarDecl_: n, int
---CompoundStmt_: locals:0  
----IfStmt_
-----BinaryOpExpr_: '<=', NULL
------DeclRefExpr_: n, NULL, 00000000
------IntLiteral_: 1 int
-----ReturnStmt_
------IntLiteral_: 1 int
----ReturnStmt_
-----BinaryOpExpr_: '*', NULL
------DeclRefExpr_: n, NULL, 00000000
------CallExpr_ NULL
-------DeclRefExpr_: factorial, NULL, 00000000
-------BinaryOpExpr_: '-', NULL
--------DeclRefExpr_: n, NULL, 00000000
--------IntLiteral_: 1 int
-================
-
--------------------------------------------------------
-finish semanticAnalysis
+begin to translate main
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin to translate binarySearch
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+begin translate binary expression!!!
+allocate label: label_0 for 0x7fb62fc070f0
+allocate label: label_1 for 0x7fb62fc06da0
+allocate label: label_2 for 0x7fb62fc06df0
+allocate label: label_3 for 0x7fb62fc06e20
+allocate label: label_4 for 0x7fb62fc06e50
+allocate label: label_5 for 0x7fb62fc06a50
+allocate label: label_6 for 0x7fb62fc080f0
+allocate label: label_7 for 0x7fb62fc08380
+allocate label: label_8 for 0x7fb62fc08770
+allocate label: label_9 for 0x7fb62fc087a0
+allocate label: label_10 for 0x7fb62fc08d20
+allocate label: label_11 for 0x7fb62fc08d50
+allocate label: label_12 for 0x7fb62fc08cf0
+allocate label: label_13 for 0x7fb62fc08740
+allocate label: label_14 for 0x7fb62fc083b0
+allocate label: label_15 for 0x7fb62fc083e0
+allocate label: label_16 for 0x7fb62fc08120
+main: 
+	i = 0
+show def use of op0:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+show def use of src1:
+show def use of src2:
+;
+	goto label_3;
+label_1: 
+	tmp0 = i << 2
+show def use of op0:
+-------show variable symbol:tmp0 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp1 = a
+show def use of op0:
+-------show variable symbol:tmp1 ------
+show def:------
+##########
+****** valueDef class ******
+op:42
+dst:
+tmp1
+src1:
+iÀ/¶
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:a ------
+show def:------
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp2 = tmp1 + tmp0
+show def use of op0:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp1 ------
+show def:------
+##########
+****** valueDef class ******
+op:42
+dst:
+tmp1
+src1:
+iÀ/¶
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+-------show variable symbol:tmp0 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+show use:------
+&&&&&out&&&&&
+;
+	tmp3 = *tmp2
+show def use of op0:
+-------show variable symbol:tmp3 ------
+show def:------
+##########
+****** valueDef class ******
+op:25
+dst:
+tmp3
+src1:
+tmp2
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp4 = 100 - i
+show def use of op0:
+-------show variable symbol:tmp4 ------
+show def:------
+##########
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+show def use of src2:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+;
+	*tmp2 = tmp4
+show def use of op0:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp4 ------
+show def:------
+##########
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp5 = *tmp2
+show def use of op0:
+-------show variable symbol:tmp5 ------
+show def:------
+##########
+****** valueDef class ******
+op:25
+dst:
+tmp5
+src1:
+tmp2
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+label_2: 
+	tmp6 = i + 1
+show def use of op0:
+-------show variable symbol:tmp6 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	i = tmp6
+show def use of op0:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp6 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp2
+src1:
+tmp1
+src2:
+tmp0
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+label_3: 
+	if (i < 10) goto label_1;
+label_4: 
+	tmp7 = a
+show def use of op0:
+-------show variable symbol:tmp7 ------
+show def:------
+##########
+****** valueDef class ******
+op:42
+dst:
+tmp7
+src1:
+iÀ/¶
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:a ------
+show def:------
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp8 = binarySearch(tmp7, 10, 91, );
+	i = tmp8
+show def use of op0:
+-------show variable symbol:i ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+i
+src2:
+1
+----------
+****** valueDef class ******
+op:6
+dst:
+src1:
+100
+src2:
+i
+----------
+****** valueDef class ******
+op:3
+dst:
+src1:
+i
+src2:
+2
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp8 ------
+show def:------
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	return 0;
+	goto label_5;
+label_5: 
+binarySearch: 
+	left = 0
+show def use of op0:
+-------show variable symbol:left ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+show def use of src1:
+show def use of src2:
+;
+	tmp0 = len + -1
+show def use of op0:
+-------show variable symbol:tmp0 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:len ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+&&&&&out&&&&&
+show def use of src2:
+;
+	right = tmp0
+show def use of op0:
+-------show variable symbol:right ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp0 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	goto label_14;
+label_7: 
+	tmp1 = left + right
+show def use of op0:
+-------show variable symbol:tmp1 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:left ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+show def use of src2:
+-------show variable symbol:right ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+;
+	tmp2 = tmp1 >> 1
+show def use of op0:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:4
+dst:
+tmp2
+src1:
+tmp1
+src2:
+1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp1 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	mid = tmp2
+show def use of op0:
+-------show variable symbol:mid ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp2 ------
+show def:------
+##########
+****** valueDef class ******
+op:4
+dst:
+tmp2
+src1:
+tmp1
+src2:
+1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp3 = mid << 2
+show def use of op0:
+-------show variable symbol:tmp3 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:mid ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp4 = a + tmp3
+show def use of op0:
+-------show variable symbol:tmp4 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:a ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+&&&&&out&&&&&
+show def use of src2:
+-------show variable symbol:tmp3 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+show use:------
+&&&&&out&&&&&
+;
+	tmp5 = *tmp4
+show def use of op0:
+-------show variable symbol:tmp5 ------
+show def:------
+##########
+****** valueDef class ******
+op:25
+dst:
+tmp5
+src1:
+tmp4
+src2:
+##########
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp4 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	if (tmp5 != key) goto label_9;
+label_8: 
+	return mid;
+	goto label_16;
+	goto label_13;
+label_9: 
+	tmp6 = mid << 2
+show def use of op0:
+-------show variable symbol:tmp6 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:mid ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	tmp7 = a + tmp6
+show def use of op0:
+-------show variable symbol:tmp7 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:a ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+&&&&&out&&&&&
+show def use of src2:
+-------show variable symbol:tmp6 ------
+show def:------
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+##########
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+show use:------
+&&&&&out&&&&&
+;
+	tmp8 = *tmp7
+show def use of op0:
+-------show variable symbol:tmp8 ------
+show def:------
+##########
+****** valueDef class ******
+op:25
+dst:
+tmp8
+src1:
+tmp7
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp7 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	if (tmp8 > key) goto label_11;
+label_10: 
+	tmp9 = mid + 1
+show def use of op0:
+-------show variable symbol:tmp9 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:mid ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	left = tmp9
+show def use of op0:
+-------show variable symbol:left ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp9 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+	goto label_12;
+label_11: 
+	tmp10 = mid + -1
+show def use of op0:
+-------show variable symbol:tmp10 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:mid ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+----------
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp6
+src1:
+mid
+src2:
+2
+----------
+****** valueDef class ******
+op:3
+dst:
+tmp3
+src1:
+mid
+src2:
+2
+&&&&&out&&&&&
+show def use of src2:
+;
+	right = tmp10
+show def use of op0:
+-------show variable symbol:right ------
+show def:------
+show use:------
+----------
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+&&&&&out&&&&&
+show def use of src1:
+-------show variable symbol:tmp10 ------
+show def:------
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp10
+src1:
+mid
+src2:
+-1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp9
+src1:
+mid
+src2:
+1
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp7
+src1:
+a
+src2:
+tmp6
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp4
+src1:
+a
+src2:
+tmp3
+##########
+****** valueDef class ******
+op:5
+dst:
+src1:
+left
+src2:
+right
+##########
+****** valueDef class ******
+op:5
+dst:
+tmp0
+src1:
+len
+src2:
+-1
+show use:------
+&&&&&out&&&&&
+show def use of src2:
+;
+label_12: 
+label_13: 
+label_14: 
+	if (left <= right) goto label_7;
+label_15: 
+	tmp11 = -1
+show def use of op0:
+-------show variable symbol:tmp11 ------
+show def:------
+##########
+****** valueDef class ******
+op:10
+dst:
+tmp11
+src1:
+1
+src2:
+show use:------
+&&&&&out&&&&&
+show def use of src1:
+show def use of src2:
+;
+	return tmp11;
+	goto label_16;
+label_16: 
