@@ -82,12 +82,13 @@ Access Allocator::access(Symbol symbol)
     else if(symbol->kind==SK_Variable)
     {
         VariableSymbol sym=dynamic_cast<VariableSymbol>(symbol);
-		int _offset = -sizeOf(sym->type) - this->offset;
+		int _offset = -sizeOf(sym->type) + this->offset;
         
         Access ret=new Access_();
         ret->kind=Access_::InFrame;
         ret->offset=_offset;
         cache[symbol]=ret;
+        this->offset=_offset;
         return ret;
     }
     else if(symbol->kind==SK_String)

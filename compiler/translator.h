@@ -628,6 +628,15 @@ private:
         
 
 	}
+    std::string getAccessName(Symbol symbol)
+	{
+		switch (symbol->kind) {
+		case SK_Label:case SK_Function:case SK_Constant:
+			return symbol->name;
+		case SK_String:
+			return std::string((char *)symbol->valueUnion.p);
+		}
+	}
 };
 
 #endif //CP_TRANSLATOR_H
