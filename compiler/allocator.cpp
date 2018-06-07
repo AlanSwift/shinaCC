@@ -9,6 +9,7 @@ char *SP = "rsp";
 
 void Allocator::precess(BasicBlock bb)
 {
+    printf("==start=======\n");
     clear();
     vector<pair<Symbol,vector<Symbol>>>ans=graph->analysis(bb);
     for(auto &i:ans)
@@ -55,12 +56,19 @@ void Allocator::precess(BasicBlock bb)
     {
         printf("%s  %d\n",i.first->name.c_str(),i.second);
     }
+    printf("---------\n");
+
 
 }
 
 Access Allocator::access(Symbol symbol)
 {
+
     assert(symbol!=NULL);
+    if(cache.find(symbol)!=cache.end())
+    {
+        return cache[symbol];
+    }
     if(symbol->kind==SK_Function)
     {
         FunctionSymbol funsym=dynamic_cast<FunctionSymbol>(symbol);
@@ -68,16 +76,18 @@ Access Allocator::access(Symbol symbol)
         Access retAccess=new Access_();
         retAccess->kind=Access_::InGlobal;
         retAccess->global=ret;
+        cache[symbol]=retAccess;
         return retAccess;
     }
     else if(symbol->kind==SK_Variable)
     {
         VariableSymbol sym=dynamic_cast<VariableSymbol>(symbol);
-        int offset=-sizeOf(sym->type);
+		int _offset = -sizeOf(sym->type) - this->offset;
         
         Access ret=new Access_();
         ret->kind=Access_::InFrame;
-        ret->offset=offset;
+        ret->offset=_offset;
+        cache[symbol]=ret;
         return ret;
     }
     else if(symbol->kind==SK_String)
@@ -97,32 +107,42 @@ Access Allocator::access(Symbol symbol)
         Access ret=new Access_();
         ret->global=retStr;
         ret->kind=Access_::InGlobal;
+        cache[symbol]=ret;
         return ret;
     }
     else if(symbol->kind==SK_Temp)
     {
-        try{
-            int retReg=regMap[symbol];
-            if(retReg<0)
-            {
-                //spill
-                int offset=sizeOf(symbol->type);
-                Access ret=new Access_();
-                ret->kind= Access_::InFrame;
-                ret->offset=offset;
-                return ret;
-            }
-            else{
-                int regPosition=retReg;
-                Access ret=new Access_();
-                ret->kind=Access_::InReg;
-                ret->reg=regPosition;
-            }
-        }catch(...)
+        if(regMap.find(symbol)==regMap.end())
         {
-            printf("no such temp...\n");
+            cout<<symbol->name<<endl;
+
+            cerr<<"reg error...."<<endl;
+            for(auto &i:regMap)
+            {
+                printf("%s  %d\n",i.first->name.c_str(),i.second);
+            }
             assert(0);
         }
+        int retReg=regMap[symbol];
+        if(retReg<0)
+        {
+            //spill
+            int offset=sizeOf(symbol->type);
+            Access ret=new Access_();
+            ret->kind= Access_::InFrame;
+            ret->offset=offset;
+            cache[symbol]=ret;
+            return ret;
+        }
+        else{
+            int regPosition=retReg;
+            Access ret=new Access_();
+            ret->kind=Access_::InReg;
+            ret->reg=regPosition;
+            cache[symbol]=ret;
+            return ret;
+        }
+
         
     }
 
