@@ -1,4 +1,19 @@
 	.text
+	.globl	f
+	.seh_proc	f
+f:
+	pushq	rbq
+	.seh_pushreg	rbp
+	movq	rsp, rbp
+	.seh_setframe	rbp, 0
+	subq	$0, rsp
+	.seh_stackalloc	0
+	.seh_endprologuep
+label_1:
+	addq	$0, rsp
+	popq	rbp
+	ret
+	.seh_endproc
 	.globl	main
 	.seh_proc	main
 main:
@@ -9,8 +24,6 @@ main:
 	subq	$0, %rsp
 	.seh_stackalloc	0
 	.seh_endprologuep
-label_1:
-label_2:
 label_3:
 label_4:
 label_5:

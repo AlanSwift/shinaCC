@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <cstring>
+#include <algorithm>
 
 #include "type.h"
 #include "constant.h"
@@ -15,6 +16,7 @@
 
 
 typedef int Register;
+typedef unsigned long long ULL;
 typedef struct Access_ *Access;
 
 extern char *REGS[];
@@ -62,271 +64,38 @@ public:
 
     }
     
-    void analysis(BasicBlock bb)
-    {
-        
-        clear();
-
-        map<unsigned long long,int>tempMap;
-        map<unsigned long long,std::string>debug;
-
-        int cnt=0;
-
-        for(auto &inst:bb->insts)
-        {
-
-            switch (inst->opcode) {
-                case BOR:
-                case BXOR:
-                case BAND:
-                case LSH:
-                case RSH:
-                case ADD:
-                case SUB:
-                case MUL:
-                case DIV:
-                case MOD:
-                    //fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=SRC1->name.c_str();
-                        }
-                    }
-                    if(SRC2->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC2))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC2)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC2)]=SRC2->name.c_str();
-                        }
-                    }
-
-
-
-                    break;
-                case INC:
-                case DEC:
-                    //fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    break;
-                case BCOM:
-                case NEG:
-                case ADDR:
-                case DEREF:
-                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    break;
-                case MOV:
-                    //fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=SRC1->name.c_str();
-                        }
-                    }
-  
-                    
-                    break;
-                case IMOV:
-                    //fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=SRC1->name.c_str();
-                        }
-                    }
-
-
-                    break;
-                case JE:
-                case JNE:
-                case JG:
-                case JL:
-                case JGE:
-                case JLE:
-                    //fprintf(stdout, "if (%s %s %s) goto %s", SRC1->name.c_str(), opCodeNames[op],
-                    //    SRC2->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC2->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC2))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC2)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC2)]=SRC2->name.c_str();
-                        }
-                    }
-                    break;
-                case JZ:
-                    //fprintf(stdout, "if (! %s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
-
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=SRC1->name.c_str();
-                        }
-                    }
-
-                    break;
-                case JNZ:
-                    //fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
-
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=SRC1->name.c_str();
-                        }
-                    }
-
-                    break;
-                case JMP:
-
-                    assert(((BasicBlock)DST));
-                    assert(((BasicBlock)DST)->symbol);
-                    //fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
-                    
-                    break;
-                case RET:
-                    //if(DST == NULL)
-                    //    fprintf(stdout, "return", DST->name.c_str());
-                    //fprintf(stdout, "return %s", DST->name.c_str());
-                    break;
-                case CALL:{
-                    // vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)SRC2;
-                    // int i;
-
-                    // if (DST != NULL)
-                    //     fprintf(stdout, "%s = ", DST->name.c_str());
-                    // fprintf(stdout, "%s(", SRC1->name.c_str());
-                    // for (auto &arg: *args) {
-                    //     fprintf(stdout, "%s, ", arg.first->name.c_str());
-                    // }
-                    // fprintf(stdout, ")");
-                }
-                    break;
-                default:
-                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
-                    if(DST->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(DST))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(DST)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(DST)]=DST->name.c_str();
-                        }
-                    }
-                    if(SRC1->kind==SK_Temp)
-                    {
-                        if(tempMap.count(reinterpret_cast<unsigned long long>(SRC1))==0)
-                        {
-                            tempMap[reinterpret_cast<unsigned long long>(SRC1)]=cnt++;
-                            debug[reinterpret_cast<unsigned long long>(SRC1)]=DST->name.c_str();
-                        }
-                    }
-                    break;
-                }
-
-        
-
-	
-        }
-        printf("Block %s:\n",bb->symbol->name.c_str());
-        for(auto &i:debug)
-        {
-            printf("%s ",i.second.c_str());
-        }
-        puts("");
-    }
+    vector<pair<Symbol,vector<Symbol>>> analysis(BasicBlock bb);
 
 private:
     enum{MAX=100};
 
+    bool confMap[MAX+10][MAX+10];
+    std::map<unsigned long long,int>tempMap;
+    unsigned long long id2Pointer[MAX];
+    std::map<unsigned long long,std::string>debug;
+    pair<int,int>posMark[MAX];
 
-    struct Edge
-    {  
-        int to;  
-        int next;  
-    };  
-    Edge e[MAX];
-    int pre[MAX];
-    int cnt;
+    bool conflict(const pair<int,int>&a,const pair<int,int>&b)
+    {
+        return !(a.first>b.second||a.second<b.first);
+    }
 
     void clear()
     {
+        memset(confMap,0,sizeof(confMap));
+        tempMap.clear();
+        debug.clear();
 
-        memset(pre,-1,sizeof(pre));
-        cnt=0;
     }
 
     void addEdge(int from,int to)
     {
-        e[cnt].to=to;
-        e[cnt].next=pre[from];
-        pre[from]=cnt;
-        cnt++;
+        assert(from<100);
+        assert(to<100);
+        confMap[from][to]=true;
+        confMap[to][from]=true;
     }
+
 };
 
 
@@ -343,10 +112,8 @@ public:
 	{
 		
 	}
-    void precess(BasicBlock bb)
-    {
-        graph->analysis(bb);
-    }
+    void precess(BasicBlock bb);
+    
 
 	Access access(Symbol symbol);
     
@@ -354,6 +121,8 @@ public:
 
 private:
     bool regUsed[100];
+    std::map<Symbol,int>regMap;
+    vector<Symbol> id2Symbol[100];
     const int regStart=6;
     const int regEnd=13;
     const int generalCnt=8;
@@ -367,20 +136,26 @@ private:
     void clear()
     {
         memset(regUsed,0,sizeof(regUsed));
+        for(int i=regStart;i<=regEnd;i++)
+        {
+            id2Symbol[i].clear();
+        }
+        regMap.clear();
+
     }
     bool isGeneralUsedUp()
     {
         for(int i=regStart;i<=regEnd;i++)
         {
-            if(regUsed[i])  return true;
+            if(!regUsed[i])  return false;
         }
-        return false;
+        return true;
     }
     int getFirstReg()
     {
         for(int i=regStart;i<=regEnd;i++)
         {
-            if(regUsed[i])  return i;
+            if(!regUsed[i])  return i;
         }
         assert(0);
     }
