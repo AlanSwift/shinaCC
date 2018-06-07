@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EMITTER_H
+#define EMITTER_H
 #include <cstdio>
 #include <cassert>
 #include "constant.h"
@@ -16,16 +17,18 @@ class Emitter_
 private:
 	FILE *fp;
 	Program program;
-	Allocator allocator;
+	Allocator* allocator;
+
 public:
 	Emitter_()
 	{
 		fp = stdout;
+		allocator=new Allocator();
 	}
 
 	Emitter_(FILE *fp):fp(fp)
 	{
-
+		allocator=new Allocator();
 	}
 
 	~Emitter_()
@@ -68,6 +71,7 @@ private:
 	void emitBasicBlock(BasicBlock block)
 	{
 		assert(block);
+		allocator->precess(block);
 		for (auto &inst : block->insts) {
 			emitIrInst(inst);
 		}
@@ -243,4 +247,4 @@ private:
 		return V;
 	}
 };
-
+#endif

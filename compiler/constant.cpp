@@ -119,3 +119,28 @@ string id2name(int id)
     }
     return ret;
 }
+
+void valueDef_::show()
+{
+    printf("****** valueDef class ******\n");
+    printf("op:%d\n",op);
+    printf("dst:\n");
+    if (dst)
+    {
+        printf("%s\n",dst->name.c_str());
+    }
+    printf("src1:\n");
+    if(src1)
+    {
+        printf("%s\n",src1->name.c_str());
+
+    }
+    printf("src2:\n");
+    if(src2)
+    {
+        printf("%s\n",src2->name.c_str());
+    }
+
+
+
+}

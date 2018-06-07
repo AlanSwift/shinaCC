@@ -47,6 +47,8 @@ public:
     Program translate(TranslationUnitDecl start);
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
+    void controlFlowOptimise();
+
 private:
     int tmpNumber, labelNumber;
     Program program;
@@ -93,6 +95,9 @@ private:
         inst->type = type;
         inst->opcode = opcode;
         dstBlock->reference++;
+        src1->ref++;
+        if(src2)    src2->ref++;
+
         inst->opds[0] = (Symbol)dstBlock; //!!!
         inst->opds[1] = src1;
         inst->opds[2] = src2;
@@ -117,6 +122,9 @@ private:
         inst->opds[0] = dst;
         inst->opds[1] = src1;
         inst->opds[2] = src2;
+        dst->ref++;
+        src1->ref++;
+        if(src2)    src2->ref++;
         program->appendInst(inst);
         DefineTemp(dst,opcode,src1,src2);
     }
@@ -124,6 +132,8 @@ private:
     void generateMove(Type type, Symbol dst, Symbol src)
     {
         IrInst inst = new IrInst_();
+        dst->ref++;
+        src->ref++;
         inst->opcode = MOV;
         inst->opds[0] = dst;
         inst->opds[1] = src;
@@ -144,6 +154,7 @@ private:
         inst->opcode=RET;
         inst->opds[0]=src;
         inst->opds[1]=inst->opds[2]=NULL;
+        src->ref++;
         program->appendInst(inst);
 
     }
@@ -156,6 +167,9 @@ private:
 		inst->opds[0] = dst;
 		inst->opds[1] = src;
 		inst->opds[2] = NULL;
+        dst->ref++;
+        src->ref++;
+
 		program->appendInst(inst);
 	}
 
@@ -170,9 +184,23 @@ private:
         inst->opds[2] = (Symbol)( args );
         program->appendInst(inst);
 
+        faddr->ref++;
+        if(recv)
+        {
+            recv->ref++;
+        }
+        for(auto &i:*args )
+        {
+            i.first->ref++;
+
+        }
+
         if(!recv) {
             this->DefineTemp(recv, CALL, (Symbol)inst, NULL);
         }
+
+        
+
     }
 
     Symbol translateCast(Type to, Type from, Symbol src)
@@ -290,7 +318,11 @@ private:
     void DefineTemp(Symbol t, int op, Symbol src1, Symbol src2)
     {
         valueDef def=new valueDef_();
-
+        if(!t)
+        {
+            printf("NULL!!!!!!!!!!!!!!\n");
+            
+        }
         def->dst = t;
         def->op = op;
         def->src1 = src1;
@@ -460,7 +492,23 @@ private:
 		case DIV:
 		case MOD:
 			fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case INC:
 		case DEC:
 			fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
@@ -470,13 +518,61 @@ private:
 		case ADDR:
 		case DEREF:
 			fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case MOV:
 			fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case IMOV:
 			fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
-			break;
+			// fprintf(stdout,"\nshow def use of op0:\n");
+            // if(DST)
+            // {
+            //     DST->show();
+            // }
+            
+            // fprintf(stdout,"show def use of src1:\n");
+            // if(SRC1)
+            // {
+            //     SRC1->show();
+            // }
+            // fprintf(stdout,"show def use of src2:\n");
+            // if(SRC2)
+            // {
+            //     SRC2->show();
+            // }
+            break;
 		case JE:
 		case JNE:
 		case JG:
@@ -500,7 +596,8 @@ private:
 			assert(((BasicBlock)DST));
 			assert(((BasicBlock)DST)->symbol);
 			fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
-			break;
+			
+            break;
 		case RET:
 			if(DST == NULL)
 				fprintf(stdout, "return", DST->name.c_str());
@@ -525,6 +622,8 @@ private:
 		}
 		fprintf(stdout, ";\n");
 		fflush(stdout);
+        
+
 	}
 };
 
