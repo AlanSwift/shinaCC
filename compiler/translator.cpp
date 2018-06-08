@@ -3,6 +3,7 @@
 //
 
 #include "translator.h"
+#include "Emitter.h"
 #include <utility>
 
 
@@ -45,6 +46,7 @@ Program Translator_::translate(TranslationUnitDecl start)
             tmpNumber = 0;
             program->currentFunc = decl1->functionSymbol;
 			printf("begin to translate %s\n", program->currentFunc->name.c_str());
+			fflush(stdout);
             program->currentFunc->entryBB = program->createBasicBlock();
             program->currentFunc->exitBB = program->createBasicBlock();
 
@@ -65,7 +67,11 @@ Program Translator_::translate(TranslationUnitDecl start)
 		printf("allocate label: %s for %p\n", bb->symbol->name.c_str(), bb);
 		//}
 	}
-	showProgram(start);
+	//showProgram(start);
+	FILE *fp = fopen("asm.s", "w");
+	Emitter emitter = new Emitter_(fp);
+	emitter->emitCode(program);
+	fclose(fp);
     return program;
 }
 
@@ -175,6 +181,13 @@ Symbol Translator_::translateUnaryExpr(UnaryOpExpr expr)
         case OP_UNARY_POSITIVE:
             return src;
         case OP_UNARY_NEGATIVE:
+			if (src->kind == SK_Constant) {
+				if (isIntegType(src->type))
+					src->valueUnion.i[0] = -src->valueUnion.i[0];
+				else
+					src->valueUnion.d = -src->valueUnion.d;
+				return src;
+			}
             return simplify(expr->type, NEG, src, NULL);
         case OP_UNARY_STAR:
             return deReference(expr->type, src);
@@ -321,6 +334,7 @@ Symbol Translator_::translatePrimaryExpr(Expr expr) //id, str, int, float, paren
     if(expr->type->id == CONST_TYPE_FUNC){
 		return (Symbol)(expr->valueUnion.p);
     }
+	assert(expr->valueUnion.p);
     return (Symbol)expr->valueUnion.p;
 }
 
@@ -543,6 +557,7 @@ void Translator_::translateCompoundStmt(CompoundStmt stmt)
 	if (level == 1) {
 		for (auto &v : stmt->locals)
 			program->currentFunc->locals.push_back(v);
+		//printf("??????????????????????????????????????????????????????????????\n");
 	}
     for(auto &s: stmt->stmtList){
         if(s->id == NODE_STM_DECL){
@@ -792,7 +807,7 @@ Symbol Translator_::addressOf(Symbol p)
 	{
 		TrackValueChange(p);
 	}
-	Symbol t=TryAddValue(new PointerType_(NULL), ADDR, p, NULL);
+	Symbol t=TryAddValue(new PointerType_(p->type), ADDR, p, NULL);
 	//debugSymbol(t);
 	return t; 
 }

@@ -124,9 +124,14 @@ public:
         offset=0;
     }
     
+	void emitData(FILE *fp)
+	{
+
+	}
 
 
 private:
+	Program program;
     bool regUsed[100];
     std::map<Symbol,int>regMap;
     vector<Symbol> id2Symbol[100];

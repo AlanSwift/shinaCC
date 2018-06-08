@@ -464,7 +464,8 @@ private:
 		ptr++;
 	}
 
-	void showInstruction(IrInst inst)
+public:
+	static void showInstruction(IrInst inst)
 	{
 #define DST  inst->opds[0]
 #define SRC1 inst->opds[1]
@@ -559,22 +560,6 @@ private:
             break;
 		case IMOV:
 			fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
-			// fprintf(stdout,"\nshow def use of op0:\n");
-            // if(DST)
-            // {
-            //     DST->show();
-            // }
-            
-            // fprintf(stdout,"show def use of src1:\n");
-            // if(SRC1)
-            // {
-            //     SRC1->show();
-            // }
-            // fprintf(stdout,"show def use of src2:\n");
-            // if(SRC2)
-            // {
-            //     SRC2->show();
-            // }
             break;
 		case JE:
 		case JNE:
