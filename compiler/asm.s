@@ -3,11 +3,11 @@
 	.globl	mergeSort
 	.seh_proc	mergeSort
 mergeSort:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	movq	%rsp, %rbp
-	.seh_setframe	%rbp, 0
-	subq	$316, %rsp
+	pushq	rbp
+	.seh_pushreg	rbp
+	movq	rsp, rbp
+	.seh_setframe	rbp, 0
+	subq	$316, rsp
 	.seh_stackalloc	316
 	.seh_endprologue
 	movl	32(%rbp), %eax
@@ -249,18 +249,18 @@ label_18:
 	cmpl	40(%rbp), %eax
 	jle	label_16
 label_21:
-	addq	$316, %rsp
-	popq	%rbp
+	addq	$316, rsp
+	popq	rbp
 	ret
 	.seh_endproc
 	.globl	main
 	.seh_proc	main
 main:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	movq	%rsp, %rbp
-	.seh_setframe	%rbp, 0
-	subq	$472, %rsp
+	pushq	rbp
+	.seh_pushreg	rbp
+	movq	rsp, rbp
+	.seh_setframe	rbp, 0
+	subq	$472, rsp
 	.seh_stackalloc	472
 	.seh_endprologue
 	movl	$0, %eax
@@ -285,21 +285,21 @@ main:
 	addq	%r14, %r15
 	movq	%r15, %r8
 	movq	%r8, %rax
-	movl	(%rax), %r8d
+	movl	(%rax), %r10d
 	movl	$3, (%rax)
 	movq	%r8, %rax
-	movl	(%rax), %r8d
+	movl	(%rax), %r10d
 	movl	$2, %eax
 	movl	$2, %ecx
 	sall	%cl, %eax
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$4, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$3, %eax
 	movl	$2, %ecx
@@ -307,11 +307,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$1, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$4, %eax
 	movl	$2, %ecx
@@ -319,11 +319,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$9, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$5, %eax
 	movl	$2, %ecx
@@ -331,11 +331,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$7, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$6, %eax
 	movl	$2, %ecx
@@ -343,11 +343,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$3, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$7, %eax
 	movl	$2, %ecx
@@ -355,11 +355,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$19, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$8, %eax
 	movl	$2, %ecx
@@ -367,11 +367,11 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$6, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$9, %eax
 	movl	$2, %ecx
@@ -379,18 +379,18 @@ main:
 	movl	%eax, %r8d
 	movq	%r9, %r10
 	addq	%r8, %r10
-	movq	%r10, %r8
-	movq	%r8, %rax
+	movq	%r10, %r11
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movl	$25, (%rax)
-	movq	%r8, %rax
+	movq	%r11, %rax
 	movl	(%rax), %r8d
 	movq	%r9, %r8
 	leaq	-100(%rbp), %rax
 	movq	%rax, %r8
-	movq	%r8, %r8
+	movq	%r8, %r9
 	movq	%r8, 0(%rsp)
-	movq	%r8, 8(%rsp)
+	movq	%r9, 8(%rsp)
 	movl	$0, 16(%rsp)
 	movl	$9, 24(%rsp)
 	call	mergeSort
@@ -422,7 +422,7 @@ label_26:
 	movl	$0, %eax
 	jmp		label_27
 label_27:
-	addq	$472, %rsp
-	popq	%rbp
+	addq	$472, rsp
+	popq	rbp
 	ret
 	.seh_endproc

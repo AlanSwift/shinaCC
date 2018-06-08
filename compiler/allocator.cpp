@@ -36,12 +36,18 @@ void Allocator::precess(BasicBlock bb)
                 {
                     regMap[i.first]=j;
                     id2Symbol[j].push_back(i.first);
+                    spill=false;
                     break;
 
                 }
                 else{
+                    continue;
+                }
+                if(spill)
+                {
                     regMap[i.first]=-1;//spill
-                    
+                    printf("%s spill........\n",i.first->name.c_str());
+                    //assert(0);
                 }
             }
         }
@@ -128,11 +134,12 @@ Access Allocator::access(Symbol symbol)
         if(retReg<0)
         {
             //spill
-            int offset=sizeOf(symbol->type);
+            int _offset=-sizeOf(symbol->type)+this->offset;
             Access ret=new Access_();
             ret->kind= Access_::InFrame;
-            ret->offset=offset;
+            ret->offset=_offset;
             cache[symbol]=ret;
+            this->offset=_offset;
             return ret;
         }
         else{
@@ -507,7 +514,7 @@ vector<pair<Symbol,vector<Symbol>>> ConflictGraph::analysis(BasicBlock bb)
                     if(tempMap.count(addr)!=0)
                     {
                         int which=tempMap[addr];
-                        posMark[which].first=lines;
+                        posMark[which].second=lines;
                     }
                 }
                 if(SRC1->kind==SK_Temp)
@@ -597,11 +604,13 @@ vector<pair<Symbol,vector<Symbol>>> ConflictGraph::analysis(BasicBlock bb)
         lines++;
 
     }
-    // for(int i=0;i<cnt;i++)
-    // {
-    //     printf("^^ %d: %d %d\n",i,posMark[i].first,posMark[i].second);
+    for(int i=0;i<cnt;i++)
+    {
+        posMark[i].second=max(posMark[i].second,posMark[i].first);
         
-    // }
+        printf("^^ %d: %d %d\n",i,posMark[i].first,posMark[i].second);
+        
+    }
     for(int i=0;i<cnt;i++)
     {
         for(int j=0;j<cnt;j++)
