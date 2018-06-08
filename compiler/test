@@ -1,8 +1,53 @@
 
-int main()
+void mergeSort(int *a, int *b, int left, int right)
 {
-	char *c;
-	c = "hello world!!\n";
-	return 0;
+	int aptr, bptr, ptr, i;
+	int center;
+	if(left < right){
+		center = (left + right) / 2;
+		mergeSort(a, b, left, center);
+		mergeSort(a, b, center + 1, right);
+		aptr = left; bptr = center + 1;
+		ptr = left;
+		while(aptr <= center && bptr <= right){
+			if(a[aptr] < a[bptr]){
+				b[ptr] = a[aptr];
+				aptr += 1;
+			}
+			else{
+				b[ptr] = a[bptr];
+				bptr += 1;
+			}
+			ptr += 1;
+		}
+
+		while(aptr <= center){
+			b[ptr] = a[aptr];
+			aptr += 1;
+			ptr += 1;
+		}
+
+		while(aptr <= center && bptr <= right){
+			b[ptr] = a[bptr];
+			bptr += 1;
+			ptr += 1;
+		}
+
+		for(i = left; i <= right; i += 1)
+			a[i] = b[i];
+	}
 }
 
+int main()
+{
+	int a[10], b[10];
+	int i, c;
+	a[0] = 2;a[1] = 3;a[2] = 4;
+	a[3] = 1;a[4] = 9;a[5] = 7;
+	a[6] = 3;a[7] = 19;a[8] = 6;a[9] = 25;
+	mergeSort(a, b, 0, 9);
+	for(i = 0; i < 10; i += 1){
+		c = a[i];
+	}
+	return 0;
+}

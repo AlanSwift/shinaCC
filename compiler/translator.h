@@ -202,8 +202,8 @@ private:
             i.first->ref++;
 
         }
-
-        if(!recv) {
+		
+        if(recv) {
             this->DefineTemp(recv, CALL, (Symbol)inst, NULL);
         }
 

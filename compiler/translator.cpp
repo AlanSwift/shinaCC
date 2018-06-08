@@ -101,8 +101,8 @@ Symbol Translator_::translateFunctionCall(CallExpr expr)
 	}
 	//t->show();
 	assert(t->id == CONST_TYPE_FUNC);
-	//exit(0);
-    if(t->id == CONST_TYPE_FUNC && dynamic_cast<FunctionType>(t)->returnType->id != CONST_TYPE_BUILTIN_VOID) {
+	
+    if(t->id == CONST_TYPE_FUNC && dynamic_cast<FunctionType>(t)->returnType != BuiltinType_::voidType) {
         recv = this->createTemp(dynamic_cast<FunctionType>(t)->returnType);
     }
     this->generateFunctionCall(expr->type, recv, faddr, args);

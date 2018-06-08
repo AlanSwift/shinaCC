@@ -118,6 +118,11 @@ public:
 
 	Access access(Symbol symbol);
 
+	void putSymbol(Symbol symbol, Access access)
+	{
+		cache[symbol] = access;
+	}
+
     void clearCache()
     {
         cache.clear();
@@ -132,7 +137,7 @@ public:
 				if (stringMap.count(str) == 0){
 					fprintf(fp, ".LC%d:\n", stringCnt);
 					stringMap[str] = stringCnt++;
-					fprintf(fp, "\t.ascii \"%s\"\n", str.c_str());
+					fprintf(fp, "\t.ascii \"%s\\0\"\n", str.c_str());
 				}
 			}
 			else {

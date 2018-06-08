@@ -9,7 +9,7 @@ char *SP = "rsp";
 
 void Allocator::precess(BasicBlock bb)
 {
-    printf("==start=======\n");
+   // printf("==start=======\n");
     clear();
     vector<pair<Symbol,vector<Symbol>>>ans=graph->analysis(bb);
     for(auto &i:ans)
@@ -72,7 +72,7 @@ Access Allocator::access(Symbol symbol)
     if(symbol->kind==SK_Function)
     {
         FunctionSymbol funsym=dynamic_cast<FunctionSymbol>(symbol);
-        std::string ret="."+funsym->name+"(%rip)";
+        std::string ret=funsym->name+"(%rip)";
         Access retAccess=new Access_();
         retAccess->kind=Access_::InGlobal;
         retAccess->global=ret;

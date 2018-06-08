@@ -35,12 +35,10 @@ private:
 	FILE *fp;
 	Program program;
 	Allocator* allocator;
-	Symbol X87Top;
 
 public:
 	Emitter_()
 	{
-		X87Top = NULL;
 		fp = stdout;
 		allocator=new Allocator();
 	}
@@ -96,7 +94,8 @@ private:
 		for (auto &inst : block->insts) {
 			Translator_::showInstruction(inst);
 			fflush(stdout);
-			//printf("%d:\t", inst->opcode);
+			printf("%d:\t", inst->opcode);
+			//exit(0);
 			emitIrInst(inst);
 		}
 	}
@@ -139,14 +138,21 @@ private:
 		}
 		else if (inst->opcode == RSH || inst->opcode == LSH) {
 			std::string src1, src2; // Src1 << Src2
-			if (SRC1->kind == SK_Constant)
+			//%eax %ecx
+			if (SRC1->kind == SK_Constant) {
 				src1 = getConstant(code, SRC1);
+				//if (src1 != "%eax")
+				fprintf(fp, "\tmovl\t%s, %%eax\n", src1.c_str());
+				src1 = "%eax";
+			}
 			else {
 				Access addr1 = allocator->access(SRC1);
-				src1 = getAddress(addr1, 32, true);
+				src1 = getAddress(addr1, 32, true); // -> 
 			}
-			if (SRC2->kind == SK_Constant)
+			if (SRC2->kind == SK_Constant) {
 				src2 = getConstant(code, SRC2);
+				fprintf(fp, "\tmovl\t%s, %%ecx\n", src2.c_str());
+			}
 			else {
 				Access addr2 = allocator->access(SRC2);
 				src2 = getAddress(addr2, 32, true, 1);
@@ -250,22 +256,152 @@ private:
 
 	void emitReturn(IrInst& inst)
 	{
+		assert(inst->type != BuiltinType_::voidType);
 		int code = typeCode(inst->type);
 		if (code == F4 || code == F8) {
 			assert(0);
 			return;
 		}
 		std::string src, dst;
-		if (DST->kind == SK_Constant)
+		if (DST->kind == SK_Constant) {
 			src = getConstant(code, DST);
-		else
-			src = getAddress(allocator->access(DST));
-		fprintf(fp, "\tmovl\t%s, %%eax\n", src.c_str());
+			fprintf(fp, "\tmovl\t%s, %%eax\n", src.c_str());
+		}
+		else {
+			Access addr = allocator->access(DST);
+			switch (code) {
+			case I4:case U4:
+				src = getAddress(allocator->access(DST));
+				fprintf(fp, "\tmovl\t%s, %%eax\n", src.c_str());
+				break;
+			case P:
+				src = getAddress(allocator->access(DST), 64);
+				fprintf(fp, "\tmovq\t%s, %%rax\n", src.c_str());
+				break;
+			case I2:case U2:
+				src = getAddress(addr, 16, true);
+				if(addr->kind == addr->InReg)
+					fprintf(fp, "\tmovl\t%s, %%eax\n", src.c_str());
+				break;
+			case I1:case U1:
+				src = getAddress(addr, 8, true);
+				if (addr->kind == addr->InReg)
+					fprintf(fp, "\tmovl\t%s, %%eax\n", src.c_str());
+				break;
+			}
+		}
 	}
 
 	void emitCall(IrInst& inst)
 	{
-
+#define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
+#define InReg(addr) (((addr)->kind) == ((addr)->InReg))
+#define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
+		vector<pair<Symbol, Type> > *args = (vector<pair<Symbol, Type> > *)SRC2;
+		int index[] = {1, 2, 6, 7};
+		int use = 0;
+		for (int i = 0; i < args->size(); i++) {
+			//assert(args->at(i).second != BuiltinType_::voidType);
+			int code = typeCode(args->at(i).second);
+			std::string arg;
+			if (args->at(i).first->kind == SK_Constant) {
+				arg = getConstant(code, args->at(i).first);
+			}
+			Access srcAddr = allocator->access(args->at(i).first);
+			switch (code) {
+			case I4:case U4:
+				if (arg.size() == 0) {
+					if (i >= use) { //spill out
+						arg = getAddress(srcAddr, 32, true, 0);
+						fprintf(fp, "\tmovl\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					}
+					else { // in reg
+						if(InReg(srcAddr))
+							fprintf(fp, "\tmovl\t%s, %%%s\n", getAddress(srcAddr).c_str(), WREGS[index[i]]);
+						else
+							arg = getAddress(srcAddr, 32, true, index[i]); // load to reg[index[i]]
+					}
+				}
+				else {
+					if (i >= use)
+						fprintf(fp, "\tmovl\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					else
+						fprintf(fp, "\tmovl\t%s, %%%s\n", arg.c_str(), WREGS[index[i]]);
+				}
+				break;
+			case I2:case U2:
+				if (arg.size() == 0) {
+					if (i >= use) { //spill out
+						arg = getAddress(srcAddr, 16, true, 0);
+						fprintf(fp, "\tmovw\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					}
+					else { // in reg
+						if (InReg(srcAddr))
+							fprintf(fp, "\tmovl\t%s, %%%s\n", getAddress(srcAddr).c_str(), WREGS[index[i]]);
+						else
+							arg = getAddress(srcAddr, 16, true, index[i]); // load to reg[index[i]]
+					}
+				}
+				else {
+					if (i >= use)
+						fprintf(fp, "\tmovw\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					else
+						fprintf(fp, "\tmovl\t%s, %%%s\n", arg.c_str(), WREGS[index[i]]);
+				}
+				break;
+			case I1:case U1:
+				if (arg.size() == 0) {
+					if (i >= use) { //spill out
+						arg = getAddress(srcAddr, 8, true, 0);
+						fprintf(fp, "\tmovb\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					}
+					else { // in reg
+						if (InReg(srcAddr))
+							fprintf(fp, "\tmovl\t%s, %%%s\n", getAddress(srcAddr).c_str(), WREGS[index[i]]);
+						else
+							arg = getAddress(srcAddr, 8, true, index[i]); // load to reg[index[i]]
+					}
+				}
+				else {
+					if (i >= use)
+						fprintf(fp, "\tmovb\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+					else
+						fprintf(fp, "\tmovl\t%s, %%%s\n", arg.c_str(), WREGS[index[i]]);
+				}
+				break;
+			case P:
+				assert(arg.size() == 0);
+				if (i >= use) { //spill out
+					arg = getAddress(srcAddr, 64, true, 0);
+					fprintf(fp, "\tmovq\t%s, %d(%%rsp)\n", arg.c_str(), i << 3); // push to stack
+				}
+				else { // in reg
+					if (InReg(srcAddr))
+						fprintf(fp, "\tmovq\t%s, %%%s\n", getAddress(srcAddr).c_str(), WREGS[index[i]]);
+					else
+						arg = getAddress(srcAddr, 64, true, index[i]); // load to reg[index[i]]
+				}
+				break;
+			}
+		}
+		if (SRC1->type->id == CONST_TYPE_POINTER) {
+			std::string strFp = getAddress(allocator->access(SRC1), 64, true);
+			fprintf(fp, "\tcall\t*%s\n", strFp.c_str());
+		}
+		else
+			fprintf(fp, "\tcall\t%s\n", ((FunctionSymbol)SRC1)->name.c_str());
+		if (DST) {
+			int code = typeCode(DST->type);
+			assert(DST->kind == SK_Temp);
+			switch (code) {
+			case P:
+				fprintf(fp, "\tmovq\t%%rax, %s\n", getAddress(allocator->access(DST), 64).c_str());
+				break;
+			default:
+				fprintf(fp, "\tmovl\t%%eax, %s\n", getAddress(allocator->access(DST), 32).c_str());
+				break;
+			}
+		}
 	}
 
 	void emitAddress(IrInst& inst)
@@ -300,9 +436,12 @@ private:
 			return;
 		}
 		std::string dst, src; // dst = *src
-		Access dstAddr = allocator->access(DST);
+		Access dstAddr = allocator->access(DST), srcAddr = allocator->access(SRC1);
 		dst = getAddress(dstAddr, 32, false);
-		src = getAddress(allocator->access(SRC1), 64, true); // -> %rax
+		src = getAddress(srcAddr, 64, true); // -> %rax
+		if(InReg(srcAddr)){
+			fprintf(fp, "\tmovq\t%s, %%rax\n", src.c_str());
+		}
 		switch (code) {
 		case I4:case U4:
 			if (InFrame(dstAddr)) {
@@ -474,7 +613,7 @@ private:
 			if (SRC1->kind == SK_Constant)
 				src = getConstant(code, SRC1);
 			else
-				src = getAddress(allocator->access(SRC1));
+				src = getAddress(allocator->access(SRC1), 32, true);
 			dst = getAddress(allocator->access(DST));
 			fprintf(fp, "\tmovl\t%s, %s\n", src.c_str(), dst.c_str());
 			break;
@@ -482,7 +621,7 @@ private:
 			if (SRC1->kind == SK_Constant)
 				src = getConstant(code, SRC1);
 			else
-				src = getAddress(allocator->access(SRC1), 64);
+				src = getAddress(allocator->access(SRC1), 64, true);
 			dst = getAddress(allocator->access(DST), 64);
 			fprintf(fp, "\tmovq\t%s, %s\n", src.c_str(), dst.c_str());
 		default:
@@ -538,7 +677,23 @@ private:
 
 	int calcFrameSize(FunctionSymbol fsym)
 	{
-		return 120;
+		int sum = 0;
+		int offset = 16;
+		for (auto &symbol : fsym->params) {
+			Access access = new Access_();
+			access->kind = access->InFrame;
+			access->offset = offset;
+			allocator->putSymbol(symbol, access);
+			symbol->type->show();
+			int size = sizeOf(symbol->type);
+			size = size < 8 ? 8 : size;
+			offset += size;
+		}
+		for (auto &symbol : fsym->locals) {
+			symbol->type->show();
+			sum += sizeOf(symbol->type);
+		}
+		return sum + 36;
 	}
 
 	std::string getAccessName(Symbol symbol)
