@@ -104,7 +104,7 @@ private:
 	{
 		char opCodeNames[][30] = {
 			"or", "xor", "and", "sal", "sar", "add", "sub", "imul", "div", "div",
-			"neg", "~", "je", "jne", "je", "jne", "jg", "jl", "jge", "jle"
+			"neg", "notl", "je", "jne", "je", "jne", "jg", "jl", "jge", "jle"
 		};
 		assert(inst->type);
 		int code = typeCode(inst->type);
@@ -135,6 +135,9 @@ private:
 				fprintf(fp, "\tmovl\t%%eax, %s\n", getAddress(allocator->access(DST), 32).c_str());
 			else
 				fprintf(fp, "\tmovl\t%%edx, %s\n", getAddress(allocator->access(DST), 32).c_str());
+		}
+		else if (inst->opcode == BCOM) {
+
 		}
 		else if (inst->opcode == RSH || inst->opcode == LSH) {
 			std::string src1, src2; // Src1 << Src2
@@ -675,6 +678,58 @@ private:
 		fprintf(fp, "\t.seh_endproc\n");
 	}
 
+	void loadFromMemory(Symbol symbol, int index = 0)
+	{
+#define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
+#define InReg(addr) (((addr)->kind) == ((addr)->InReg))
+#define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
+		int code = typeCode(symbol->type);
+		Access addr = allocator->access(symbol);
+		assert(InFrame(addr));
+		switch (code)
+		{
+		case P:
+			fprintf(fp, "\tmovq\t%d(%%rbp), %s\n", addr->offset, REGS[index]);
+			break;
+		case I4:case U4:
+			fprintf(fp, "\tmovl\t%d(%%rbp), %s\n", addr->offset, WREGS[index]);
+			break;
+		case I2:case U2:
+			fprintf(fp, "\tmovzwl\t%d(%%rbp), %s\n", addr->offset, WREGS[index]);
+			break;
+		case I1:case U1:
+			fprintf(fp, "\tmovzbl\t%d(%%rbp), %s\n", addr->offset, WREGS[index]);
+			break;
+		default:
+			assert(0);
+			break;
+		}
+	}
+
+	void moveToRegister(Symbol symbol, int index = 0)
+	{
+#define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
+#define InReg(addr) (((addr)->kind) == ((addr)->InReg))
+#define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
+		int code = typeCode(symbol->type);
+		Access addr = allocator->access(symbol);
+		assert(InReg(addr));
+		if (strcmp(REGS[addr->InReg], REGS[index]) == 0)
+			return;
+		switch (code)
+		{
+		case P:
+			fprintf(fp, "\tmovq\t%s, %s\n", REGS[addr->InReg], REGS[index]);
+			break;
+		case I4:case U4:case I2:case U2:case I1:case U1:
+			fprintf(fp, "\tmovl\t%s, %s\n", WREGS[addr->InReg], WREGS[index]);
+			break;
+		default:
+			assert(0);
+			break;
+		}
+	}
+
 	int calcFrameSize(FunctionSymbol fsym)
 	{
 		int sum = 0;
@@ -690,7 +745,7 @@ private:
 			offset += size;
 		}
 		for (auto &symbol : fsym->locals) {
-			symbol->type->show();
+			//symbol->type->show();
 			sum += sizeOf(symbol->type);
 		}
 		return sum + 36;

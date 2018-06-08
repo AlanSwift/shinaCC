@@ -40,14 +40,7 @@ void mergeSort(int *a, int *b, int left, int right)
 
 int main()
 {
-	int a[10], b[10];
-	int i, c;
-	a[0] = 2;a[1] = 3;a[2] = 4;
-	a[3] = 1;a[4] = 9;a[5] = 7;
-	a[6] = 3;a[7] = 19;a[8] = 6;a[9] = 25;
-	mergeSort(a, b, 0, 9);
-	for(i = 0; i < 10; i += 1){
-		c = a[i];
-	}
+	int a;
+	a = ~a;
 	return 0;
 }
