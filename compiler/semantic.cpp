@@ -367,6 +367,8 @@ void Semantic::semanticExpr(Expr expr)
             break;
         case NODE_EXP_DECLREF:{
             DeclRefExpr expr1 = (DeclRefExpr)expr;
+			if (expr1->name == "printf" || expr1->name == "scanf")
+				return;
             Symbol symbol = valueEnv.lookUp(expr1->name);
             if(!symbol){
                 fprintf(stderr, "%d:%d: error: use of undeclared identifier \'%s\'\n",

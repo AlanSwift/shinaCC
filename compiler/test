@@ -1,19 +1,8 @@
 
 int main()
 {
-	int a, b, r, mod;
-	r = 1;
-	a = 2;
-	b = 5;
-	mod = 7;
-	while(b){
-		if(b & 1)
-			r = r * a;
-		r = r % 7;
-		a = a * a;
-		b >>= 1;
-	}
-	
+	char *c;
+	c = "hello world!!\n";
 	return 0;
 }
 

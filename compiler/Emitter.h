@@ -60,7 +60,8 @@ public:
 		assert(fp);
 		this->program = program;
 		allocator->allocate(program);
-		fprintf(fp, "\t.data\n");
+		fprintf(fp, "\t.section .rdata,\"dr\"\n");
+		allocator->emitData(fp);
 		fprintf(fp, "\t.text\n");
 		for (auto &fsym : program->functionList) {
 			emitFunction(fsym);
@@ -95,7 +96,7 @@ private:
 		for (auto &inst : block->insts) {
 			Translator_::showInstruction(inst);
 			fflush(stdout);
-			printf("%d:\t", inst->opcode);
+			//printf("%d:\t", inst->opcode);
 			emitIrInst(inst);
 		}
 	}
@@ -280,8 +281,8 @@ private:
 		std::string src1;
 		Access addr1 = allocator->access(SRC1);
 		src1 = getAddress(addr1, 32, false);
-		fprintf(fp, "\tleaq\t%s, %%eax\n", src1.c_str());
-		fprintf(fp, "\tmovq\t%%eax, %s\n", getAddress(allocator->access(DST), 64).c_str());
+		fprintf(fp, "\tleaq\t%s, %%rax\n", src1.c_str());
+		fprintf(fp, "\tmovq\t%%rax, %s\n", getAddress(allocator->access(DST), 64).c_str());
 
 	}
 

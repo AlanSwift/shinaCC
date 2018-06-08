@@ -111,7 +111,7 @@ public:
     
 	void allocate(Program program)
 	{
-		
+		this->program = program;
 	}
     void precess(BasicBlock bb);
     
@@ -126,7 +126,19 @@ public:
     
 	void emitData(FILE *fp)
 	{
-
+		for (auto &symbol : program->globals) {
+			if (symbol->kind == SK_String) {
+				std::string str = std::string(reinterpret_cast<char*>(symbol->valueUnion.p));
+				if (stringMap.count(str) == 0){
+					fprintf(fp, ".LC%d:\n", stringCnt);
+					stringMap[str] = stringCnt++;
+					fprintf(fp, "\t.ascii \"%s\"\n", str.c_str());
+				}
+			}
+			else {
+				assert(0);
+			}
+		}
 	}
 
 
