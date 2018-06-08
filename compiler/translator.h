@@ -16,6 +16,7 @@
 #include <cstring>
 #include <cassert>
 #include <utility>
+#include <map>
 
 typedef class Translator_ *Translator;
 typedef class Program_ *Program;
@@ -52,6 +53,10 @@ public:
 private:
     int tmpNumber, labelNumber;
     Program program;
+    std::map<int,bool>hash;
+    bool isref[10000];
+
+    
     /*translate expression*/
     Symbol translateFunctionCall(CallExpr expr);//1
     Symbol translateBinaryExpr(BinaryOpExpr expr);
@@ -421,6 +426,7 @@ private:
 
 	void showProgram(TranslationUnitDecl start)
 	{
+        printf("size: %d\n",program->bblocks.size());
 		int ptr = 0;
 		printf("global(%d): ", program->globals.size());
 		for (auto &s : program->globals)
@@ -440,6 +446,7 @@ private:
 
 	void showFunction(FunctionSymbol functionSymbol, int& ptr)
 	{
+        printf("in show function\n");
 		printf("locals temporary variables: ");
 		for(auto &s: program->currentFunc->locals)
 			if (s->kind == SK_Temp) 
@@ -451,7 +458,7 @@ private:
 				printf("%s, ", s->name.c_str());
 		printf("\n");
 		for (; program->bblocks[ptr] != functionSymbol->exitBB; ptr++) {
-			fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
+            fprintf(stdout, "%s: \n", program->bblocks[ptr]->symbol->name.c_str());
 			for (auto &i : program->bblocks[ptr]->insts) {
 				showInstruction(i);
 			}
@@ -622,6 +629,9 @@ public:
 			return std::string((char *)symbol->valueUnion.p);
 		}
 	}
+    void linkBasicBlock(BasicBlock from,BasicBlock to);
+    int findBasicBlockNotEmpty(vector<BasicBlock>&bbs,int from,BasicBlock exit);
+    void checkBasicBlock(int index,BasicBlock exit);
 };
 
 #endif //CP_TRANSLATOR_H
