@@ -1267,3 +1267,156 @@ int Translator_::findBasicBlockNotEmpty(vector<BasicBlock>&bbs,int from,BasicBlo
     return bbs.size()-1;
 }
 
+void Translator_::variableOptimise()
+{
+    for(int i=0;i<program->bblocks.size();i++)
+    {
+        BasicBlock bb=program->bblocks[i];
+        eliminateBlockTemp(bb);
+
+    }
+}
+
+void Translator_::eliminateBlockTemp(BasicBlock bb)
+{
+    if(bb->insts.size()==0)  return;
+    int preSize=bb->insts.size();
+    map<Symbol,int> use;
+    while(bb->insts.size()!=preSize)
+    {
+        use.clear();
+        for(int i=0;i<bb->insts.size();i++)
+        {
+            IrInst ir=bb->insts[i];
+            switch (ir->opcode) {
+                case BOR:
+                case BXOR:
+                case BAND:
+                case LSH:
+                case RSH:
+                case ADD:
+                case SUB:
+                case MUL:
+                case DIV:
+                case MOD:
+                    //fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    if(ir->opds[2]->kind==SK_Temp)
+                    {
+                        use[ir->opds[2]]=1;
+                    }
+
+                    break;
+                case INC:
+                case DEC:
+                    //fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
+                    
+                    break;
+                case BCOM:
+                case NEG:
+                case ADDR:
+                case DEREF:
+                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+                case MOV:
+                    //fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+                case IMOV:
+                    //fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+                case JE:
+                case JNE:
+                case JG:
+                case JL:
+                case JGE:
+                case JLE:
+                    //fprintf(stdout, "if (%s %s %s) goto %s", SRC1->name.c_str(), opCodeNames[op],
+                    //    SRC2->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    if(ir->opds[2]->kind==SK_Temp)
+                    {
+                        use[ir->opds[2]]=1;
+                    }
+                    break;
+                case JZ:
+                    //fprintf(stdout, "if (! %s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+                case JNZ:
+                    //fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+                case JMP:
+                    /*printf("%p\n", inst->opds[0]);
+                    fflush(stdout);
+                    printf("%p\n", reinterpret_cast<BasicBlock>(inst->opds[0]));
+                    fflush(stdout);*/
+                    //assert(((BasicBlock)DST));
+                    //assert(((BasicBlock)DST)->symbol);
+                    //fprintf(stdout, "goto %s", ((BasicBlock)DST)->symbol->name.c_str());
+                    
+                    break;
+                case RET:
+                    //if(DST == NULL)
+                    //    fprintf(stdout, "return", DST->name.c_str());
+                    //fprintf(stdout, "return %s", DST->name.c_str());
+                    break;
+                case CALL:{
+                    // vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)SRC2;
+                    // int i;
+
+                    // if (DST != NULL)
+                    //     fprintf(stdout, "%s = ", DST->name.c_str());
+                    // fprintf(stdout, "%s(", SRC1->name.c_str());
+                    // for (auto &arg: *args) {
+                    //     fprintf(stdout, "%s, ", arg.first->name.c_str());
+                    // }
+                    // fprintf(stdout, ")");
+                }
+                    break;
+                default:
+                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+                    if(ir->opds[1]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
+                    
+                    break;
+            }
+        }
+        vector<IrInst>irafter;
+        // for(int i=0;i<bb->insts.size();i++)
+        
+    }
+
+}
+

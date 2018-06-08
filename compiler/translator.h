@@ -49,6 +49,7 @@ public:
     void translateStatement(Stmt stmt);
     Symbol translateExpression(Expr expr);
     void controlFlowOptimise();
+    void variableOptimise();
 
 private:
     int tmpNumber, labelNumber;
@@ -632,6 +633,7 @@ public:
     void linkBasicBlock(BasicBlock from,BasicBlock to);
     int findBasicBlockNotEmpty(vector<BasicBlock>&bbs,int from,BasicBlock exit);
     void checkBasicBlock(int index,BasicBlock exit);
+    void eliminateBlockTemp(BasicBlock bb);
 };
 
 #endif //CP_TRANSLATOR_H
