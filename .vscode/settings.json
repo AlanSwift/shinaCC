@@ -19,6 +19,10 @@
         "bitset": "cpp",
         "chrono": "cpp",
         "functional": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "__locale": "cpp",
+        "type_traits": "cpp",
+        "iostream": "cpp",
+        "__functional_03": "cpp"
     }
 }

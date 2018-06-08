@@ -67,6 +67,7 @@ Program Translator_::translate(TranslationUnitDecl start)
 		printf("allocate label: %s for %p\n", bb->symbol->name.c_str(), bb);
 		//}
 	}
+    controlFlowOptimise();
 	//showProgram(start);
 	FILE *fp = fopen("asm.s", "w");
 	Emitter emitter = new Emitter_(fp);
@@ -1116,23 +1117,153 @@ Symbol Translator_::createOffset(Type ty, Symbol base, int coff)
 	return dynamic_cast<Symbol>(p);
 }
 
+
 void Translator_::controlFlowOptimise()
 {
+    hash.clear();
+    memset(isref,0,sizeof(isref));
     int startIndex;
+    pair<BasicBlock,BasicBlock>pos[1000];
     for(startIndex=0;startIndex<program->functionList.size();startIndex++)
     {
         FunctionSymbol fsym=program->functionList[startIndex];
-        if(getAccessName(program->bblocks[fsym->start]->symbol)==string("main"))
+        BasicBlock startblock=program->bblocks[fsym->start];
+        BasicBlock endblock=program->bblocks[fsym->end];
+        pos[startIndex].first=startblock;
+        pos[startIndex].second=endblock;
+        checkBasicBlock(fsym->start,fsym->exitBB);
+        isref[fsym->start]=1;
+        isref[fsym->end]=1;
+    }
+    vector<BasicBlock>after;
+    for(int i=0;i<program->bblocks.size();i++)
+    {
+        if(isref[i])
         {
-            break;
+            after.push_back(program->bblocks[i]);
         }
     }
-    FunctionSymbol mainFsym=program->functionList[startIndex];
-    for (int i = mainFsym->start; i <= mainFsym->end; i++)
+    program->bblocks=after;
+    for(startIndex=0;startIndex<program->functionList.size();startIndex++)
     {
+        FunctionSymbol fsym=program->functionList[startIndex];
+        auto newIndex=find(program->bblocks.begin(),
+            program->bblocks.end(),pos[startIndex].first
+        );
+        int nPosition = distance(program->bblocks.begin(),newIndex);  
         
+        fsym->start=nPosition;
+        newIndex=find(program->bblocks.begin(),
+            program->bblocks.end(),pos[startIndex].second
+        );
+        nPosition = distance(program->bblocks.begin(),newIndex); 
+        fsym->end=nPosition;
+    }
+
+
+
+
+}
+void Translator_::checkBasicBlock(int index,BasicBlock exit)
+{
+    if(hash[index]==1)
+    {
+        return;
+    }
+    hash[index]=1;
+    BasicBlock bb=program->bblocks[index];
+    if(!(bb->insts.size()))
+    {
+        return;
+    }
+    IrInst lastir=bb->insts[bb->insts.size()-1];
+    switch (lastir->opcode) 
+    {
+        case RET:
+            return;
+		case JE:
+		case JNE:
+		case JG:
+		case JL:
+		case JGE:
+		case JLE:
+		case JZ:
+		case JNZ:
+		case JMP:{
+            BasicBlock to=(BasicBlock)(lastir->opds[0]);
+            auto newIndex=find(program->bblocks.begin(),
+                program->bblocks.end(),to
+            );
+            int nPosition = distance(program->bblocks.begin(),newIndex);  
+            int toIndex1=findBasicBlockNotEmpty(
+                program->bblocks,nPosition,exit
+            );
+            linkBasicBlock(bb,program->bblocks[toIndex1]);
+            int toIndex2=findBasicBlockNotEmpty(program->bblocks,index+1,exit);
+            //linkBasicBlock(bb,program->bblocks[toIndex2]);
+
+            checkBasicBlock(toIndex1,exit);
+            checkBasicBlock(toIndex2,exit);
+            isref[index]=1;
+            isref[toIndex1]=1;
+            isref[toIndex2]=1;
+            cout<<"ref: "<<index<<" "<<toIndex1<<" "<<toIndex2<<endl;
+            break;
+            }
+
+        default:
+            int toIndex3=findBasicBlockNotEmpty(program->bblocks,index+1,exit);
+            linkBasicBlock(bb,program->bblocks[toIndex3]);
+            checkBasicBlock(toIndex3,exit);
+            isref[index]=1;
+            isref[toIndex3]=1;
+            cout<<"ref: "<<index<<" "<<toIndex3<<endl;
+            break;
+	}
+}
+
+
+void Translator_::linkBasicBlock(BasicBlock from,BasicBlock to)
+{
+    assert(from->insts.size());
+    IrInst lastir=from->insts[from->insts.size()-1];
+    switch (lastir->opcode) 
+    {
+		case JE:
+		case JNE:
+		case JG:
+		case JL:
+		case JGE:
+		case JLE:
+		case JZ:
+		case JNZ:
+		case JMP:
+            lastir->opds[0] = (Symbol)to;			
+            break;
 	}
 
-
+}
+int Translator_::findBasicBlockNotEmpty(vector<BasicBlock>&bbs,int from,BasicBlock exit)
+{
+    for(int i=from;i<bbs.size();i++)
+    {
+        if(bbs[i]==exit)
+        {
+            return i;
+        }
+        if(!bbs[i]->insts.empty())
+        {
+            return i;
+        }
+        if(bbs[i]->symbol->name.size()<6)
+        {
+            continue;
+        }
+        if(bbs[i]->symbol->name.substr(0,6)!=string("label_"))
+        {
+            return i;
+        }
+    }
+    return bbs.size()-1;
 }
 
