@@ -57,12 +57,12 @@ void Allocator::precess(BasicBlock bb)
             id2Symbol[regMap[i.first]].push_back(i.first);
         }
     }
-    //printf("################### basic block: %s\n",bb->symbol->name.c_str());
-    /*for(auto &i:regMap)
+    printf("################### basic block: %s\n",bb->symbol->name.c_str());
+    for(auto &i:regMap)
     {
         printf("%s  %d\n",i.first->name.c_str(),i.second);
     }
-    printf("---------\n");*/
+    printf("---------\n");
 
 
 }
@@ -539,17 +539,40 @@ vector<pair<Symbol,vector<Symbol>>> ConflictGraph::analysis(BasicBlock bb)
             case JLE:
                 //fprintf(stdout, "if (%s %s %s) goto %s", SRC1->name.c_str(), opCodeNames[op],
                 //    SRC2->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
-
+                if(SRC1->kind==SK_Temp)
+                {
+                    ULL addr=(ULL)SRC1;
+                    if(tempMap.count(addr)!=0)
+                    {
+                        int which=tempMap[addr];
+                        posMark[which].second=lines;
+                    }
+                }
+                if(SRC2->kind==SK_Temp)
+                {
+                    ULL addr=(ULL)SRC2;
+                    if(tempMap.count(addr)!=0)
+                    {
+                        int which=tempMap[addr];
+                        posMark[which].second=lines;
+                    }
+                }
 
                 break;
             case JZ:
                 //fprintf(stdout, "if (! %s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
 
-
-                break;
             case JNZ:
                 //fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
-
+                if(SRC1->kind==SK_Temp)
+                {
+                    ULL addr=(ULL)SRC1;
+                    if(tempMap.count(addr)!=0)
+                    {
+                        int which=tempMap[addr];
+                        posMark[which].second=lines;
+                    }
+                }
 
                 break;
             case JMP:
@@ -569,12 +592,39 @@ vector<pair<Symbol,vector<Symbol>>> ConflictGraph::analysis(BasicBlock bb)
                     if(tempMap.count(addr)!=0)
                     {
                         int which=tempMap[addr];
-                        posMark[which].first=lines;
+                        posMark[which].second=lines;
                     }
                 }
                 break;
             case CALL:{
+                vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)(SRC2);
+                int i;
 
+                if (DST != NULL)
+                {
+                    if(DST->kind==SK_Temp)
+                    {
+                        ULL addr=(ULL)DST;
+                        if(tempMap.count(addr)!=0)
+                        {
+                            int which=tempMap[addr];
+                            posMark[which].first=lines;
+                        }
+                    }
+                }
+                
+                
+                for (auto &arg: *args) {
+                    if(arg.first->kind==SK_Temp)
+                    {
+                        ULL addr=(ULL)arg.first;
+                        if(tempMap.count(addr)!=0)
+                        {
+                            int which=tempMap[addr];
+                            posMark[which].second=lines;
+                        }
+                    }
+                }
             }
                 break;
             default:
