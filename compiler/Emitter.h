@@ -94,7 +94,8 @@ private:
 		for (auto &inst : block->insts) {
 			Translator_::showInstruction(inst);
 			fflush(stdout);
-			printf("%d:\t", inst->opcode);
+			//continue;
+			//printf("%d:\t", inst->opcode);
 			//exit(0);
 			emitIrInst(inst);
 		}
@@ -182,8 +183,17 @@ private:
 		else {
 			int bits = code != P ? 32 : 64;
 			std::string src1, src2;
-			if (SRC1->kind == SK_Constant)
+			if (SRC1->kind == SK_Constant) {
 				src1 = getConstant(code, SRC1);
+				if (bits == 32) {
+					fprintf(fp, "\tmovl\t%s, %%r15d\n", src1.c_str());
+					src1 = "%r15d";
+				}
+				else {
+					fprintf(fp, "\tmovq\t%s, %%r15\n", src1.c_str());
+					src1 = "%r15";
+				}
+			}
 			else {
 				Access addr1 = allocator->access(SRC1);
 				src1 = getAddress(addr1, bits, true);
@@ -387,12 +397,19 @@ private:
 				break;
 			}
 		}
+		for (int i = 0; i <= 13; i++) {
+			//i + 6
+			fprintf(fp, "\tpushq\t%%%s\n", REGS[i]);
+		}
 		if (SRC1->type->id == CONST_TYPE_POINTER) {
 			std::string strFp = getAddress(allocator->access(SRC1), 64, true);
 			fprintf(fp, "\tcall\t*%s\n", strFp.c_str());
 		}
 		else
 			fprintf(fp, "\tcall\t%s\n", ((FunctionSymbol)SRC1)->name.c_str());
+		for (int i = 13; i >= 0; i--) {
+			fprintf(fp, "\tpopq\t%%%s\n", REGS[i]);
+		}
 		if (DST) {
 			int code = typeCode(DST->type);
 			assert(DST->kind == SK_Temp);
@@ -427,6 +444,7 @@ private:
 
 	void emitDeref(IrInst& inst)
 	{
+		// dst = *src
 #define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
 #define InReg(addr) (((addr)->kind) == ((addr)->InReg))
 #define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
@@ -440,7 +458,7 @@ private:
 		}
 		std::string dst, src; // dst = *src
 		Access dstAddr = allocator->access(DST), srcAddr = allocator->access(SRC1);
-		dst = getAddress(dstAddr, 32, false);
+		dst = getAddress(dstAddr, 32, false); //
 		src = getAddress(srcAddr, 64, true); // -> %rax
 		if(InReg(srcAddr)){
 			fprintf(fp, "\tmovq\t%s, %%rax\n", src.c_str());
@@ -487,6 +505,9 @@ private:
 
 	void emitIndirectMove(IrInst& inst)
 	{
+#define InFrame(addr) (((addr)->kind) == ((addr)->InFrame))
+#define InReg(addr) (((addr)->kind) == ((addr)->InReg))
+#define InGlobal(addr) (((addr)->kind) == ((addr)->InGlobal))
 		// *dst = src
 		// get dst
 		assert(SRC2 == NULL);
@@ -495,12 +516,17 @@ private:
 		int code = typeCode(inst->type);
 		Access dstAddr = allocator->access(DST);
 		dst = getAddress(dstAddr, 64, true); // -> %rax
+		if (InReg(dstAddr)){
+			fprintf(fp, "\tmovq\t%s, %%rax\n", dst.c_str());
+		}
 		switch (code) {
 		case I4:case U4:
 			if (SRC1->kind == SK_Constant) 
 				src = getConstant(code, SRC1);
-			else 
-				src = getAddress(allocator->access(SRC1), 32, true, 1);// -> %ecx
+			else {
+				Access srcAddr = allocator->access(SRC1);
+				src = getAddress(srcAddr, 32, true, 1);// -> %ecx
+			}
 			fprintf(fp, "\tmovl\t%s, (%%rax)\n", src.c_str());
 			break;
 		case I2:case U2:
@@ -661,19 +687,19 @@ private:
 
 	void emitPrologue(int size)
 	{
-		fprintf(fp, "\tpushq\t%rbp\n");
-		fprintf(fp, "\t.seh_pushreg	%rbp\n");
-		fprintf(fp, "\tmovq	%rsp, %rbp\n");
-		fprintf(fp, "\t.seh_setframe\t%rbp, 0\n");
-		fprintf(fp, "\tsubq	$%d, %rsp\n", size);
+		fprintf(fp, "\tpushq\t%%rbp\n");
+		fprintf(fp, "\t.seh_pushreg	%%rbp\n");
+		fprintf(fp, "\tmovq	%%rsp, %%rbp\n");
+		fprintf(fp, "\t.seh_setframe\t%%rbp, 0\n");
+		fprintf(fp, "\tsubq	$%d, %%rsp\n", size);
 		fprintf(fp, "\t.seh_stackalloc	%d\n", size);
 		fprintf(fp, "\t.seh_endprologue\n");
 	}
 
 	void emitEpilogue(int size)
 	{
-		fprintf(fp, "\taddq	$%d, %rsp\n", size);
-		fprintf(fp, "\tpopq	%rbp\n");
+		fprintf(fp, "\taddq	$%d, %%rsp\n", size);
+		fprintf(fp, "\tpopq	%%rbp\n");
 		fprintf(fp, "\tret\n");
 		fprintf(fp, "\t.seh_endproc\n");
 	}
@@ -733,7 +759,7 @@ private:
 	int calcFrameSize(FunctionSymbol fsym)
 	{
 		int sum = 0;
-		int offset = 16;
+		int offset = 128;
 		for (auto &symbol : fsym->params) {
 			Access access = new Access_();
 			access->kind = access->InFrame;
@@ -748,7 +774,7 @@ private:
 			//symbol->type->show();
 			sum += sizeOf(symbol->type);
 		}
-		return sum + 36;
+		return sum + 128;
 	}
 
 	std::string getAccessName(Symbol symbol)

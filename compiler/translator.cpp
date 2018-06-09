@@ -67,6 +67,7 @@ Program Translator_::translate(TranslationUnitDecl start)
 		printf("allocate label: %s for %p\n", bb->symbol->name.c_str(), bb);
 		//}
 	}
+	variableOptimise();
 	controlFlowOptimise();
 	showProgram(start);
 	FILE *fp = fopen("asm.s", "w");

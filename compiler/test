@@ -1,19 +1,39 @@
-void merge(int *a, int *b, int *c, int len)
+void mergeSort(int *a, int *b, int left, int right)
 {
 	int aptr, bptr, ptr, i;
-	aptr = 0;
-	bptr = 0;
-	ptr = 0;
-	while(aptr < len && bptr < len){
-		if(a[aptr] < b[bptr]){
-			c[ptr] = a[aptr];
+	int center;
+	if(left < right){
+		center = (left + right) / 2;
+		mergeSort(a, b, left, center);
+		mergeSort(a, b, center + 1, right);
+		aptr = left; bptr = center + 1;
+		ptr = left;
+		while(aptr <= center && bptr <= right){
+			if(a[aptr] < a[bptr]){
+				b[ptr] = a[aptr];
+				aptr += 1;
+			}
+			else{
+				b[ptr] = a[bptr];
+				bptr += 1;
+			}
+			ptr += 1;
+		}
+
+		while(aptr <= center){
+			b[ptr] = a[aptr];
 			aptr += 1;
+			ptr += 1;
 		}
-		else{
-			c[ptr] = b[bptr];
+
+		while(bptr <= right){
+			b[ptr] = a[bptr];
 			bptr += 1;
+			ptr += 1;
 		}
-		ptr += 1;
+
+		for(i = left; i <= right; i += 1)
+			a[i] = b[i];
 	}
 }
 
@@ -25,30 +45,12 @@ int main()
 	char *cp;
 	cp = "result = %d\n";
 	cp = "center = %d\n";
-	a[0]=0;
-	a[1]=1;
-	a[2]=2;
-	a[3]=3;
-	a[4]=4;
-	a[5]=5;
-	a[6]=6;
-	a[7]=7;
-	a[8]=8;
-	a[9]=9;
-
-	b[0]=1;
-	b[1]=11;
-	b[2]=21;
-	b[3]=31;
-	b[4]=41;
-	b[5]=51;
-	b[6]=61;
-	b[7]=71;
-	b[8]=81;
-	b[9]=91;
-	merge(a, b, c, 5);
-	for(i = 0; i < 20; i += 1){
-		t = c[i];
+	a[0] = 2;a[1] = 3;a[2] = 4;
+	a[3] = 1;a[4] = 9;a[5] = 7;
+	a[6] = 3;a[7] = 19;a[8] = 6;a[9] = 25;
+	mergeSort(a, b, 0, 9);
+	for(i = 0; i < 10; i += 1){
+		t = b[i];
 	}	
 	return 0;
 }
