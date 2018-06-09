@@ -1,8 +1,79 @@
 	.section .rdata,"dr"
 .LC0:
-	.ascii "result = %d\n\0"
+	.ascii ", \0"
 .LC1:
-	.ascii "center = %d\n\0"
+	.ascii "\n\0"
+	.section .rdata,"dr"
+.IntFormat:
+	.ascii "%d\0"
+	.text
+	.globl	printInt
+	.def	printInt;	.scl	2;	.type	32;	.endef
+	.seh_proc	printInt
+printInt:
+	pushq	%rbp
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$32, %rsp
+	.seh_stackalloc	32
+	.seh_endprologue
+	movl	%ecx, 16(%rbp)
+	movl	128(%rbp), %edx
+	leaq	.IntFormat(%rip), %rcx
+	call	printf
+	nop
+	addq	$32, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
+.StrFormat:
+	.ascii "%s\0"
+	.text
+	.globl	printStr
+	.def	printStr;	.scl	2;	.type	32;	.endef
+	.seh_proc	printStr
+printStr:
+	pushq	%rbp
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$32, %rsp
+	.seh_stackalloc	32
+	.seh_endprologue
+	movq	%rcx, 16(%rbp)
+	movq	128(%rbp), %rdx
+	leaq	.StrFormat(%rip), %rcx
+	call	printf
+	nop
+	addq	$32, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
+.section .rdata,"dr"
+.InputFormat:
+	.ascii "%d\0"
+	.text
+	.globl	inputInt
+	.def	inputInt;	.scl	2;	.type	32;	.endef
+	.seh_proc	inputInt
+inputInt:
+	pushq	%rbp
+	.seh_pushreg	%rbp
+	movq	%rsp, %rbp
+	.seh_setframe	%rbp, 0
+	subq	$32, %rsp
+	.seh_stackalloc	32
+	.seh_endprologue
+	movq	%rcx, 16(%rbp)
+	movq	128(%rbp), %rdx
+	leaq	.InputFormat(%rip), %rcx
+	call	scanf
+	nop
+	addq	$32, %rsp
+	popq	%rbp
+	ret
+	.seh_endproc
 	.text
 	.globl	mergeSort
 	.seh_proc	mergeSort
@@ -301,113 +372,69 @@ main:
 	.seh_pushreg	%rbp
 	movq	%rsp, %rbp
 	.seh_setframe	%rbp, 0
-	subq	$672, %rsp
-	.seh_stackalloc	672
+	subq	$428, %rsp
+	.seh_stackalloc	428
 	.seh_endprologue
-	leaq	.LC0(%rip), %rax
+	movl	$0, -24(%rbp)
+	jmp		label_24
+label_22:
+	movl	-24(%rbp), %eax
+	movl	$2, %ecx
+	sall	%cl, %eax
+	movl	%eax, %r8d
+	leaq	-64(%rbp), %rax
+	movq	%rax, %r9
+	movq	%r9, %r10
+	addq	%r8, %r10
+	movq	%r10, %r11
+	movq	%r11, 0(%rsp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%rbx
+	pushq	%rsi
+	pushq	%rdi
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
+	call	inputInt
+	popq	%r15
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdi
+	popq	%rsi
+	popq	%rbx
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+label_23:
+	movl	-24(%rbp), %eax
+	addl	$1, %eax
+	movl	%eax, %r8d
+	movl	%r8d, -24(%rbp)
+label_24:
+	movl	-24(%rbp), %eax
+	cmpl	$10, %eax
+	jl	label_22
+label_25:
+	leaq	-64(%rbp), %rax
 	movq	%rax, %r8
-	movq	%r8, -28(%rbp)
-	leaq	.LC1(%rip), %rax
-	movq	%rax, %r9
-	movq	%r9, -28(%rbp)
-	movl	$0, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r10d
-	leaq	-68(%rbp), %rax
-	movq	%rax, %r11
-	movq	%r11, %r12
-	addq	%r10, %r12
-	movq	%r12, %r13
-	movq	%r13, %rax
-	movl	$2, (%rax)
-	movl	$1, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r14d
-	movq	%r11, %r15
-	addq	%r14, %r15
-	movq	%r15, %r8
-	movq	%r8, %rax
-	movl	$3, (%rax)
-	movl	$2, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$4, (%rax)
-	movl	$3, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$1, (%rax)
-	movl	$4, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$9, (%rax)
-	movl	$5, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$7, (%rax)
-	movl	$6, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$3, (%rax)
-	movl	$7, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$19, (%rax)
-	movl	$8, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$6, (%rax)
-	movl	$9, %eax
-	movl	$2, %ecx
-	sall	%cl, %eax
-	movl	%eax, %r8d
-	movq	%r11, %r9
-	addq	%r8, %r9
-	movq	%r9, %r10
-	movq	%r10, %rax
-	movl	$25, (%rax)
-	movq	%r11, %r8
-	leaq	-108(%rbp), %rax
-	movq	%rax, %r9
-	movq	%r9, %r10
-	movq	%r8, 0(%rsp)
-	movq	%r10, 8(%rsp)
+	movq	%r8, %r9
+	leaq	-104(%rbp), %rax
+	movq	%rax, %r10
+	movq	%r10, %r11
+	movq	%r9, 0(%rsp)
+	movq	%r11, 8(%rsp)
 	movl	$0, 16(%rsp)
 	movl	$9, 24(%rsp)
 	pushq	%rax
@@ -439,38 +466,130 @@ main:
 	popq	%rdx
 	popq	%rcx
 	popq	%rax
-	movl	$0, -112(%rbp)
-	jmp		label_24
-label_22:
-	movl	-112(%rbp), %eax
+	movl	$0, -24(%rbp)
+	jmp		label_28
+label_26:
+	movl	-24(%rbp), %eax
 	movl	$2, %ecx
 	sall	%cl, %eax
 	movl	%eax, %r8d
-	leaq	-108(%rbp), %rax
+	leaq	-104(%rbp), %rax
 	movq	%rax, %r9
 	movq	%r9, %r10
 	addq	%r8, %r10
 	movq	%r10, %r11
 	movq	%r11, %rax
 	movl	(%rax), %r12d
-	movl	%r12d, -116(%rbp)
-	movl	-116(%rbp), %edx
-	leaq	.LC0(%rip), %rcx
-	call	printf
-label_23:
-	movl	-112(%rbp), %eax
+	movl	%r12d, -108(%rbp)
+	movl	-108(%rbp), %eax
+	movl	%eax, 0(%rsp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%rbx
+	pushq	%rsi
+	pushq	%rdi
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
+	call	printInt
+	popq	%r15
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdi
+	popq	%rsi
+	popq	%rbx
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %r13
+	movq	%r13, 0(%rsp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%rbx
+	pushq	%rsi
+	pushq	%rdi
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
+	call	printStr
+	popq	%r15
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdi
+	popq	%rsi
+	popq	%rbx
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
+label_27:
+	movl	-24(%rbp), %eax
 	addl	$1, %eax
 	movl	%eax, %r8d
-	movl	%r8d, -112(%rbp)
-label_24:
-	movl	-112(%rbp), %eax
+	movl	%r8d, -24(%rbp)
+label_28:
+	movl	-24(%rbp), %eax
 	cmpl	$10, %eax
-	jl	label_22
-label_25:
+	jl	label_26
+label_29:
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %r8
+	movq	%r8, 0(%rsp)
+	pushq	%rax
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%rbx
+	pushq	%rsi
+	pushq	%rdi
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
+	call	printStr
+	popq	%r15
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
+	popq	%rdi
+	popq	%rsi
+	popq	%rbx
+	popq	%rdx
+	popq	%rcx
+	popq	%rax
 	movl	$0, %eax
-	jmp		label_26
-label_26:
-	addq	$672, %rsp
+	jmp		label_30
+label_30:
+	addq	$428, %rsp
 	popq	%rbp
 	ret
 	.seh_endproc

@@ -60,6 +60,24 @@ public:
 		allocator->allocate(program);
 		fprintf(fp, "\t.section .rdata,\"dr\"\n");
 		allocator->emitData(fp);
+
+		FILE *output = fopen("output.s", "r");
+		char buf[500];
+		while (!feof(output)) {
+			fgets(buf, sizeof(buf), output);
+			fputs(buf, fp);
+		}
+		fprintf(fp, "\n");
+		fclose(output);
+
+		FILE *input = fopen("input.s", "r");
+		while (!feof(input)) {
+			fgets(buf, sizeof(buf), input);
+			fputs(buf, fp);
+		}
+		fprintf(fp, "\n");
+		fclose(input);
+
 		fprintf(fp, "\t.text\n");
 		for (auto &fsym : program->functionList) {
 			emitFunction(fsym);
