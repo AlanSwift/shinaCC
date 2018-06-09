@@ -1301,7 +1301,7 @@ void Translator_::variableOptimise()
 void Translator_::eliminateBlockTemp(BasicBlock bb)
 {
     if(bb->insts.size()==0)  return;
-    int preSize=bb->insts.size();
+    int preSize=0;
     map<Symbol,int> use;
     while(bb->insts.size()!=preSize)
     {
@@ -1361,6 +1361,10 @@ void Translator_::eliminateBlockTemp(BasicBlock bb)
                     {
                         use[ir->opds[1]]=1;
                     }
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        use[ir->opds[1]]=1;
+                    }
                     
                     break;
                 case JE:
@@ -1410,18 +1414,31 @@ void Translator_::eliminateBlockTemp(BasicBlock bb)
                     //if(DST == NULL)
                     //    fprintf(stdout, "return", DST->name.c_str());
                     //fprintf(stdout, "return %s", DST->name.c_str());
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        use[ir->opds[0]]=1;
+                    }
                     break;
                 case CALL:{
-                    // vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)SRC2;
-                    // int i;
+                    vector<pair<Symbol, Type> > * args = (vector<pair<Symbol, Type> > *)(ir->opds[2]);
+                    int i;
 
-                    // if (DST != NULL)
-                    //     fprintf(stdout, "%s = ", DST->name.c_str());
-                    // fprintf(stdout, "%s(", SRC1->name.c_str());
-                    // for (auto &arg: *args) {
-                    //     fprintf(stdout, "%s, ", arg.first->name.c_str());
-                    // }
-                    // fprintf(stdout, ")");
+                    if (ir->opds[0] != NULL)
+                    {
+                        if(ir->opds[0]->kind==SK_Temp)
+                        {
+                            use[ir->opds[0]]=1;
+                        }
+                    }
+                    
+                    
+                    for (auto &arg: *args) {
+                        if(arg.first->kind==SK_Temp)
+                        {
+                            use[arg.first]=1;
+                        }
+                    }
+                    
                 }
                     break;
                 default:
@@ -1435,9 +1452,134 @@ void Translator_::eliminateBlockTemp(BasicBlock bb)
             }
         }
         vector<IrInst>irafter;
-        // for(int i=0;i<bb->insts.size();i++)
+        for(int i=0;i<bb->insts.size();i++)
+        {
+            IrInst ir=bb->insts[i];
+            switch (ir->opcode) {
+                case BOR:
+                case BXOR:
+                case BAND:
+                case LSH:
+                case RSH:
+                case ADD:
+                case SUB:
+                case MUL:
+                case DIV:
+                case MOD:
+                    //fprintf(stdout, "%s = %s %s %s", DST->name.c_str(), SRC1->name.c_str(), opCodeNames[op], SRC2->name.c_str());
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        if(use[ir->opds[0]])
+                        {
+                            irafter.push_back(ir);
+                        }
+                        
+                    }
+                    else{
+                        irafter.push_back(ir);
+                    }
+                    
+
+                    break;
+                case INC:
+                case DEC:
+                    //fprintf(stdout, "%s%s", opCodeNames[op], DST->name.c_str());
+                    irafter.push_back(ir);
+                    break;
+                case BCOM:
+                case NEG:
+                case ADDR:
+                case DEREF:
+                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        if(use[ir->opds[0]])
+                        {
+                            irafter.push_back(ir);
+                        }
+                        
+                    }
+                    else{
+                        irafter.push_back(ir);
+                    }
+                    
+                    break;
+                case MOV:
+                    //fprintf(stdout, "%s = %s", DST->name.c_str(), SRC1->name.c_str());
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        if(use[ir->opds[0]])
+                        {
+                            irafter.push_back(ir);
+                        }
+                        
+                    }
+                    else{
+                        irafter.push_back(ir);
+                    }
+                    
+                    break;
+                case IMOV:
+                    //fprintf(stdout, "*%s = %s", DST->name.c_str(), SRC1->name.c_str());
+                    irafter.push_back(ir);
+                    
+                    break;
+                case JE:
+                case JNE:
+                case JG:
+                case JL:
+                case JGE:
+                case JLE:
+                    //fprintf(stdout, "if (%s %s %s) goto %s", SRC1->name.c_str(), opCodeNames[op],
+                    //    SRC2->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    irafter.push_back(ir);
+                    break;
+                case JZ:
+                    //fprintf(stdout, "if (! %s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    irafter.push_back(ir);
+                    
+                    break;
+                case JNZ:
+                    //fprintf(stdout, "if (%s) goto %s", SRC1->name.c_str(), ((BasicBlock)DST)->symbol->name.c_str());
+                    irafter.push_back(ir);
+                    
+                    break;
+                case JMP:
+                    irafter.push_back(ir);
+
+                    break;
+                case RET:
+                    //if(DST == NULL)
+                    //    fprintf(stdout, "return", DST->name.c_str());
+                    //fprintf(stdout, "return %s", DST->name.c_str());
+                    irafter.push_back(ir);
+                    break;
+                case CALL:{
+                    irafter.push_back(ir);
+                }
+                    break;
+                default:
+                    //fprintf(stdout, "%s = %s%s", DST->name.c_str(), opCodeNames[op], SRC1->name.c_str());
+                    if(ir->opds[0]->kind==SK_Temp)
+                    {
+                        if(use[ir->opds[0]])
+                        {
+                            irafter.push_back(ir);
+                        }
+                        
+                    }
+                    else{
+                        irafter.push_back(ir);
+                    }
+                    
+                    break;
+            }
+        }
+        bb->insts=irafter;
+        preSize=bb->insts.size();
         
     }
+
 
 }
 
