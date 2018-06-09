@@ -1,0 +1,1391 @@
+
+void mergeSort(int *a, int *b, int left, int right)
+{
+	int aptr, bptr, ptr, i;
+	int center;
+	if(left < right){
+		center = (left + right) / 2;
+		mergeSort(a, b, left, center);
+		mergeSort(a, b, center + 1, right);
+		aptr = left; bptr = center + 1;
+		ptr = left;
+		while(aptr <= center && bptr <= right){
+			if(a[aptr] < a[bptr]){
+				b[ptr] = a[aptr];
+				aptr += 1;
+			}
+			else{
+				b[ptr] = a[bptr];
+				bptr += 1;
+			}
+			ptr += 1;
+		}
+
+		while(aptr <= center){
+			b[ptr] = a[aptr];
+			aptr += 1;
+			ptr += 1;
+		}
+
+		while(aptr <= center && bptr <= right){
+			b[ptr] = a[bptr];
+			bptr += 1;
+			ptr += 1;
+		}
+
+		for(i = left; i <= right; i += 1)
+			a[i] = b[i];
+	}
+}
+
+int main()
+{
+	int a[10], b[10];
+	int i, c;
+	a[0] = 2;a[1] = 3;a[2] = 4;
+	a[3] = 1;a[4] = 9;a[5] = 7;
+	a[6] = 3;a[7] = 19;a[8] = 6;a[9] = 25;
+	mergeSort(a, b, 0, 9);
+	for(i = 0; i < 10; i += 1){
+		c = a[i];
+	}
+	return 0;
+}
+-------------------------------------------------------
+TranslationUnitDecl_
+-FunctionDecl_: mergeSort, void, 00000000
+--ParmVarDecl_: a, int *
+--ParmVarDecl_: b, int *
+--ParmVarDecl_: left, int
+--ParmVarDecl_: right, int
+--CompoundStmt_: locals:0  
+---DeclStmt_
+----VarDecl_: aptr, int
+----VarDecl_: bptr, int
+----VarDecl_: ptr, int
+----VarDecl_: i, int
+---DeclStmt_
+----VarDecl_: center, int
+---IfStmt_
+----BinaryOpExpr_: '<', NULL
+-----DeclRefExpr_: left, NULL, 00000000
+-----DeclRefExpr_: right, NULL, 00000000
+----CompoundStmt_: locals:0  
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: center, NULL, 00000000
+-------BinaryOpExpr_: '/', NULL
+--------ParenExpr_ NULL
+---------BinaryOpExpr_: '+', NULL
+----------DeclRefExpr_: left, NULL, 00000000
+----------DeclRefExpr_: right, NULL, 00000000
+--------IntLiteral_: 2 int
+-----ExprStmt_
+------CallExpr_ NULL
+-------DeclRefExpr_: mergeSort, NULL, 00000000
+-------DeclRefExpr_: a, NULL, 00000000
+-------DeclRefExpr_: b, NULL, 00000000
+-------DeclRefExpr_: left, NULL, 00000000
+-------DeclRefExpr_: center, NULL, 00000000
+-----ExprStmt_
+------CallExpr_ NULL
+-------DeclRefExpr_: mergeSort, NULL, 00000000
+-------DeclRefExpr_: a, NULL, 00000000
+-------DeclRefExpr_: b, NULL, 00000000
+-------BinaryOpExpr_: '+', NULL
+--------DeclRefExpr_: center, NULL, 00000000
+--------IntLiteral_: 1 int
+-------DeclRefExpr_: right, NULL, 00000000
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: aptr, NULL, 00000000
+-------DeclRefExpr_: left, NULL, 00000000
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: bptr, NULL, 00000000
+-------BinaryOpExpr_: '+', NULL
+--------DeclRefExpr_: center, NULL, 00000000
+--------IntLiteral_: 1 int
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: ptr, NULL, 00000000
+-------DeclRefExpr_: left, NULL, 00000000
+-----WhileStmt_
+------BinaryOpExpr_: '&&', NULL
+-------BinaryOpExpr_: '<=', NULL
+--------DeclRefExpr_: aptr, NULL, 00000000
+--------DeclRefExpr_: center, NULL, 00000000
+-------BinaryOpExpr_: '<=', NULL
+--------DeclRefExpr_: bptr, NULL, 00000000
+--------DeclRefExpr_: right, NULL, 00000000
+------CompoundStmt_: locals:0  
+-------IfStmt_
+--------BinaryOpExpr_: '<', NULL
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: a, NULL, 00000000
+----------DeclRefExpr_: aptr, NULL, 00000000
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: a, NULL, 00000000
+----------DeclRefExpr_: bptr, NULL, 00000000
+--------CompoundStmt_: locals:0  
+---------ExprStmt_
+----------AssignExpr_: '=', NULL
+-----------ArraySubscriptExpr_ NULL
+------------DeclRefExpr_: b, NULL, 00000000
+------------DeclRefExpr_: ptr, NULL, 00000000
+-----------ArraySubscriptExpr_ NULL
+------------DeclRefExpr_: a, NULL, 00000000
+------------DeclRefExpr_: aptr, NULL, 00000000
+---------ExprStmt_
+----------AssignExpr_: '+=', NULL
+-----------DeclRefExpr_: aptr, NULL, 00000000
+-----------IntLiteral_: 1 int
+--------CompoundStmt_: locals:0  
+---------ExprStmt_
+----------AssignExpr_: '=', NULL
+-----------ArraySubscriptExpr_ NULL
+------------DeclRefExpr_: b, NULL, 00000000
+------------DeclRefExpr_: ptr, NULL, 00000000
+-----------ArraySubscriptExpr_ NULL
+------------DeclRefExpr_: a, NULL, 00000000
+------------DeclRefExpr_: bptr, NULL, 00000000
+---------ExprStmt_
+----------AssignExpr_: '+=', NULL
+-----------DeclRefExpr_: bptr, NULL, 00000000
+-----------IntLiteral_: 1 int
+-------ExprStmt_
+--------AssignExpr_: '+=', NULL
+---------DeclRefExpr_: ptr, NULL, 00000000
+---------IntLiteral_: 1 int
+-----WhileStmt_
+------BinaryOpExpr_: '<=', NULL
+-------DeclRefExpr_: aptr, NULL, 00000000
+-------DeclRefExpr_: center, NULL, 00000000
+------CompoundStmt_: locals:0  
+-------ExprStmt_
+--------AssignExpr_: '=', NULL
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: b, NULL, 00000000
+----------DeclRefExpr_: ptr, NULL, 00000000
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: a, NULL, 00000000
+----------DeclRefExpr_: aptr, NULL, 00000000
+-------ExprStmt_
+--------AssignExpr_: '+=', NULL
+---------DeclRefExpr_: aptr, NULL, 00000000
+---------IntLiteral_: 1 int
+-------ExprStmt_
+--------AssignExpr_: '+=', NULL
+---------DeclRefExpr_: ptr, NULL, 00000000
+---------IntLiteral_: 1 int
+-----WhileStmt_
+------BinaryOpExpr_: '&&', NULL
+-------BinaryOpExpr_: '<=', NULL
+--------DeclRefExpr_: aptr, NULL, 00000000
+--------DeclRefExpr_: center, NULL, 00000000
+-------BinaryOpExpr_: '<=', NULL
+--------DeclRefExpr_: bptr, NULL, 00000000
+--------DeclRefExpr_: right, NULL, 00000000
+------CompoundStmt_: locals:0  
+-------ExprStmt_
+--------AssignExpr_: '=', NULL
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: b, NULL, 00000000
+----------DeclRefExpr_: ptr, NULL, 00000000
+---------ArraySubscriptExpr_ NULL
+----------DeclRefExpr_: a, NULL, 00000000
+----------DeclRefExpr_: bptr, NULL, 00000000
+-------ExprStmt_
+--------AssignExpr_: '+=', NULL
+---------DeclRefExpr_: bptr, NULL, 00000000
+---------IntLiteral_: 1 int
+-------ExprStmt_
+--------AssignExpr_: '+=', NULL
+---------DeclRefExpr_: ptr, NULL, 00000000
+---------IntLiteral_: 1 int
+-----ForStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: i, NULL, 00000000
+-------DeclRefExpr_: left, NULL, 00000000
+------BinaryOpExpr_: '<=', NULL
+-------DeclRefExpr_: i, NULL, 00000000
+-------DeclRefExpr_: right, NULL, 00000000
+------AssignExpr_: '+=', NULL
+-------DeclRefExpr_: i, NULL, 00000000
+-------IntLiteral_: 1 int
+------ExprStmt_
+-------AssignExpr_: '=', NULL
+--------ArraySubscriptExpr_ NULL
+---------DeclRefExpr_: a, NULL, 00000000
+---------DeclRefExpr_: i, NULL, 00000000
+--------ArraySubscriptExpr_ NULL
+---------DeclRefExpr_: b, NULL, 00000000
+---------DeclRefExpr_: i, NULL, 00000000
+-FunctionDecl_: main, int, 00000000
+--CompoundStmt_: locals:0  
+---DeclStmt_
+----VarDecl_: a, int []
+----VarDecl_: b, int []
+---DeclStmt_
+----VarDecl_: i, int
+----VarDecl_: c, int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 0 int
+-----IntLiteral_: 2 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 1 int
+-----IntLiteral_: 3 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 2 int
+-----IntLiteral_: 4 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 3 int
+-----IntLiteral_: 1 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 4 int
+-----IntLiteral_: 9 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 5 int
+-----IntLiteral_: 7 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 6 int
+-----IntLiteral_: 3 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 7 int
+-----IntLiteral_: 19 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 8 int
+-----IntLiteral_: 6 int
+---ExprStmt_
+----AssignExpr_: '=', NULL
+-----ArraySubscriptExpr_ NULL
+------DeclRefExpr_: a, NULL, 00000000
+------IntLiteral_: 9 int
+-----IntLiteral_: 25 int
+---ExprStmt_
+----CallExpr_ NULL
+-----DeclRefExpr_: mergeSort, NULL, 00000000
+-----DeclRefExpr_: a, NULL, 00000000
+-----DeclRefExpr_: b, NULL, 00000000
+-----IntLiteral_: 0 int
+-----IntLiteral_: 9 int
+---ForStmt_
+----AssignExpr_: '=', NULL
+-----DeclRefExpr_: i, NULL, 00000000
+-----IntLiteral_: 0 int
+----BinaryOpExpr_: '<', NULL
+-----DeclRefExpr_: i, NULL, 00000000
+-----IntLiteral_: 10 int
+----AssignExpr_: '+=', NULL
+-----DeclRefExpr_: i, NULL, 00000000
+-----IntLiteral_: 1 int
+----CompoundStmt_: locals:0  
+-----ExprStmt_
+------AssignExpr_: '=', NULL
+-------DeclRefExpr_: c, NULL, 00000000
+-------ArraySubscriptExpr_ NULL
+--------DeclRefExpr_: a, NULL, 00000000
+--------DeclRefExpr_: i, NULL, 00000000
+---ReturnStmt_
+----IntLiteral_: 0 int
+==================
+begin to translate mergeSort
+begin to translate main
+allocate label: label_0 for 0x7fe9bb409e20
+allocate label: label_1 for 0x7fe9bb40bb90
+allocate label: label_2 for 0x7fe9bb40c460
+allocate label: label_3 for 0x7fe9bb40c520
+allocate label: label_4 for 0x7fe9bb40c550
+allocate label: label_5 for 0x7fe9bb40c0d0
+allocate label: label_6 for 0x7fe9bb40c490
+allocate label: label_7 for 0x7fe9bb40e4d0
+allocate label: label_8 for 0x7fe9bb40c4c0
+allocate label: label_9 for 0x7fe9bb40e560
+allocate label: label_10 for 0x7fe9bb40e590
+allocate label: label_11 for 0x7fe9bb40e5c0
+allocate label: label_12 for 0x7fe9bb40f3c0
+allocate label: label_13 for 0x7fe9bb40f3f0
+allocate label: label_14 for 0x7fe9bb4100b0
+allocate label: label_15 for 0x7fe9bb40f420
+allocate label: label_16 for 0x7fe9bb410160
+allocate label: label_17 for 0x7fe9bb410190
+allocate label: label_18 for 0x7fe9bb4101c0
+allocate label: label_19 for 0x7fe9bb4101f0
+allocate label: label_20 for 0x7fe9bb40bb60
+allocate label: label_21 for 0x7fe9bb409840
+allocate label: label_22 for 0x7fe9bb410db0
+allocate label: label_23 for 0x7fe9bb413480
+allocate label: label_24 for 0x7fe9bb4134b0
+allocate label: label_25 for 0x7fe9bb4134e0
+allocate label: label_26 for 0x7fe9bb413510
+allocate label: label_27 for 0x7fe9bb410de0
+size: 28
+global(0): 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, 
+locals variables: aptr, bptr, ptr, i, center, 
+mergeSort: 
+	if (left > right) goto label_20;
+label_1: 
+	tmp0 = left + right;
+	tmp1 = tmp0 >> 1;
+	center = tmp1;
+	mergeSort(a, b, left, center, );
+	tmp2 = center + 1;
+	mergeSort(a, b, tmp2, right, );
+	aptr = left;
+	tmp3 = center + 1;
+	bptr = tmp3;
+	ptr = left;
+	goto label_6;
+label_2: 
+	tmp4 = aptr << 2;
+	tmp5 = a + tmp4;
+	tmp6 = *tmp5;
+	tmp7 = bptr << 2;
+	tmp8 = a + tmp7;
+	tmp9 = *tmp8;
+	if (tmp6 > tmp9) goto label_4;
+label_3: 
+	tmp10 = ptr << 2;
+	tmp11 = b + tmp10;
+	tmp12 = *tmp11;
+	tmp13 = aptr << 2;
+	tmp14 = a + tmp13;
+	tmp15 = *tmp14;
+	*tmp11 = tmp15;
+	tmp16 = *tmp11;
+	tmp17 = aptr + 1;
+	aptr = tmp17;
+	goto label_5;
+label_4: 
+	tmp18 = ptr << 2;
+	tmp19 = b + tmp18;
+	tmp20 = *tmp19;
+	tmp21 = bptr << 2;
+	tmp22 = a + tmp21;
+	tmp23 = *tmp22;
+	*tmp19 = tmp23;
+	tmp24 = *tmp19;
+	tmp25 = bptr + 1;
+	bptr = tmp25;
+label_5: 
+	tmp26 = ptr + 1;
+	ptr = tmp26;
+label_6: 
+	if (aptr >= center) goto label_8;
+label_7: 
+	if (bptr <= right) goto label_2;
+label_8: 
+	goto label_10;
+label_9: 
+	tmp27 = ptr << 2;
+	tmp28 = b + tmp27;
+	tmp29 = *tmp28;
+	tmp30 = aptr << 2;
+	tmp31 = a + tmp30;
+	tmp32 = *tmp31;
+	*tmp28 = tmp32;
+	tmp33 = *tmp28;
+	tmp34 = aptr + 1;
+	aptr = tmp34;
+	tmp35 = ptr + 1;
+	ptr = tmp35;
+label_10: 
+	if (aptr <= center) goto label_9;
+label_11: 
+	goto label_13;
+label_12: 
+	tmp36 = ptr << 2;
+	tmp37 = b + tmp36;
+	tmp38 = *tmp37;
+	tmp39 = bptr << 2;
+	tmp40 = a + tmp39;
+	tmp41 = *tmp40;
+	*tmp37 = tmp41;
+	tmp42 = *tmp37;
+	tmp43 = bptr + 1;
+	bptr = tmp43;
+	tmp44 = ptr + 1;
+	ptr = tmp44;
+label_13: 
+	if (aptr >= center) goto label_15;
+label_14: 
+	if (bptr <= right) goto label_12;
+label_15: 
+	i = left;
+	goto label_18;
+label_16: 
+	tmp45 = i << 2;
+	tmp46 = a + tmp45;
+	tmp47 = *tmp46;
+	tmp48 = i << 2;
+	tmp49 = b + tmp48;
+	tmp50 = *tmp49;
+	*tmp46 = tmp50;
+	tmp51 = *tmp46;
+label_17: 
+	tmp52 = i + 1;
+	i = tmp52;
+label_18: 
+	if (i <= right) goto label_16;
+label_19: 
+label_20: 
+label_21: 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, tmp53, tmp54, tmp55, tmp56, tmp57, tmp58, tmp59, 
+locals variables: a, b, i, c, 
+main: 
+	tmp0 = 0 << 2;
+	tmp1 = &a;
+	tmp2 = tmp1;
+	tmp3 = tmp2 + tmp0;
+	tmp4 = *tmp3;
+	*tmp3 = 2;
+	tmp5 = *tmp3;
+	tmp6 = 1 << 2;
+	tmp7 = tmp1;
+	tmp8 = tmp7 + tmp6;
+	tmp9 = *tmp8;
+	*tmp8 = 3;
+	tmp10 = *tmp8;
+	tmp11 = 2 << 2;
+	tmp12 = tmp1;
+	tmp13 = tmp12 + tmp11;
+	tmp14 = *tmp13;
+	*tmp13 = 4;
+	tmp15 = *tmp13;
+	tmp16 = 3 << 2;
+	tmp17 = tmp1;
+	tmp18 = tmp17 + tmp16;
+	tmp19 = *tmp18;
+	*tmp18 = 1;
+	tmp20 = *tmp18;
+	tmp21 = 4 << 2;
+	tmp22 = tmp1;
+	tmp23 = tmp22 + tmp21;
+	tmp24 = *tmp23;
+	*tmp23 = 9;
+	tmp25 = *tmp23;
+	tmp26 = 5 << 2;
+	tmp27 = tmp1;
+	tmp28 = tmp27 + tmp26;
+	tmp29 = *tmp28;
+	*tmp28 = 7;
+	tmp30 = *tmp28;
+	tmp31 = 6 << 2;
+	tmp32 = tmp1;
+	tmp33 = tmp32 + tmp31;
+	tmp34 = *tmp33;
+	*tmp33 = 3;
+	tmp35 = *tmp33;
+	tmp36 = 7 << 2;
+	tmp37 = tmp1;
+	tmp38 = tmp37 + tmp36;
+	tmp39 = *tmp38;
+	*tmp38 = 19;
+	tmp40 = *tmp38;
+	tmp41 = 8 << 2;
+	tmp42 = tmp1;
+	tmp43 = tmp42 + tmp41;
+	tmp44 = *tmp43;
+	*tmp43 = 6;
+	tmp45 = *tmp43;
+	tmp46 = 9 << 2;
+	tmp47 = tmp1;
+	tmp48 = tmp47 + tmp46;
+	tmp49 = *tmp48;
+	*tmp48 = 25;
+	tmp50 = *tmp48;
+	tmp51 = tmp1;
+	tmp52 = &b;
+	tmp53 = tmp52;
+	mergeSort(tmp51, tmp53, 0, 9, );
+	i = 0;
+	goto label_25;
+label_23: 
+	tmp54 = i << 2;
+	tmp55 = &a;
+	tmp56 = tmp55;
+	tmp57 = tmp56 + tmp54;
+	tmp58 = *tmp57;
+	c = tmp58;
+label_24: 
+	tmp59 = i + 1;
+	i = tmp59;
+label_25: 
+	if (i < 10) goto label_23;
+label_26: 
+	return 0;
+	goto label_27;
+label_27: 
+you hua temp
+size: 28
+global(0): 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, 
+locals variables: aptr, bptr, ptr, i, center, 
+mergeSort: 
+	if (left > right) goto label_20;
+label_1: 
+	tmp0 = left + right;
+	tmp1 = tmp0 >> 1;
+	center = tmp1;
+	mergeSort(a, b, left, center, );
+	tmp2 = center + 1;
+	mergeSort(a, b, tmp2, right, );
+	aptr = left;
+	tmp3 = center + 1;
+	bptr = tmp3;
+	ptr = left;
+	goto label_6;
+label_2: 
+	tmp4 = aptr << 2;
+	tmp5 = a + tmp4;
+	tmp6 = *tmp5;
+	tmp7 = bptr << 2;
+	tmp8 = a + tmp7;
+	tmp9 = *tmp8;
+	if (tmp6 > tmp9) goto label_4;
+label_3: 
+	tmp10 = ptr << 2;
+	tmp11 = b + tmp10;
+	tmp13 = aptr << 2;
+	tmp14 = a + tmp13;
+	tmp15 = *tmp14;
+	*tmp11 = tmp15;
+	tmp17 = aptr + 1;
+	aptr = tmp17;
+	goto label_5;
+label_4: 
+	tmp18 = ptr << 2;
+	tmp19 = b + tmp18;
+	tmp21 = bptr << 2;
+	tmp22 = a + tmp21;
+	tmp23 = *tmp22;
+	*tmp19 = tmp23;
+	tmp25 = bptr + 1;
+	bptr = tmp25;
+label_5: 
+	tmp26 = ptr + 1;
+	ptr = tmp26;
+label_6: 
+	if (aptr >= center) goto label_8;
+label_7: 
+	if (bptr <= right) goto label_2;
+label_8: 
+	goto label_10;
+label_9: 
+	tmp27 = ptr << 2;
+	tmp28 = b + tmp27;
+	tmp30 = aptr << 2;
+	tmp31 = a + tmp30;
+	tmp32 = *tmp31;
+	*tmp28 = tmp32;
+	tmp34 = aptr + 1;
+	aptr = tmp34;
+	tmp35 = ptr + 1;
+	ptr = tmp35;
+label_10: 
+	if (aptr <= center) goto label_9;
+label_11: 
+	goto label_13;
+label_12: 
+	tmp36 = ptr << 2;
+	tmp37 = b + tmp36;
+	tmp39 = bptr << 2;
+	tmp40 = a + tmp39;
+	tmp41 = *tmp40;
+	*tmp37 = tmp41;
+	tmp43 = bptr + 1;
+	bptr = tmp43;
+	tmp44 = ptr + 1;
+	ptr = tmp44;
+label_13: 
+	if (aptr >= center) goto label_15;
+label_14: 
+	if (bptr <= right) goto label_12;
+label_15: 
+	i = left;
+	goto label_18;
+label_16: 
+	tmp45 = i << 2;
+	tmp46 = a + tmp45;
+	tmp48 = i << 2;
+	tmp49 = b + tmp48;
+	tmp50 = *tmp49;
+	*tmp46 = tmp50;
+label_17: 
+	tmp52 = i + 1;
+	i = tmp52;
+label_18: 
+	if (i <= right) goto label_16;
+label_19: 
+label_20: 
+label_21: 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, tmp53, tmp54, tmp55, tmp56, tmp57, tmp58, tmp59, 
+locals variables: a, b, i, c, 
+main: 
+	tmp0 = 0 << 2;
+	tmp1 = &a;
+	tmp2 = tmp1;
+	tmp3 = tmp2 + tmp0;
+	*tmp3 = 2;
+	tmp6 = 1 << 2;
+	tmp7 = tmp1;
+	tmp8 = tmp7 + tmp6;
+	*tmp8 = 3;
+	tmp11 = 2 << 2;
+	tmp12 = tmp1;
+	tmp13 = tmp12 + tmp11;
+	*tmp13 = 4;
+	tmp16 = 3 << 2;
+	tmp17 = tmp1;
+	tmp18 = tmp17 + tmp16;
+	*tmp18 = 1;
+	tmp21 = 4 << 2;
+	tmp22 = tmp1;
+	tmp23 = tmp22 + tmp21;
+	*tmp23 = 9;
+	tmp26 = 5 << 2;
+	tmp27 = tmp1;
+	tmp28 = tmp27 + tmp26;
+	*tmp28 = 7;
+	tmp31 = 6 << 2;
+	tmp32 = tmp1;
+	tmp33 = tmp32 + tmp31;
+	*tmp33 = 3;
+	tmp36 = 7 << 2;
+	tmp37 = tmp1;
+	tmp38 = tmp37 + tmp36;
+	*tmp38 = 19;
+	tmp41 = 8 << 2;
+	tmp42 = tmp1;
+	tmp43 = tmp42 + tmp41;
+	*tmp43 = 6;
+	tmp46 = 9 << 2;
+	tmp47 = tmp1;
+	tmp48 = tmp47 + tmp46;
+	*tmp48 = 25;
+	tmp51 = tmp1;
+	tmp52 = &b;
+	tmp53 = tmp52;
+	mergeSort(tmp51, tmp53, 0, 9, );
+	i = 0;
+	goto label_25;
+label_23: 
+	tmp54 = i << 2;
+	tmp55 = &a;
+	tmp56 = tmp55;
+	tmp57 = tmp56 + tmp54;
+	tmp58 = *tmp57;
+	c = tmp58;
+label_24: 
+	tmp59 = i + 1;
+	i = tmp59;
+label_25: 
+	if (i < 10) goto label_23;
+label_26: 
+	return 0;
+	goto label_27;
+label_27: 
+ref: 9 10
+ref: 17 18
+ref: 16 17
+ref: 18 16 21
+ref: 15 18 16
+ref: 12 13
+ref: 14 12 15
+ref: 13 15 14
+ref: 11 13 12
+ref: 10 9 11
+ref: 8 10 9
+ref: 5 6
+ref: 4 5
+ref: 3 5 4
+ref: 2 4 3
+ref: 7 2 8
+ref: 6 8 7
+ref: 1 6 2
+ref: 0 21 1
+ref: 24 25
+ref: 23 24
+ref: 26 27 27
+ref: 25 23 26
+ref: 22 25 23
+size: 26
+global(0): 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, 
+locals variables: aptr, bptr, ptr, i, center, 
+mergeSort: 
+	if (left > right) goto label_21;
+label_1: 
+	tmp0 = left + right;
+	tmp1 = tmp0 >> 1;
+	center = tmp1;
+	mergeSort(a, b, left, center, );
+	tmp2 = center + 1;
+	mergeSort(a, b, tmp2, right, );
+	aptr = left;
+	tmp3 = center + 1;
+	bptr = tmp3;
+	ptr = left;
+	goto label_6;
+label_2: 
+	tmp4 = aptr << 2;
+	tmp5 = a + tmp4;
+	tmp6 = *tmp5;
+	tmp7 = bptr << 2;
+	tmp8 = a + tmp7;
+	tmp9 = *tmp8;
+	if (tmp6 > tmp9) goto label_4;
+label_3: 
+	tmp10 = ptr << 2;
+	tmp11 = b + tmp10;
+	tmp13 = aptr << 2;
+	tmp14 = a + tmp13;
+	tmp15 = *tmp14;
+	*tmp11 = tmp15;
+	tmp17 = aptr + 1;
+	aptr = tmp17;
+	goto label_5;
+label_4: 
+	tmp18 = ptr << 2;
+	tmp19 = b + tmp18;
+	tmp21 = bptr << 2;
+	tmp22 = a + tmp21;
+	tmp23 = *tmp22;
+	*tmp19 = tmp23;
+	tmp25 = bptr + 1;
+	bptr = tmp25;
+label_5: 
+	tmp26 = ptr + 1;
+	ptr = tmp26;
+label_6: 
+	if (aptr >= center) goto label_8;
+label_7: 
+	if (bptr <= right) goto label_2;
+label_8: 
+	goto label_10;
+label_9: 
+	tmp27 = ptr << 2;
+	tmp28 = b + tmp27;
+	tmp30 = aptr << 2;
+	tmp31 = a + tmp30;
+	tmp32 = *tmp31;
+	*tmp28 = tmp32;
+	tmp34 = aptr + 1;
+	aptr = tmp34;
+	tmp35 = ptr + 1;
+	ptr = tmp35;
+label_10: 
+	if (aptr <= center) goto label_9;
+label_11: 
+	goto label_13;
+label_12: 
+	tmp36 = ptr << 2;
+	tmp37 = b + tmp36;
+	tmp39 = bptr << 2;
+	tmp40 = a + tmp39;
+	tmp41 = *tmp40;
+	*tmp37 = tmp41;
+	tmp43 = bptr + 1;
+	bptr = tmp43;
+	tmp44 = ptr + 1;
+	ptr = tmp44;
+label_13: 
+	if (aptr >= center) goto label_15;
+label_14: 
+	if (bptr <= right) goto label_12;
+label_15: 
+	i = left;
+	goto label_18;
+label_16: 
+	tmp45 = i << 2;
+	tmp46 = a + tmp45;
+	tmp48 = i << 2;
+	tmp49 = b + tmp48;
+	tmp50 = *tmp49;
+	*tmp46 = tmp50;
+label_17: 
+	tmp52 = i + 1;
+	i = tmp52;
+label_18: 
+	if (i <= right) goto label_16;
+label_21: 
+in show function
+locals temporary variables: tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17, tmp18, tmp19, tmp20, tmp21, tmp22, tmp23, tmp24, tmp25, tmp26, tmp27, tmp28, tmp29, tmp30, tmp31, tmp32, tmp33, tmp34, tmp35, tmp36, tmp37, tmp38, tmp39, tmp40, tmp41, tmp42, tmp43, tmp44, tmp45, tmp46, tmp47, tmp48, tmp49, tmp50, tmp51, tmp52, tmp53, tmp54, tmp55, tmp56, tmp57, tmp58, tmp59, 
+locals variables: a, b, i, c, 
+main: 
+	tmp0 = 0 << 2;
+	tmp1 = &a;
+	tmp2 = tmp1;
+	tmp3 = tmp2 + tmp0;
+	*tmp3 = 2;
+	tmp6 = 1 << 2;
+	tmp7 = tmp1;
+	tmp8 = tmp7 + tmp6;
+	*tmp8 = 3;
+	tmp11 = 2 << 2;
+	tmp12 = tmp1;
+	tmp13 = tmp12 + tmp11;
+	*tmp13 = 4;
+	tmp16 = 3 << 2;
+	tmp17 = tmp1;
+	tmp18 = tmp17 + tmp16;
+	*tmp18 = 1;
+	tmp21 = 4 << 2;
+	tmp22 = tmp1;
+	tmp23 = tmp22 + tmp21;
+	*tmp23 = 9;
+	tmp26 = 5 << 2;
+	tmp27 = tmp1;
+	tmp28 = tmp27 + tmp26;
+	*tmp28 = 7;
+	tmp31 = 6 << 2;
+	tmp32 = tmp1;
+	tmp33 = tmp32 + tmp31;
+	*tmp33 = 3;
+	tmp36 = 7 << 2;
+	tmp37 = tmp1;
+	tmp38 = tmp37 + tmp36;
+	*tmp38 = 19;
+	tmp41 = 8 << 2;
+	tmp42 = tmp1;
+	tmp43 = tmp42 + tmp41;
+	*tmp43 = 6;
+	tmp46 = 9 << 2;
+	tmp47 = tmp1;
+	tmp48 = tmp47 + tmp46;
+	*tmp48 = 25;
+	tmp51 = tmp1;
+	tmp52 = &b;
+	tmp53 = tmp52;
+	mergeSort(tmp51, tmp53, 0, 9, );
+	i = 0;
+	goto label_25;
+label_23: 
+	tmp54 = i << 2;
+	tmp55 = &a;
+	tmp56 = tmp55;
+	tmp57 = tmp56 + tmp54;
+	tmp58 = *tmp57;
+	c = tmp58;
+label_24: 
+	tmp59 = i + 1;
+	i = tmp59;
+label_25: 
+	if (i < 10) goto label_23;
+label_26: 
+	return 0;
+	goto label_27;
+label_27: 
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+################### basic block: mergeSort
+---------
+	if (left > right) goto label_21;
+16:	^^ 0: 0 1
+^^ 1: 1 2
+^^ 2: 4 4
+^^ 3: 7 8
+################### basic block: label_1
+tmp0  6
+tmp1  7
+tmp2  8
+tmp3  9
+---------
+	tmp0 = left + right;
+5:		tmp1 = tmp0 >> 1;
+4:		center = tmp1;
+42:		mergeSort(a, b, left, center, );
+44:		tmp2 = center + 1;
+5:		mergeSort(a, b, tmp2, right, );
+44:		aptr = left;
+42:		tmp3 = center + 1;
+5:		bptr = tmp3;
+42:		ptr = left;
+42:		goto label_6;
+20:	^^ 0: 0 1
+^^ 1: 1 2
+^^ 2: 2 4
+^^ 3: 3 4
+^^ 4: 4 5
+^^ 5: 5 5
+################### basic block: label_2
+tmp4  6
+tmp5  7
+tmp6  8
+tmp7  9
+tmp8  10
+tmp9  11
+---------
+	tmp4 = aptr << 2;
+3:		tmp5 = a + tmp4;
+5:		tmp6 = *tmp5;
+25:		tmp7 = bptr << 2;
+3:		tmp8 = a + tmp7;
+5:		tmp9 = *tmp8;
+25:		if (tmp6 > tmp9) goto label_4;
+16:	^^ 0: 0 1
+^^ 1: 1 5
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+^^ 5: 6 7
+################### basic block: label_3
+tmp10  6
+tmp11  7
+tmp13  8
+tmp14  9
+tmp15  10
+tmp17  11
+---------
+	tmp10 = ptr << 2;
+3:		tmp11 = b + tmp10;
+5:		tmp13 = aptr << 2;
+3:		tmp14 = a + tmp13;
+5:		tmp15 = *tmp14;
+25:		*tmp11 = tmp15;
+43:		tmp17 = aptr + 1;
+5:		aptr = tmp17;
+42:		goto label_5;
+20:	^^ 0: 0 1
+^^ 1: 1 5
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+^^ 5: 6 7
+################### basic block: label_4
+tmp18  6
+tmp19  7
+tmp21  8
+tmp22  9
+tmp23  10
+tmp25  11
+---------
+	tmp18 = ptr << 2;
+3:		tmp19 = b + tmp18;
+5:		tmp21 = bptr << 2;
+3:		tmp22 = a + tmp21;
+5:		tmp23 = *tmp22;
+25:		*tmp19 = tmp23;
+43:		tmp25 = bptr + 1;
+5:		bptr = tmp25;
+42:	^^ 0: 0 1
+################### basic block: label_5
+tmp26  6
+---------
+	tmp26 = ptr + 1;
+5:		ptr = tmp26;
+42:	################### basic block: label_6
+---------
+	if (aptr >= center) goto label_8;
+18:	################### basic block: label_7
+---------
+	if (bptr <= right) goto label_2;
+19:	################### basic block: label_8
+---------
+	goto label_10;
+20:	^^ 0: 0 1
+^^ 1: 1 5
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+^^ 5: 6 7
+^^ 6: 8 9
+################### basic block: label_9
+tmp28  7
+tmp27  6
+tmp30  8
+tmp31  9
+tmp32  10
+tmp34  11
+tmp35  12
+---------
+	tmp27 = ptr << 2;
+3:		tmp28 = b + tmp27;
+5:		tmp30 = aptr << 2;
+3:		tmp31 = a + tmp30;
+5:		tmp32 = *tmp31;
+25:		*tmp28 = tmp32;
+43:		tmp34 = aptr + 1;
+5:		aptr = tmp34;
+42:		tmp35 = ptr + 1;
+5:		ptr = tmp35;
+42:	################### basic block: label_10
+---------
+	if (aptr <= center) goto label_9;
+19:	################### basic block: label_11
+---------
+	goto label_13;
+20:	^^ 0: 0 1
+^^ 1: 1 5
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+^^ 5: 6 7
+^^ 6: 8 9
+################### basic block: label_12
+tmp36  6
+tmp37  7
+tmp39  8
+tmp40  9
+tmp41  10
+tmp43  11
+tmp44  12
+---------
+	tmp36 = ptr << 2;
+3:		tmp37 = b + tmp36;
+5:		tmp39 = bptr << 2;
+3:		tmp40 = a + tmp39;
+5:		tmp41 = *tmp40;
+25:		*tmp37 = tmp41;
+43:		tmp43 = bptr + 1;
+5:		bptr = tmp43;
+42:		tmp44 = ptr + 1;
+5:		ptr = tmp44;
+42:	################### basic block: label_13
+---------
+	if (aptr >= center) goto label_15;
+18:	################### basic block: label_14
+---------
+	if (bptr <= right) goto label_12;
+19:	################### basic block: label_15
+---------
+	i = left;
+42:		goto label_18;
+20:	^^ 0: 0 1
+^^ 1: 1 5
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+################### basic block: label_16
+tmp45  6
+tmp46  7
+tmp48  8
+tmp49  9
+tmp50  10
+---------
+	tmp45 = i << 2;
+3:		tmp46 = a + tmp45;
+5:		tmp48 = i << 2;
+3:		tmp49 = b + tmp48;
+5:		tmp50 = *tmp49;
+25:		*tmp46 = tmp50;
+43:	^^ 0: 0 1
+################### basic block: label_17
+tmp52  6
+---------
+	tmp52 = i + 1;
+5:		i = tmp52;
+42:	################### basic block: label_18
+---------
+	if (i <= right) goto label_16;
+19:	################### basic block: label_21
+---------
+ArrayType_: int []
+-IntLiteral_: 10 int
+ArrayType_: int []
+-IntLiteral_: 10 int
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int [] *
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+PointerType_: int *
+PointerType_: int [] *
+PointerType_: int *
+BuiltinType_: int
+PointerType_: int [] *
+PointerType_: int *
+PointerType_: int *
+BuiltinType_: int
+BuiltinType_: int
+^^ 0: 0 3
+^^ 1: 1 41
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 5 7
+^^ 5: 6 7
+^^ 6: 7 8
+^^ 7: 9 11
+^^ 8: 10 11
+^^ 9: 11 12
+^^ 10: 13 15
+^^ 11: 14 15
+^^ 12: 15 16
+^^ 13: 17 19
+^^ 14: 18 19
+^^ 15: 19 20
+^^ 16: 21 23
+^^ 17: 22 23
+^^ 18: 23 24
+^^ 19: 25 27
+^^ 20: 26 27
+^^ 21: 27 28
+^^ 22: 29 31
+^^ 23: 30 31
+^^ 24: 31 32
+^^ 25: 33 35
+^^ 26: 34 35
+^^ 27: 35 36
+^^ 28: 37 39
+^^ 29: 38 39
+^^ 30: 39 40
+^^ 31: 41 41
+^^ 32: 42 43
+^^ 33: 43 43
+################### basic block: main
+tmp0  6
+tmp1  7
+tmp2  8
+tmp3  9
+tmp13  8
+tmp6  10
+tmp7  11
+tmp8  12
+tmp11  13
+tmp12  6
+tmp28  9
+tmp16  6
+tmp17  8
+tmp18  9
+tmp21  6
+tmp22  8
+tmp23  9
+tmp26  6
+tmp27  8
+tmp31  6
+tmp32  8
+tmp33  9
+tmp36  6
+tmp37  8
+tmp38  9
+tmp41  6
+tmp42  8
+tmp43  9
+tmp46  6
+tmp47  8
+tmp48  9
+tmp51  6
+tmp52  6
+tmp53  7
+---------
+	tmp0 = 0 << 2;
+3:		tmp1 = &a;
+24:		tmp2 = tmp1;
+42:		tmp3 = tmp2 + tmp0;
+5:		*tmp3 = 2;
+43:		tmp6 = 1 << 2;
+3:		tmp7 = tmp1;
+42:		tmp8 = tmp7 + tmp6;
+5:		*tmp8 = 3;
+43:		tmp11 = 2 << 2;
+3:		tmp12 = tmp1;
+42:		tmp13 = tmp12 + tmp11;
+5:		*tmp13 = 4;
+43:		tmp16 = 3 << 2;
+3:		tmp17 = tmp1;
+42:		tmp18 = tmp17 + tmp16;
+5:		*tmp18 = 1;
+43:		tmp21 = 4 << 2;
+3:		tmp22 = tmp1;
+42:		tmp23 = tmp22 + tmp21;
+5:		*tmp23 = 9;
+43:		tmp26 = 5 << 2;
+3:		tmp27 = tmp1;
+42:		tmp28 = tmp27 + tmp26;
+5:		*tmp28 = 7;
+43:		tmp31 = 6 << 2;
+3:		tmp32 = tmp1;
+42:		tmp33 = tmp32 + tmp31;
+5:		*tmp33 = 3;
+43:		tmp36 = 7 << 2;
+3:		tmp37 = tmp1;
+42:		tmp38 = tmp37 + tmp36;
+5:		*tmp38 = 19;
+43:		tmp41 = 8 << 2;
+3:		tmp42 = tmp1;
+42:		tmp43 = tmp42 + tmp41;
+5:		*tmp43 = 6;
+43:		tmp46 = 9 << 2;
+3:		tmp47 = tmp1;
+42:		tmp48 = tmp47 + tmp46;
+5:		*tmp48 = 25;
+43:		tmp51 = tmp1;
+42:		tmp52 = &b;
+24:		tmp53 = tmp52;
+42:		mergeSort(tmp51, tmp53, 0, 9, );
+44:		i = 0;
+42:		goto label_25;
+20:	^^ 0: 0 3
+^^ 1: 1 2
+^^ 2: 2 3
+^^ 3: 3 4
+^^ 4: 4 5
+################### basic block: label_23
+tmp54  6
+tmp55  7
+tmp56  8
+tmp57  9
+tmp58  10
+---------
+	tmp54 = i << 2;
+3:		tmp55 = &a;
+24:		tmp56 = tmp55;
+42:		tmp57 = tmp56 + tmp54;
+5:		tmp58 = *tmp57;
+25:		c = tmp58;
+42:	^^ 0: 0 1
+################### basic block: label_24
+tmp59  6
+---------
+	tmp59 = i + 1;
+5:		i = tmp59;
+42:	################### basic block: label_25
+---------
+	if (i < 10) goto label_23;
+17:	################### basic block: label_26
+---------
+	return 0;
+45:		goto label_27;
+20:	################### basic block: label_27
+---------
