@@ -67,7 +67,7 @@ public:
     vector<pair<Symbol,vector<Symbol>>> analysis(BasicBlock bb);
 
 private:
-    enum{MAX=100};
+    enum{MAX=1000};
 
     bool confMap[MAX+10][MAX+10];
     std::map<unsigned long long,int>tempMap;
@@ -90,8 +90,8 @@ private:
 
     void addEdge(int from,int to)
     {
-        assert(from<100);
-        assert(to<100);
+        assert(from<MAX);
+        assert(to<MAX);
         confMap[from][to]=true;
         confMap[to][from]=true;
     }

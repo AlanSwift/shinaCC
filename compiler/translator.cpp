@@ -67,8 +67,8 @@ Program Translator_::translate(TranslationUnitDecl start)
 		printf("allocate label: %s for %p\n", bb->symbol->name.c_str(), bb);
 		//}
 	}
-    controlFlowOptimise();
-	//showProgram(start);
+	controlFlowOptimise();
+	showProgram(start);
 	FILE *fp = fopen("asm.s", "w");
 	Emitter emitter = new Emitter_(fp);
 	emitter->emitCode(program);
@@ -600,15 +600,36 @@ void Translator_::translateBranch(Expr expr, BasicBlock trueBlock, BasicBlock fa
                 program->startBasicBlock(testBlock);
                 translateBranch(expr1->right, trueBlock, falseBlock);
                 break;
+				
             case OP_BINARY_BE: // >=
+				src1 = translateExpression(expr1->left);
+				src2 = translateExpression(expr1->right);
+				generateBranch(expr1->left->type, trueBlock, JGE, src1, src2);
+				break;
             case OP_BINARY_ST: // <
+				src1 = translateExpression(expr1->left);
+				src2 = translateExpression(expr1->right);
+				generateBranch(expr1->left->type, trueBlock, JL, src1, src2);
+				break;
             case OP_BINARY_GT: // >
+				src1 = translateExpression(expr1->left);
+				src2 = translateExpression(expr1->right);
+				generateBranch(expr1->left->type, trueBlock, JG, src1, src2);
+				break;
             case OP_BINARY_SE: // <=
+				src1 = translateExpression(expr1->left);
+				src2 = translateExpression(expr1->right);
+				generateBranch(expr1->left->type, trueBlock, JLE, src1, src2);
+				break;
             case OP_BINARY_EQ:
+				src1 = translateExpression(expr1->left);
+				src2 = translateExpression(expr1->right);
+				generateBranch(expr1->left->type, trueBlock, JE, src1, src2);
+				break;
             case OP_BINARY_NEQ:
                 src1 = translateExpression(expr1->left);
                 src2 = translateExpression(expr1->right);
-                generateBranch(expr1->left->type, trueBlock, map[expr1->operator_ - OP_BINARY_GT], src1, src2);
+                generateBranch(expr1->left->type, trueBlock, JNE, src1, src2);
                 break;
 			default: assert(0); break;
         }

@@ -57,12 +57,12 @@ void Allocator::precess(BasicBlock bb)
             id2Symbol[regMap[i.first]].push_back(i.first);
         }
     }
-    printf("################### basic block: %s\n",bb->symbol->name.c_str());
-    for(auto &i:regMap)
+    //printf("################### basic block: %s\n",bb->symbol->name.c_str());
+    /*for(auto &i:regMap)
     {
         printf("%s  %d\n",i.first->name.c_str(),i.second);
     }
-    printf("---------\n");
+    printf("---------\n");*/
 
 
 }
